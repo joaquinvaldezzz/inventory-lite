@@ -1,50 +1,112 @@
 {
   "name": "invent",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
+  "description": "An Ionic project",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
+    "dev": "vite",
+    "format": "prettier --write .",
+    "lint": "eslint",
     "preview": "vite preview",
     "test.e2e": "cypress run",
-    "test.unit": "vitest",
-    "lint": "eslint"
+    "test.unit": "vitest"
+  },
+  "browserslist": {
+    "development": [
+      "> 0.5%"
+    ],
+    "production": [
+      ">= 1%",
+      "last 1 major version",
+      "not dead",
+      "Chrome >= 45",
+      "Firefox >= 38",
+      "Edge >= 12",
+      "Explorer >= 10",
+      "iOS >= 9",
+      "Safari >= 9",
+      "Android >= 4.4",
+      "Opera >= 30"
+    ]
+  },
+  "prettier": {
+    "importOrder": [
+      "^(react/(.*)$)|^(react$)",
+      "^(next/(.*)$)|^(next$)",
+      "<THIRD_PARTY_MODULES>",
+      "",
+      "^types$",
+      "^@/types/(.*)$",
+      "^@/config/(.*)$",
+      "^@/lib/(.*)$",
+      "^@/hooks/(.*)$",
+      "^@/components/ui/(.*)$",
+      "^@/components/(.*)$",
+      "^@/registry/(.*)$",
+      "^@/styles/(.*)$",
+      "^@/app/(.*)$",
+      "",
+      "^[./]",
+      "",
+      "^@/public/(.*)$"
+    ],
+    "plugins": [
+      "@ianvs/prettier-plugin-sort-imports",
+      "prettier-plugin-packagejson",
+      "prettier-plugin-tailwindcss"
+    ],
+    "printWidth": 100,
+    "semi": false,
+    "singleQuote": true
   },
   "dependencies": {
     "@capacitor/app": "6.0.2",
     "@capacitor/core": "6.2.0",
     "@capacitor/haptics": "6.0.2",
+    "@capacitor/ios": "^6.2.0",
     "@capacitor/keyboard": "6.0.3",
     "@capacitor/status-bar": "6.0.2",
     "@ionic/react": "^8.0.0",
     "@ionic/react-router": "^8.0.0",
+    "@radix-ui/react-slot": "^1.1.1",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "ionicons": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^5.3.4",
-    "react-router-dom": "^5.3.4"
+    "react-router-dom": "^5.3.4",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@capacitor/cli": "6.2.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
+    "@types/node": "^22.10.7",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-legacy": "^5.0.0",
     "@vitejs/plugin-react": "^4.0.1",
+    "autoprefixer": "^10.4.20",
     "cypress": "^13.5.0",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.32.2",
     "jsdom": "^22.1.0",
+    "postcss": "^8.5.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-packagejson": "^2.5.8",
+    "prettier-plugin-tailwindcss": "^0.6.10",
+    "tailwindcss": "^3.4.17",
     "terser": "^5.4.0",
     "typescript": "^5.1.6",
     "vite": "~5.2.0",
     "vitest": "^0.34.6"
-  },
-  "description": "An Ionic project"
+  }
 }
