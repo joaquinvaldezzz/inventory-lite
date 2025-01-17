@@ -1,0 +1,7 @@
+{
+  "name": "invent",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
