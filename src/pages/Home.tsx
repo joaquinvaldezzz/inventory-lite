@@ -3,7 +3,7 @@ import { IonContent, IonPage } from '@ionic/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-export default function Home() {
+export function Home() {
   return (
     <IonPage>
       <IonContent>
