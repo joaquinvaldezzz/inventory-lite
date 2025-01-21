@@ -13,6 +13,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-router-dom', 'react-dom'],
+          ionic: ['@ionic/react', '@ionic/react-router'],
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
