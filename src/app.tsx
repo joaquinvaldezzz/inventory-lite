@@ -11,7 +11,7 @@ import './styles/tailwind.css'
 
 setupIonicReact()
 
-export default function App() {
+export function App() {
   return (
     <IonApp>
       <IonReactRouter>
