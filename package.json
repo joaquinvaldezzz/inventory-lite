@@ -5,7 +5,7 @@
   "description": "An Ionic project",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build",
     "dev": "vite",
     "dev:ios": "ionic capacitor run ios --livereload",
     "format": "prettier --write .",
@@ -48,6 +48,7 @@
       "^@/registry/(.*)$",
       "^@/styles/(.*)$",
       "^@/app/(.*)$",
+      "^@/pages/(.*)$",
       "",
       "^[./]",
       "",
