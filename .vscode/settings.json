@@ -9,6 +9,7 @@
     "jseslint",
     "sonner",
     "stylesheet",
-    "vaul"
+    "vaul",
+    "vite"
   ]
 }
