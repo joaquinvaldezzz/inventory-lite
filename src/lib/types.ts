@@ -20,6 +20,11 @@ export interface LoginResponse {
   }
 }
 
+export interface Branch {
+  id: string
+  branch: string
+}
+
 export interface SidebarItem {
   icon?: LucideIcon
   url: string
