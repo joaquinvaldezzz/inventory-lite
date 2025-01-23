@@ -1,4 +1,14 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "cSpell.words": ["cmdk", "embla", "escobar", "eslintcache", "ianvs", "jseslint", "sonner", "vaul"]
+  "cSpell.words": [
+    "cmdk",
+    "embla",
+    "escobar",
+    "eslintcache",
+    "ianvs",
+    "jseslint",
+    "sonner",
+    "stylesheet",
+    "vaul"
+  ]
 }
