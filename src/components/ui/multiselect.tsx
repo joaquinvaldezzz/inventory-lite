@@ -17,9 +17,7 @@ export interface Option {
   /** Group the options by providing key. */
   [key: string]: string | boolean | undefined
 }
-interface GroupOption {
-  [key: string]: Option[]
-}
+type GroupOption = Record<string, Option[]>
 
 interface MultipleSelectorProps {
   value?: Option[]
@@ -88,7 +86,9 @@ export function useDebounce<T>(value: T, delay?: number): T {
   const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay || 500)
+    const timer = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay ?? 500)
 
     return () => {
       clearTimeout(timer)
@@ -102,7 +102,7 @@ function transToGroupOption(options: Option[], groupBy?: string) {
   if (options.length === 0) {
     return {}
   }
-  if (!groupBy) {
+  if (groupBy == null) {
     return {
       '': options,
     }
@@ -438,7 +438,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       >
         <div
           className={cn(
-            'relative min-h-[38px] rounded-lg border border-input text-sm transition-shadow focus-within:border-ring focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/20 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50',
+            'relative min-h-[38px] rounded-lg border border-input text-sm transition-shadow focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/20 focus-within:outline-hidden has-disabled:cursor-not-allowed has-disabled:opacity-50',
             {
               'p-1': selected.length !== 0,
               'cursor-text': !disabled && selected.length !== 0,
@@ -457,7 +457,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 <div
                   key={option.value}
                   className={cn(
-                    'animate-fadeIn relative inline-flex h-7 cursor-default items-center rounded-md border border-solid bg-background pe-7 pl-2 ps-2 text-xs font-medium text-secondary-foreground transition-all hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 data-[fixed]:pe-2',
+                    'animate-fadeIn relative inline-flex h-7 cursor-default items-center rounded-md border border-solid bg-background ps-2 pe-7 pl-2 text-xs font-medium text-secondary-foreground transition-all hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 data-fixed:pe-2',
                     badgeClassName,
                   )}
                   data-fixed={option.fixed}
@@ -508,7 +508,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               }}
               placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : placeholder}
               className={cn(
-                'flex-1 bg-transparent outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed',
+                'flex-1 bg-transparent outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed',
                 {
                   'w-full': hidePlaceholderWhenSelected,
                   'px-3 py-2': selected.length === 0,
@@ -541,14 +541,14 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
           <div
             className={cn(
               'absolute top-2 z-10 w-full overflow-hidden rounded-lg border border-input',
-              'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
+              'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
               !open && 'hidden',
             )}
             data-state={open ? 'open' : 'closed'}
           >
             {open && (
               <CommandList
-                className="bg-popover text-popover-foreground shadow-lg shadow-black/5 outline-none"
+                className="bg-popover text-popover-foreground shadow-lg shadow-black/5 outline-hidden"
                 onMouseLeave={() => {
                   setOnScrollbar(false)
                 }}
