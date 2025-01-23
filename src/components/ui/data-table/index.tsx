@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
         </div>
       )}
 
-      <div className="grid grid-cols-1 whitespace-nowrap border-y">
+      <div className="grid grid-cols-1 border-y whitespace-nowrap">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
