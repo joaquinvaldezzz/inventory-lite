@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/:match*", "destination": "http://trial.integra-payroll.com/api/login.php" }
+  ]
+}
