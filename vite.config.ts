@@ -15,6 +15,7 @@ export default defineConfig({
     },
   },
   server: {
+    port: 8100,
     proxy: {
       '/api': {
         target: 'http://trial.integra-payroll.com/api/login.php',
