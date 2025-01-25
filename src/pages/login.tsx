@@ -180,6 +180,11 @@ export function Login() {
                   <Link to="/branch-selector">Go to Branch Selector</Link>
                 </Button>
               </p>
+              <p className="text-center text-sm text-gray-600">
+                <Button className="h-auto p-0" variant="link" asChild>
+                  <Link to="/app">Go to App</Link>
+                </Button>
+              </p>
             </div>
           </div>
         </div>
