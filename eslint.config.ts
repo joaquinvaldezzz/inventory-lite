@@ -23,6 +23,9 @@ const config: Config = tseslint.config(
       eslintPluginPrettier,
       eslintConfigPrettier,
     ],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+    },
   },
 
   // Rules for files within the src folder
@@ -34,7 +37,6 @@ const config: Config = tseslint.config(
     ],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/prefer-destructuring': 'off',
       'react/react-in-jsx-scope': 'off',
     },
