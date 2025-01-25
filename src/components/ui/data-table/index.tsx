@@ -120,7 +120,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       {(withPagination ?? false) && (
-        <div className="flex flex-col gap-4 pb-4">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-end gap-4">
             <div className="flex items-center gap-2">
               <p className="text-sm font-medium">Rows per page</p>
