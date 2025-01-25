@@ -9,6 +9,7 @@ import { Login } from '@/pages/login'
 
 import '@ionic/react/css/core.css'
 import '@ionic/react/css/palettes/dark.system.css'
+import '@ionic/react/css/structure.css'
 import './styles/tailwind.css'
 
 setupIonicReact()
