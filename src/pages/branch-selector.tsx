@@ -1,6 +1,7 @@
 import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
 import { IonContent, IonPage } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Storage } from '@ionic/storage'
 import { Store } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
@@ -35,16 +36,18 @@ export function BranchSelector() {
   })
 
   useEffect(() => {
-    const storedBranches = localStorage.getItem('branches')
+    async function fetchBranches() {
+      const storage = new Storage()
+      await storage.create()
 
-    if (storedBranches != null) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- ignore error
-      const parsedBranches = JSON.parse(storedBranches)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- safe to ignore
+      const storedBranches = await storage.get('branches')
 
-      if (Array.isArray(parsedBranches)) {
-        setBranches(parsedBranches)
-      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- safe to ignore
+      setBranches(JSON.parse(storedBranches))
     }
+
+    void fetchBranches()
   }, [])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
