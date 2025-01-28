@@ -21,7 +21,7 @@ export interface LoginResponse {
 }
 
 export interface Branch {
-  id: string
+  id: string | number
   branch: string
 }
 
