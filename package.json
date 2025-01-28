@@ -34,59 +34,19 @@
       "Opera >= 30"
     ]
   },
-  "prettier": {
-    "importOrder": [
-      "^(react/(.*)$)|^(react$)",
-      "^(next/(.*)$)|^(next$)",
-      "^(@ionic/react/(.*)$)|^(@ionic/react$)",
-      "<THIRD_PARTY_MODULES>",
-      "",
-      "^types$",
-      "^@/types/(.*)$",
-      "^@/config/(.*)$",
-      "^@/lib/(.*)$",
-      "^@/hooks/(.*)$",
-      "^@/components/ui/(.*)$",
-      "^@/components/(.*)$",
-      "^@/registry/(.*)$",
-      "^@/styles/(.*)$",
-      "^@/app/(.*)$",
-      "^@/pages/(.*)$",
-      "",
-      "^[./]",
-      "",
-      "^@/public/(.*)$"
-    ],
-    "plugins": [
-      "@ianvs/prettier-plugin-sort-imports",
-      "prettier-plugin-jsdoc",
-      "prettier-plugin-packagejson",
-      "prettier-plugin-sh",
-      "prettier-plugin-tailwindcss"
-    ],
-    "printWidth": 100,
-    "semi": false,
-    "singleQuote": true,
-    "tailwindAttributes": [
-      "classNames"
-    ],
-    "tailwindFunctions": [
-      "cva",
-      "cn"
-    ],
-    "tailwindStylesheet": "./src/styles/tailwind.css"
-  },
   "dependencies": {
-    "@capacitor/android": "^6.2.0",
-    "@capacitor/app": "6.0.2",
-    "@capacitor/core": "6.2.0",
-    "@capacitor/haptics": "6.0.2",
-    "@capacitor/ios": "^6.2.0",
-    "@capacitor/keyboard": "6.0.3",
-    "@capacitor/status-bar": "6.0.2",
+    "@awesome-cordova-plugins/core": "^6.14.0",
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/haptics": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/keyboard": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0",
     "@hookform/resolvers": "^3.10.0",
     "@ionic/react": "^8.0.0",
     "@ionic/react-router": "^8.0.0",
+    "@ionic/storage": "^4.0.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -144,7 +104,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "6.2.0",
+    "@capacitor/cli": "^7.0.0",
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.17.0",
