@@ -1,6 +1,7 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
 import { IonContent, IonPage } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Storage } from '@ionic/storage'
 import axios from 'axios'
 import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -57,13 +58,15 @@ export function Login() {
           }
 
           try {
+            const storage = new Storage()
+            await storage.create()
             const formData = new FormData(formRef.current)
             const request = await axios.post<LoginResponse>(
               '/api',
               JSON.stringify(Object.fromEntries(formData)),
             )
             const branches = request.data.data.user.branches
-            localStorage.setItem('branches', JSON.stringify(branches))
+            await storage.set('branches', JSON.stringify(branches))
           } catch (error) {
             console.error('Form submission failed:', error)
           } finally {
