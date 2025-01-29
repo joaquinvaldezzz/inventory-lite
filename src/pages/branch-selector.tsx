@@ -43,8 +43,10 @@ export function BranchSelector() {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- safe to ignore
       const storedBranches = await storage.get('branches')
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- safe to ignore
-      setBranches(JSON.parse(storedBranches))
+      if (storedBranches != null) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- safe to ignore
+        setBranches(JSON.parse(storedBranches))
+      }
     }
 
     void fetchBranches()
