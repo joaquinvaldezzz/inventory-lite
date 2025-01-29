@@ -1,4 +1,7 @@
 {
   "name": "Inventory Lite",
-  "type": "react-vite"
+  "type": "react-vite",
+  "integrations": {
+    "capacitor": {}
+  }
 }
