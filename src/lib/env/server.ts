@@ -8,5 +8,5 @@ export const env = createEnv({
     VITE_LOGIN_API_URL: z.string().url(),
   },
 
-  runtimeEnv: import.meta.env,
+  runtimeEnv: process.env,
 })
