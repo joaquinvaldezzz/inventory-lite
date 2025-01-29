@@ -31,7 +31,7 @@
     "",
     "^@/public/(.*)$"
   ],
-  "tailwindStylesheet": "./src/styles/tailwind.css",
+  "tailwindStylesheet": "./src/styles/main.css",
   "tailwindAttributes": ["classNames"],
   "tailwindFunctions": ["cva", "cn"]
 }

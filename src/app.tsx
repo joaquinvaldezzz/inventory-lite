@@ -7,10 +7,7 @@ import { BranchSelector } from '@/pages/branch-selector'
 import { Home } from '@/pages/home'
 import { Login } from '@/pages/login'
 
-import '@ionic/react/css/core.css'
-import '@ionic/react/css/palettes/dark.system.css'
-import '@ionic/react/css/structure.css'
-import './styles/tailwind.css'
+import './styles/main.css'
 
 setupIonicReact()
 
