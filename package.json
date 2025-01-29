@@ -36,14 +36,13 @@
     ]
   },
   "dependencies": {
-    "@awesome-cordova-plugins/core": "^6.14.0",
-    "@capacitor/android": "^7.0.0",
-    "@capacitor/app": "^7.0.0",
-    "@capacitor/core": "^7.0.0",
-    "@capacitor/haptics": "^7.0.0",
-    "@capacitor/ios": "^7.0.0",
-    "@capacitor/keyboard": "^7.0.0",
-    "@capacitor/status-bar": "^7.0.0",
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/app": "6.0.2",
+    "@capacitor/core": "6.2.0",
+    "@capacitor/haptics": "6.0.2",
+    "@capacitor/ios": "^6.2.0",
+    "@capacitor/keyboard": "6.0.3",
+    "@capacitor/status-bar": "6.0.2",
     "@hookform/resolvers": "^3.10.0",
     "@ionic/react": "^8.0.0",
     "@ionic/react-router": "^8.0.0",
@@ -105,7 +104,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.0.0",
+    "@capacitor/cli": "6.2.0",
     "@eslint/compat": "^1.2.5",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.17.0",
