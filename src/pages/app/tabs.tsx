@@ -18,7 +18,7 @@ export function Tabs() {
           <Route path="/app/wastes" render={() => <Wastes />} exact />
         </IonRouterOutlet>
 
-        <IonTabBar className="pb-safe" slot="bottom">
+        <IonTabBar slot="bottom">
           <IonTabButton href="/app/deliveries" tab="deliveries">
             <IonIcon icon={cube} />
             <IonLabel>Deliveries</IonLabel>
