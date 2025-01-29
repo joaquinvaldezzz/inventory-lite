@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference -- Required for Vite to work with Vitest
-/// <reference types="vitest" />
-
 import path from 'path'
 import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
@@ -26,10 +23,5 @@ export default defineConfig({
         },
       },
     },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setup-tests.ts',
   },
 })
