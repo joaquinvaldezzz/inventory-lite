@@ -1,12 +1,14 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
-import { IonContent, IonPage } from '@ionic/react'
+import { IonContent, IonImg, IonPage, useIonToast } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Storage } from '@ionic/storage'
 import axios from 'axios'
+import { checkmarkCircleOutline, closeOutline } from 'ionicons/icons'
 import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
+import { env } from '@/lib/env/server'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
 import type { LoginResponse } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -31,6 +33,7 @@ export function Login() {
     },
     resolver: zodResolver(loginFormSchema),
   })
+  const [toast] = useIonToast()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -62,13 +65,29 @@ export function Login() {
             await storage.create()
             const formData = new FormData(formRef.current)
             const request = await axios.post<LoginResponse>(
-              '/api',
+              env.VITE_LOGIN_API_URL,
               JSON.stringify(Object.fromEntries(formData)),
             )
-            const branches = request.data.data.user.branches
-            await storage.set('branches', JSON.stringify(branches))
+
+            if (request.status === 200) {
+              const branches = request.data.data.user.branches
+              await storage.set('branches', JSON.stringify(branches))
+              void toast({
+                duration: 2000,
+                icon: checkmarkCircleOutline,
+                message: 'Logged in successfully!',
+                position: 'top',
+              })
+            }
           } catch (error) {
             console.error('Form submission failed:', error)
+            void toast({
+              icon: closeOutline,
+              color: 'danger',
+              duration: 2000,
+              message: 'Failed to log in. Please try again.',
+              position: 'top',
+            })
           } finally {
             setIsLoading(false)
           }
@@ -85,7 +104,7 @@ export function Login() {
         <div className="mt-safe py-12">
           <div className="space-y-8 px-4">
             <div className="space-y-6">
-              <img
+              <IonImg
                 className="mx-auto h-24 w-40 object-contain"
                 src="/images/escobar-steakhouse-logo.png"
                 alt="Escobar's Steakhouse"
