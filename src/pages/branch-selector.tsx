@@ -1,10 +1,10 @@
 import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
 import { IonContent, IonPage } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Storage } from '@ionic/storage'
 import { Store } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
+import { getUserBranches } from '@/lib/dal'
 import { branchSelectorFormSchema, type BranchSelectorFormSchema } from '@/lib/form-schema'
 import type { Branch } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,6 @@ import {
 export function BranchSelector() {
   const formRef = useRef<HTMLFormElement>(null)
   const [branches, setBranches] = useState<Branch[]>([])
-  // const [, formAction, isSubmitting] = useActionState(login, { message: '' })
   const form = useForm<BranchSelectorFormSchema>({
     defaultValues: {
       branch: '',
@@ -36,20 +35,13 @@ export function BranchSelector() {
   })
 
   useEffect(() => {
-    async function fetchBranches() {
-      const storage = new Storage()
-      await storage.create()
+    void (async () => {
+      const userBranches = await getUserBranches()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- safe to ignore
-      const storedBranches = await storage.get('branches')
-
-      if (storedBranches != null) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- safe to ignore
-        setBranches(JSON.parse(storedBranches))
+      if (userBranches != null) {
+        setBranches(userBranches)
       }
-    }
-
-    void fetchBranches()
+    })()
   }, [])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
