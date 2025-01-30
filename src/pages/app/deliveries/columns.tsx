@@ -50,7 +50,7 @@ export const columns: Array<ColumnDef<Delivery>> = [
         currency: 'PHP',
       })
 
-      return PHP.format(Number(cell.row.original.total_amount))
+      return <div className="text-right">{PHP.format(Number(cell.row.original.total_amount))}</div>
     },
   },
   {
@@ -65,9 +65,5 @@ export const columns: Array<ColumnDef<Delivery>> = [
         </Badge>
       )
     },
-  },
-  {
-    // accessorKey: 'status',
-    header: 'Ingredients',
   },
 ]
