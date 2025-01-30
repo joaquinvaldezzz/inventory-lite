@@ -4,9 +4,6 @@ import { Storage } from '@ionic/storage'
 /** Creates an instance of the Storage class. */
 const storage = new Storage()
 
-/** Initializes the storage instance. */
-await storage.create()
-
 /**
  * Saves a value to storage under the specified key.
  *
@@ -16,6 +13,7 @@ await storage.create()
  *   storage.
  */
 export async function saveToStorage(key: string, value: string): Promise<void> {
+  await storage.create()
   await storage.set(key, value)
 }
 
@@ -27,5 +25,6 @@ export async function saveToStorage(key: string, value: string): Promise<void> {
  *   specified key, or null if the key does not exist.
  */
 export async function getFromStorage(key: string): Promise<string | null> {
+  await storage.create()
   return await storage.get(key)
 }
