@@ -1,8 +1,7 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
-import { IonContent, IonImg, IonPage, useIonToast } from '@ionic/react'
+import { IonContent, IonImg, IonPage, useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
-import { checkmarkCircleOutline, closeOutline } from 'ionicons/icons'
 import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
@@ -11,6 +10,7 @@ import { env } from '@/lib/env'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
 import { saveToStorage } from '@/lib/storage'
 import type { LoginResult } from '@/lib/types'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -33,7 +33,8 @@ export function Login() {
     },
     resolver: zodResolver(loginFormSchema),
   })
-  const [toast] = useIonToast()
+  const router = useIonRouter()
+  const { toast } = useToast()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -54,7 +55,7 @@ export function Login() {
       setIsLoading(true)
 
       startTransition(() => {
-        async function submitForm() {
+        void (async () => {
           if (formRef.current == null) {
             console.error('Form reference is not available')
             return
@@ -67,31 +68,28 @@ export function Login() {
               JSON.stringify(Object.fromEntries(formData)),
             )
 
-            if (request.status === 200) {
-              const currentUser = request.data
-              await saveToStorage('currentUser', JSON.stringify(currentUser))
-              void toast({
-                duration: 2000,
-                icon: checkmarkCircleOutline,
-                message: 'Logged in successfully!',
-                position: 'top',
+            if (request.data.success) {
+              await saveToStorage('currentUser', JSON.stringify(request.data))
+              toast({
+                description: 'Logged in successfully!',
+              })
+              router.push('/branch-selector')
+            } else {
+              toast({
+                description: 'Failed to log in. Please try again.',
+                variant: 'destructive',
               })
             }
           } catch (error) {
             console.error('Form submission failed:', error)
-            void toast({
-              icon: closeOutline,
-              color: 'danger',
-              duration: 2000,
-              message: 'Failed to log in. Please try again.',
-              position: 'top',
+            toast({
+              description: 'Failed to log in. Please try again.',
+              variant: 'destructive',
             })
           } finally {
             setIsLoading(false)
           }
-        }
-
-        void submitForm()
+        })
       })
     })(event)
   }

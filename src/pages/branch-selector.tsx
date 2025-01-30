@@ -1,12 +1,14 @@
-import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
-import { IonContent, IonPage } from '@ionic/react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { IonContent, IonPage, useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Store } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { getUserBranches } from '@/lib/dal'
+import { getCurrentUser, getUserBranches } from '@/lib/dal'
 import { branchSelectorFormSchema, type BranchSelectorFormSchema } from '@/lib/form-schema'
+import { saveToStorage } from '@/lib/storage'
 import type { Branch } from '@/lib/types'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -26,17 +28,26 @@ import {
 
 export function BranchSelector() {
   const formRef = useRef<HTMLFormElement>(null)
+  const [username, setUsername] = useState<string>('')
   const [branches, setBranches] = useState<Branch[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<BranchSelectorFormSchema>({
     defaultValues: {
       branch: '',
     },
     resolver: zodResolver(branchSelectorFormSchema),
   })
+  const router = useIonRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     void (async () => {
+      const username = await getCurrentUser()
       const userBranches = await getUserBranches()
+
+      if (username != null) {
+        setUsername(username.data.user.name)
+      }
 
       if (userBranches != null) {
         setBranches(userBranches)
@@ -48,11 +59,38 @@ export function BranchSelector() {
     event.preventDefault()
 
     try {
-      void form.handleSubmit(() => {
-        startTransition(() => {
-          // if (formRef.current == null) return
-          // formAction(new FormData(formRef.current))
-        })
+      void form.handleSubmit(async () => {
+        if (formRef.current == null) {
+          console.error('Form reference is not available')
+          return
+        }
+
+        const formData = Object.fromEntries(new FormData(formRef.current))
+        const parsedData = branchSelectorFormSchema.safeParse(formData)
+
+        if (!parsedData.success) {
+          console.error('Form data is invalid:', parsedData.error)
+          // Optionally, provide user feedback here
+          return
+        }
+
+        setIsLoading(true)
+
+        try {
+          await saveToStorage('currentBranch', JSON.stringify(formData))
+          toast({
+            description: 'Branch selected successfully!',
+          })
+          router.push('/app')
+        } catch (error) {
+          toast({
+            description: 'Failed to select branch. Please try again.',
+            variant: 'destructive',
+          })
+          console.error('Form submission failed:', error)
+        } finally {
+          setIsLoading(false)
+        }
       })(event)
     } catch (error) {
       console.error('Form submission failed:', error)
@@ -71,7 +109,7 @@ export function BranchSelector() {
                 alt="Escobar's Steakhouse"
               />
               <div className="space-y-2 text-center">
-                <h1 className="text-2xl font-semibold">Select a branch</h1>
+                <h1 className="text-2xl font-semibold">Hello, {username}!</h1>
                 <p className="text-gray-600">Please select a branch to proceed.</p>
               </div>
             </div>
@@ -93,6 +131,7 @@ export function BranchSelector() {
                             name="branch"
                             defaultValue={field.value}
                             onValueChange={field.onChange}
+                            disabled={isLoading}
                           >
                             <SelectTrigger className="ps-9" id={field.name}>
                               <SelectValue placeholder="Select a branch" />
@@ -123,10 +162,7 @@ export function BranchSelector() {
                 />
 
                 <div className="mt-1 flex flex-col">
-                  <Button type="submit">
-                    {/* {isSubmitting ? 'Proceeding...' : 'Proceed'} */}
-                    Proceed
-                  </Button>
+                  <Button type="submit">{isLoading ? 'Proceeding...' : 'Proceed'}</Button>
                 </div>
               </form>
             </Form>
