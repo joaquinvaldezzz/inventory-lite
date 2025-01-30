@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return -- Safe to ignore */
-/* eslint-disable @typescript-eslint/no-unsafe-type-assertion -- Safe to ignore */
 import { Storage } from '@ionic/storage'
 
+import { getFromStorage } from './storage'
 import type { Branch, LoginResult } from './types'
 
 const storage = new Storage()
@@ -15,7 +15,7 @@ await storage.create()
  *   if found, or null if the user is not found or an error occurs while parsing the user data.
  */
 export async function getCurrentUser(): Promise<LoginResult | null> {
-  const currentUser = (await storage.get('currentUser')) as string | null
+  const currentUser = await getFromStorage('currentUser')
 
   if (currentUser != null) {
     try {

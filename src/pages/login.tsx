@@ -1,7 +1,6 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
 import { IonContent, IonImg, IonPage, useIonToast } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Storage } from '@ionic/storage'
 import axios from 'axios'
 import { checkmarkCircleOutline, closeOutline } from 'ionicons/icons'
 import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
@@ -10,6 +9,7 @@ import { Link } from 'react-router-dom'
 
 import { env } from '@/lib/env'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
+import { saveToStorage } from '@/lib/storage'
 import type { LoginResult } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
@@ -61,8 +61,6 @@ export function Login() {
           }
 
           try {
-            const storage = new Storage()
-            await storage.create()
             const formData = new FormData(formRef.current)
             const request = await axios.post<LoginResult>(
               env.VITE_LOGIN_API_URL,
@@ -71,7 +69,7 @@ export function Login() {
 
             if (request.status === 200) {
               const currentUser = request.data
-              await storage.set('currentUser', JSON.stringify(currentUser))
+              await saveToStorage('currentUser', JSON.stringify(currentUser))
               void toast({
                 duration: 2000,
                 icon: checkmarkCircleOutline,
@@ -132,6 +130,7 @@ export function Login() {
                             className="peer ps-9"
                             placeholder="Enter your username"
                             autoComplete="username"
+                            disabled={isLoading}
                             {...field}
                           />
                         </FormControl>
@@ -156,6 +155,7 @@ export function Login() {
                             className="ps-9 pe-9"
                             type={isVisible ? 'text' : 'password'}
                             placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+                            disabled={isLoading}
                             {...field}
                           />
                         </FormControl>
