@@ -122,8 +122,7 @@ export function DataTable<TData, TValue>({
       </div>
 
       {(withPagination ?? false) && (
-        <div className="flex items-center justify-between gap-8">
-          {/* Results per page */}
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Label className="max-sm:sr-only">Rows per page</Label>
             <Select
