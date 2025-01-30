@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 
 import { env } from '@/lib/env'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
-import type { LoginResponse } from '@/lib/types'
+import type { LoginResult } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -64,14 +64,14 @@ export function Login() {
             const storage = new Storage()
             await storage.create()
             const formData = new FormData(formRef.current)
-            const request = await axios.post<LoginResponse>(
+            const request = await axios.post<LoginResult>(
               env.VITE_LOGIN_API_URL,
               JSON.stringify(Object.fromEntries(formData)),
             )
 
             if (request.status === 200) {
-              const branches = request.data.data.user.branches
-              await storage.set('branches', JSON.stringify(branches))
+              const currentUser = request.data
+              await storage.set('currentUser', JSON.stringify(currentUser))
               void toast({
                 duration: 2000,
                 icon: checkmarkCircleOutline,

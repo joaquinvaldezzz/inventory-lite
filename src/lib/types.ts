@@ -1,6 +1,4 @@
-import type { LucideIcon } from 'lucide-react'
-
-export interface LoginResponse {
+export interface LoginResult {
   success: boolean
   message: string
   data: {
@@ -25,13 +23,17 @@ export interface Branch {
   branch: string
 }
 
-export interface SidebarItem {
-  icon?: LucideIcon
-  url: string
-  title: string
-  isActive?: boolean
-  items?: Array<{
-    url: string
-    title: string
-  }>
+export interface DeliveryItem {
+  id: number
+  branch_id: number
+  branch: string
+  date_request: string
+  date_order: string
+  date_delivered: string
+  date_received: string
+  grand_total: number
+  remarks: string
+  status: number
+  count: number
+  total_amount: number
 }
