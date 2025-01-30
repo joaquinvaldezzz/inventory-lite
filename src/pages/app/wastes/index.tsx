@@ -14,7 +14,12 @@ export default function Wastes() {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
+      <IonContent fullscreen>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Wastes</IonTitle>
+          </IonToolbar>
+        </IonHeader>
         <div className="p-4">
           <DataTable columns={columns} data={data.data} withSearch withPagination />
         </div>

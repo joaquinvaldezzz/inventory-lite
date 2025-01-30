@@ -14,7 +14,13 @@ export default function DailyCount() {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent>
+      <IonContent fullscreen>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Daily Count</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+
         <div className="p-4">
           <DataTable columns={columns} data={data.data} withSearch withPagination />
         </div>
