@@ -2,6 +2,7 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 import { Redirect, Route } from 'react-router-dom'
 
+import { Toaster } from '@/components/ui/toaster'
 import { Tabs } from '@/pages/app/tabs'
 import { BranchSelector } from '@/pages/branch-selector'
 import { Home } from '@/pages/home'
@@ -35,6 +36,7 @@ export function App() {
           </Route>
         </IonRouterOutlet>
       </IonReactRouter>
+      <Toaster />
     </IonApp>
   )
 }
