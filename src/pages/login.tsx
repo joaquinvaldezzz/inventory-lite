@@ -8,7 +8,7 @@ import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
-import { env } from '@/lib/env/server'
+import { env } from '@/lib/env'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
 import type { LoginResponse } from '@/lib/types'
 import { Button } from '@/components/ui/button'
