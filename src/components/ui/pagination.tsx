@@ -16,18 +16,19 @@ Pagination.displayName = 'Pagination'
 
 const PaginationContent = React.forwardRef<HTMLUListElement, React.ComponentProps<'ul'>>(
   ({ className, ...props }, ref) => (
-    <ul ref={ref} className={cn('flex flex-row items-center gap-1', className)} {...props} />
+    <ul ref={ref} className={cn('flex items-center gap-1', className)} {...props} />
   ),
 )
 PaginationContent.displayName = 'PaginationContent'
 
 const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<'li'>>(
-  ({ className, ...props }, ref) => <li ref={ref} className={cn('', className)} {...props} />,
+  ({ className, ...props }, ref) => <li ref={ref} className={cn(className)} {...props} />,
 )
 PaginationItem.displayName = 'PaginationItem'
 
 type PaginationLinkProps = {
   isActive?: boolean
+  isDisabled?: boolean
 } & Pick<ButtonProps, 'size'> &
   React.ComponentProps<'a'>
 
@@ -35,12 +36,12 @@ const PaginationLink = ({ className, isActive, size = 'icon', ...props }: Pagina
   <a
     className={cn(
       buttonVariants({
-        variant: isActive === true ? 'outline' : 'ghost',
+        variant: isActive ? 'outline' : 'ghost',
         size,
       }),
       className,
     )}
-    aria-current={(isActive ?? false) ? 'page' : undefined}
+    aria-current={isActive ? 'page' : undefined}
     {...props}
   />
 )
@@ -56,7 +57,7 @@ const PaginationPrevious = ({
     size="default"
     {...props}
   >
-    <ChevronLeft className="h-4 w-4" />
+    <ChevronLeft size={16} strokeWidth={2} />
     <span>Previous</span>
   </PaginationLink>
 )
@@ -70,14 +71,18 @@ const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof Pag
     {...props}
   >
     <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
+    <ChevronRight size={16} strokeWidth={2} />
   </PaginationLink>
 )
 PaginationNext.displayName = 'PaginationNext'
 
 const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<'span'>) => (
-  <span className={cn('flex size-9 items-center justify-center', className)} aria-hidden {...props}>
-    <MoreHorizontal className="size-4" />
+  <span
+    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    aria-hidden
+    {...props}
+  >
+    <MoreHorizontal size={16} strokeWidth={2} />
     <span className="sr-only">More pages</span>
   </span>
 )
