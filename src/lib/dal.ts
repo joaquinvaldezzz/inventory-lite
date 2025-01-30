@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return -- Safe to ignore */
-import { Storage } from '@ionic/storage'
-
 import { getFromStorage } from './storage'
 import type { Branch, LoginResult } from './types'
-
-const storage = new Storage()
-
-await storage.create()
 
 /**
  * Retrieves the current user from storage.
