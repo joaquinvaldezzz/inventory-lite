@@ -122,44 +122,46 @@ export function DataTable<TData, TValue>({
       </div>
 
       {(withPagination ?? false) && (
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Label className="max-sm:sr-only">Rows per page</Label>
-            <Select
-              value={table.getState().pagination.pageSize.toString()}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value))
-              }}
-            >
-              <SelectTrigger className="w-fit whitespace-nowrap">
-                <SelectValue placeholder="Select number of results" />
-              </SelectTrigger>
-              <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
-                {[5, 10, 25, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={pageSize.toString()}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center">
+            <div className="flex items-center gap-3">
+              <Label className="max-sm:sr-only">Rows per page</Label>
+              <Select
+                value={table.getState().pagination.pageSize.toString()}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value))
+                }}
+              >
+                <SelectTrigger className="w-fit whitespace-nowrap">
+                  <SelectValue placeholder="Select number of results" />
+                </SelectTrigger>
+                <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+                  {[5, 10, 25, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={pageSize.toString()}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
-            <p className="text-sm whitespace-nowrap text-muted-foreground" aria-live="polite">
-              <span className="text-foreground">
-                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
-                to{' '}
-                {Math.min(
-                  Math.max(
-                    table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                      table.getState().pagination.pageSize,
-                    0,
-                  ),
-                  table.getRowCount(),
-                )}
-              </span>{' '}
-              of <span className="text-foreground">{table.getRowCount().toString()}</span>
-            </p>
+            <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
+              <p className="text-sm whitespace-nowrap text-muted-foreground" aria-live="polite">
+                <span className="text-foreground">
+                  {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
+                  to{' '}
+                  {Math.min(
+                    Math.max(
+                      table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                        table.getState().pagination.pageSize,
+                      0,
+                    ),
+                    table.getRowCount(),
+                  )}
+                </span>{' '}
+                of <span className="text-foreground">{table.getRowCount().toString()}</span>
+              </p>
+            </div>
           </div>
 
           <Pagination>
