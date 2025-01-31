@@ -23,17 +23,26 @@ export interface Branch {
   branch: string
 }
 
-export interface DeliveryItem {
-  id: number
-  branch_id: number
-  branch: string
-  date_request: string
-  date_order: string
-  date_delivered: string
-  date_received: string
-  grand_total: number
-  remarks: string
-  status: number
-  count: number
-  total_amount: number
+export interface Delivery {
+  success: boolean
+  message: string
+  data: {
+    id: number
+    po_no: string
+    dr_no: string
+    branch_id: number
+    branch: string
+    supplier_id: number
+    supplier_name: string
+    date_request: string
+    date_order: string
+    date_delivered: string
+    remarks: string
+    status_id: number
+    status: string
+    count: number
+    total_amount: number
+  }
 }
+
+export type DeliveryItem = Delivery['data']

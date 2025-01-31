@@ -1,5 +1,6 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Redirect, Route } from 'react-router-dom'
 
 import { Toaster } from '@/components/ui/toaster'
@@ -12,31 +13,35 @@ import './styles/main.css'
 
 setupIonicReact()
 
+const queryClient = new QueryClient()
+
 export default function App() {
   return (
-    <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/branch-selector">
-            <BranchSelector />
-          </Route>
+    <QueryClientProvider client={queryClient}>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route exact path="/home">
+              <Home />
+            </Route>
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <Route exact path="/branch-selector">
+              <BranchSelector />
+            </Route>
 
-          <Route exact path="/app">
-            <Tabs />
-          </Route>
+            <Route exact path="/app">
+              <Tabs />
+            </Route>
 
-          <Route exact path="/">
-            <Redirect to="/login" />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-      <Toaster />
-    </IonApp>
+            <Route exact path="/">
+              <Redirect to="/login" />
+            </Route>
+          </IonRouterOutlet>
+        </IonReactRouter>
+        <Toaster />
+      </IonApp>
+    </QueryClientProvider>
   )
 }

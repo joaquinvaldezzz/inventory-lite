@@ -1,31 +1,17 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { formatDate } from 'date-fns'
 
+import type { DeliveryItem } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { DataTableColumnHeader } from '@/components/ui/data-table/column-header'
 
-interface Delivery {
-  id: string
-  branch_id: string
-  branch: string | null
-  date_request: string
-  date_order: string
-  date_delivered: string
-  date_received: string | null
-  grand_total: string
-  remarks: string
-  status: string
-  count: string
-  total_amount: string
-}
-
-export const columns: Array<ColumnDef<Delivery>> = [
+export const columns: Array<ColumnDef<DeliveryItem>> = [
   {
-    accessorKey: 'id',
+    accessorKey: 'dr_no',
     header: 'DR no.',
   },
   {
-    // accessorKey: 'id',
+    accessorKey: 'po_no',
     header: 'PO no.',
   },
   {
@@ -38,7 +24,7 @@ export const columns: Array<ColumnDef<Delivery>> = [
     header: 'Branch',
   },
   {
-    // accessorKey: 'branch',
+    accessorKey: 'supplier_name',
     header: 'Supplier',
   },
   {
