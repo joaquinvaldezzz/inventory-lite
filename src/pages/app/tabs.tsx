@@ -4,7 +4,7 @@ import { calendar, cube, trash } from 'ionicons/icons'
 import { Redirect, Route } from 'react-router'
 
 import DailyCount from './daily-count'
-import Deliveries from './deliveries'
+import Delivery from './delivery'
 import Wastes from './wastes'
 
 export function Tabs() {
@@ -13,7 +13,7 @@ export function Tabs() {
       <IonTabs>
         <IonRouterOutlet>
           <Redirect path="/app" to="/app/deliveries" exact />
-          <Route path="/app/deliveries" render={() => <Deliveries />} exact />
+          <Route path="/app/deliveries" render={() => <Delivery />} exact />
           <Route path="/app/daily-count" render={() => <DailyCount />} exact />
           <Route path="/app/wastes" render={() => <Wastes />} exact />
         </IonRouterOutlet>
