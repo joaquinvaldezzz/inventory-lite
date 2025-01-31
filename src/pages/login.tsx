@@ -89,7 +89,7 @@ export function Login() {
           } finally {
             setIsLoading(false)
           }
-        })
+        })()
       })
     })(event)
   }
