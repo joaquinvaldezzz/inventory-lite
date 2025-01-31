@@ -12,7 +12,7 @@ import './styles/main.css'
 
 setupIonicReact()
 
-export function App() {
+export default function App() {
   return (
     <IonApp>
       <IonReactRouter>
