@@ -1,9 +1,12 @@
 @import 'tailwindcss';
 
+@import '../styles/variables.css' layer(base);
+
 @import '@ionic/react/css/core.css' layer(base);
 @import '@ionic/react/css/structure.css' layer(base);
 @import '@ionic/react/css/palettes/dark.system.css' layer(base);
-@import '../styles/variables.css' layer(base);
+
+@import '@ionic/react/css/padding.css' layer(utilities);
 
 @plugin 'tailwindcss-safe-area';
 @plugin 'tailwindcss-animate';
