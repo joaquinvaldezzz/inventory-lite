@@ -1,6 +1,7 @@
 import path from 'path'
 import { includeIgnoreFile } from '@eslint/compat'
 import jseslint from '@eslint/js'
+import eslintPluginQuery from '@tanstack/eslint-plugin-query'
 import love from 'eslint-config-love'
 // @ts-expect-error -- eslint-plugin-prettier does not have types
 import eslintConfigPrettier from 'eslint-config-prettier'
@@ -33,6 +34,7 @@ const config: Config = tseslint.config(
     files: ['src/**'],
     extends: [
       eslintPluginReact.configs.flat.recommended,
+      eslintPluginQuery.configs['flat/recommended'],
       // eslintPluginTailwind.configs['flat/recommended'], eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- ignore
     ],
     rules: {
