@@ -107,7 +107,7 @@ export function Login() {
               />
               <div className="space-y-2 text-center">
                 <h1 className="text-2xl font-semibold">Log in to your account</h1>
-                <p className="text-gray-600">Welcome back! Please enter your details.</p>
+                <p className="text-muted-foreground">Welcome back! Please enter your details.</p>
               </div>
             </div>
 
@@ -188,19 +188,19 @@ export function Login() {
             </Form>
 
             <div className="space-y-2">
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm text-muted-foreground">
                 Forgot password? Reset your password{' '}
                 <Button className="h-auto p-0" variant="link" asChild>
                   <a href="">here</a>
                 </Button>
                 .
               </p>
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm">
                 <Button className="h-auto p-0" variant="link" asChild>
                   <Link to="/branch-selector">Go to Branch Selector</Link>
                 </Button>
               </p>
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm">
                 <Button className="h-auto p-0" variant="link" asChild>
                   <Link to="/app">Go to App</Link>
                 </Button>

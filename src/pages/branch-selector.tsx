@@ -110,7 +110,7 @@ export function BranchSelector() {
               />
               <div className="space-y-2 text-center">
                 <h1 className="text-2xl font-semibold">Hello, {username}!</h1>
-                <p className="text-gray-600">Please select a branch to proceed.</p>
+                <p className="text-muted-foreground">Please select a branch to proceed.</p>
               </div>
             </div>
 
