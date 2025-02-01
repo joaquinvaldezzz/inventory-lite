@@ -168,9 +168,9 @@ export function DataTable<TData, TValue>({
                 <Button
                   className="disabled:pointer-events-none disabled:opacity-50"
                   aria-label="Go to first page"
-                  variant="outline"
                   disabled={!table.getCanPreviousPage()}
                   size="icon"
+                  variant="outline"
                   onClick={() => {
                     table.firstPage()
                   }}
@@ -183,9 +183,9 @@ export function DataTable<TData, TValue>({
                 <Button
                   className="disabled:pointer-events-none disabled:opacity-50"
                   aria-label="Go to previous page"
-                  variant="outline"
                   disabled={!table.getCanPreviousPage()}
                   size="icon"
+                  variant="outline"
                   onClick={() => {
                     table.previousPage()
                   }}
@@ -198,9 +198,9 @@ export function DataTable<TData, TValue>({
                 <Button
                   className="disabled:pointer-events-none disabled:opacity-50"
                   aria-label="Go to next page"
-                  variant="outline"
                   disabled={!table.getCanNextPage()}
                   size="icon"
+                  variant="outline"
                   onClick={() => {
                     table.nextPage()
                   }}
@@ -213,9 +213,9 @@ export function DataTable<TData, TValue>({
                 <Button
                   className="disabled:pointer-events-none disabled:opacity-50"
                   aria-label="Go to last page"
-                  variant="outline"
                   disabled={!table.getCanNextPage()}
                   size="icon"
+                  variant="outline"
                   onClick={() => {
                     table.lastPage()
                   }}

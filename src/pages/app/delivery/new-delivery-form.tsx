@@ -58,14 +58,14 @@ export function NewDeliveryForm() {
     <Form {...form}>
       <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
         <FormField
-          control={form.control}
           name="supplier"
+          control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormLabel htmlFor={field.name}>Supplier</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Container size={16} strokeWidth={2} aria-hidden="true" />
+                  <Container aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>
                   <Select
@@ -94,14 +94,14 @@ export function NewDeliveryForm() {
         />
 
         <FormField
-          control={form.control}
           name="branch"
+          control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormLabel htmlFor={field.name}>Branch</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Store size={16} strokeWidth={2} aria-hidden="true" />
+                  <Store aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>
                   <Select
@@ -130,16 +130,16 @@ export function NewDeliveryForm() {
         />
 
         <FormField
-          control={form.control}
           name="date"
+          control={form.control}
           render={() => (
             <FormItem>
               <FormLabel>Date</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <CalendarIcon size={16} strokeWidth={2} aria-hidden="true" />
+                  <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
-                <Popover>
+                <Popover modal>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -161,8 +161,8 @@ export function NewDeliveryForm() {
         />
 
         <FormField
-          control={form.control}
           name="remarks"
+          control={form.control}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Remarks</FormLabel>
@@ -179,7 +179,7 @@ export function NewDeliveryForm() {
         <div className="mt-1 flex flex-col gap-3">
           <Button type="submit">Submit</Button>
 
-          <Button variant="ghost" type="button">
+          <Button type="button" variant="ghost">
             Cancel
           </Button>
         </div>
