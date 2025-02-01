@@ -10,6 +10,7 @@
     "dev:android": "ionic capacitor run android --livereload",
     "dev:ios": "ionic capacitor run ios --livereload",
     "format": "prettier --write .",
+    "format:src": "prettier --write src",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "preview": "vite preview",
