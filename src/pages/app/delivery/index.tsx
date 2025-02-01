@@ -42,7 +42,7 @@ export default function Delivery() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Deliveries</IonTitle>
+          <IonTitle>Delivery</IonTitle>
           <IonButtons slot="end" collapse>
             <IonButton onClick={openModal}>
               <IonIcon icon={add} />
@@ -51,10 +51,10 @@ export default function Delivery() {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen>
+      <IonContent>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Deliveries</IonTitle>
+            <IonTitle size="large">Delivery</IonTitle>
             <IonButtons slot="end">
               <IonButton onClick={openModal}>
                 <IonIcon icon={add} />
@@ -64,10 +64,10 @@ export default function Delivery() {
         </IonHeader>
 
         <div className="ion-padding">
-          <DataTable columns={columns} data={data ?? []} withSearch withPagination />
+          <DataTable columns={columns} data={data ?? []} withPagination withSearch />
         </div>
 
-        <IonModal ref={modalRef} isOpen={isOpen}>
+        <IonModal isOpen={isOpen} ref={modalRef}>
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="start">
@@ -75,13 +75,7 @@ export default function Delivery() {
               </IonButtons>
               <IonTitle className="text-center">New delivery</IonTitle>
               <IonButtons slot="end">
-                <IonButton
-                  onClick={() => {
-                    void modalRef.current?.dismiss()
-                  }}
-                >
-                  Submit
-                </IonButton>
+                <IonButton onClick={closeModal}>Submit</IonButton>
               </IonButtons>
             </IonToolbar>
           </IonHeader>
