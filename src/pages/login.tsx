@@ -114,21 +114,21 @@ export function Login() {
             <Form {...form}>
               <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
                 <FormField
-                  control={form.control}
                   name="username"
+                  control={form.control}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                          <User size={16} strokeWidth={2} aria-hidden="true" />
+                          <User aria-hidden="true" strokeWidth={2} size={16} />
                         </div>
                         <FormControl>
                           <Input
                             className="peer ps-9"
                             placeholder="Enter your username"
-                            autoComplete="username"
                             disabled={isLoading}
+                            autoComplete="username"
                             {...field}
                           />
                         </FormControl>
@@ -139,14 +139,14 @@ export function Login() {
                 />
 
                 <FormField
-                  control={form.control}
                   name="password"
+                  control={form.control}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                          <KeyRound size={16} strokeWidth={2} aria-hidden="true" />
+                          <KeyRound aria-hidden="true" strokeWidth={2} size={16} />
                         </div>
                         <FormControl>
                           <Input
@@ -160,17 +160,17 @@ export function Login() {
                         <button
                           className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                           type="button"
+                          aria-controls="password"
+                          aria-label={isVisible ? 'Hide password' : 'Show password'}
+                          aria-pressed={isVisible}
                           onClick={() => {
                             setIsVisible(!isVisible)
                           }}
-                          aria-label={isVisible ? 'Hide password' : 'Show password'}
-                          aria-pressed={isVisible}
-                          aria-controls="password"
                         >
                           {isVisible ? (
-                            <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
+                            <EyeOff aria-hidden="true" strokeWidth={2} size={16} />
                           ) : (
-                            <Eye size={16} strokeWidth={2} aria-hidden="true" />
+                            <Eye aria-hidden="true" strokeWidth={2} size={16} />
                           )}
                         </button>
                       </div>

@@ -1,6 +1,4 @@
 /* eslint-disable complexity -- This component has complex logic that is necessary for its functionality */
-'use client'
-
 import { useState } from 'react'
 import {
   flexRender,
@@ -70,14 +68,14 @@ export function DataTable<TData, TValue>({
       {(withSearch ?? false) && (
         <div className="relative w-full shrink-0">
           <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-            <Search size={16} strokeWidth={2} />
+            <Search strokeWidth={2} size={16} />
           </div>
           <Input
             className="peer ps-9"
             type="search"
-            value={table.getColumn('id')?.getFilterValue()?.toString() ?? ''}
             placeholder="Search by DR no."
-            onChange={(event) => table.getColumn('id')?.setFilterValue(event.target.value)}
+            value={table.getColumn('dr_no')?.getFilterValue()?.toString() ?? ''}
+            onChange={(event) => table.getColumn('dr_no')?.setFilterValue(event.target.value)}
           />
         </div>
       )}
@@ -102,7 +100,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -112,7 +110,7 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell className="h-24 text-center" colSpan={columns.length}>
                   No results.
                 </TableCell>
               </TableRow>
@@ -137,7 +135,7 @@ export function DataTable<TData, TValue>({
                 </SelectTrigger>
                 <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
                   {[5, 10, 25, 50].map((pageSize) => (
-                    <SelectItem key={pageSize} value={pageSize.toString()}>
+                    <SelectItem value={pageSize.toString()} key={pageSize}>
                       {pageSize}
                     </SelectItem>
                   ))}
@@ -168,61 +166,61 @@ export function DataTable<TData, TValue>({
             <PaginationContent>
               <PaginationItem>
                 <Button
-                  size="icon"
-                  variant="outline"
                   className="disabled:pointer-events-none disabled:opacity-50"
+                  aria-label="Go to first page"
+                  variant="outline"
+                  disabled={!table.getCanPreviousPage()}
+                  size="icon"
                   onClick={() => {
                     table.firstPage()
                   }}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to first page"
                 >
-                  <ChevronFirst size={16} strokeWidth={2} aria-hidden="true" />
+                  <ChevronFirst aria-hidden="true" strokeWidth={2} size={16} />
                 </Button>
               </PaginationItem>
 
               <PaginationItem>
                 <Button
-                  size="icon"
-                  variant="outline"
                   className="disabled:pointer-events-none disabled:opacity-50"
+                  aria-label="Go to previous page"
+                  variant="outline"
+                  disabled={!table.getCanPreviousPage()}
+                  size="icon"
                   onClick={() => {
                     table.previousPage()
                   }}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to previous page"
                 >
-                  <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
+                  <ChevronLeft aria-hidden="true" strokeWidth={2} size={16} />
                 </Button>
               </PaginationItem>
 
               <PaginationItem>
                 <Button
-                  size="icon"
-                  variant="outline"
                   className="disabled:pointer-events-none disabled:opacity-50"
+                  aria-label="Go to next page"
+                  variant="outline"
+                  disabled={!table.getCanNextPage()}
+                  size="icon"
                   onClick={() => {
                     table.nextPage()
                   }}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to next page"
                 >
-                  <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />
+                  <ChevronRight aria-hidden="true" strokeWidth={2} size={16} />
                 </Button>
               </PaginationItem>
 
               <PaginationItem>
                 <Button
-                  size="icon"
-                  variant="outline"
                   className="disabled:pointer-events-none disabled:opacity-50"
+                  aria-label="Go to last page"
+                  variant="outline"
+                  disabled={!table.getCanNextPage()}
+                  size="icon"
                   onClick={() => {
                     table.lastPage()
                   }}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to last page"
                 >
-                  <ChevronLast size={16} strokeWidth={2} aria-hidden="true" />
+                  <ChevronLast aria-hidden="true" strokeWidth={2} size={16} />
                 </Button>
               </PaginationItem>
             </PaginationContent>
