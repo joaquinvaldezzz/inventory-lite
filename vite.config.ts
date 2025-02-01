@@ -19,7 +19,10 @@ export default defineConfig({
       output: {
         manualChunks: {
           react: ['react', 'react-router-dom', 'react-dom'],
-          ionic: ['@ionic/react', '@ionic/react-router'],
+          'ionic-react': ['@ionic/react'],
+          'ionic-react-router': ['@ionic/react-router'],
+          'tanstack-react-query': ['@tanstack/react-query'],
+          'tanstack-react-table': ['@tanstack/react-table'],
         },
       },
     },
