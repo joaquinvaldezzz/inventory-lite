@@ -9,8 +9,8 @@ export function BackButton() {
   const router = useRouter()
   return (
     <Button
-      variant="ghost"
       size="icon"
+      variant="ghost"
       onClick={() => {
         router.back()
       }}

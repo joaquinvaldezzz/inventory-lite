@@ -30,7 +30,7 @@ export const columns: Array<ColumnDef<Delivery>> = [
   },
   {
     accessorKey: 'date_delivered',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Date delivered" />,
+    header: ({ column }) => <DataTableColumnHeader title="Date delivered" column={column} />,
     cell: (cell) => formatDate(new Date(cell.row.original.date_delivered), 'MMMM d, yyyy'),
   },
   {
@@ -43,7 +43,7 @@ export const columns: Array<ColumnDef<Delivery>> = [
   },
   {
     accessorKey: 'total_amount',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Total amount" />,
+    header: ({ column }) => <DataTableColumnHeader title="Total amount" column={column} />,
     cell: (cell) => {
       const PHP = new Intl.NumberFormat('en-PH', {
         style: 'currency',

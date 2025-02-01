@@ -24,7 +24,7 @@ const SelectNative = React.forwardRef<HTMLSelectElement, SelectPropsNative>(
         </select>
         {!props.multiple && (
           <span className="pointer-events-none absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center text-muted-foreground/80 peer-disabled:opacity-50">
-            <ChevronDown size={16} strokeWidth={2} aria-hidden="true" />
+            <ChevronDown aria-hidden="true" strokeWidth={2} size={16} />
           </span>
         )}
       </div>

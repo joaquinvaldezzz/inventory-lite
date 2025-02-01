@@ -54,7 +54,7 @@ const PaginationPrevious = ({ className, ...props }: ComponentProps<typeof Pagin
     size="default"
     {...props}
   >
-    <ChevronLeft size={16} strokeWidth={2} />
+    <ChevronLeft strokeWidth={2} size={16} />
     <span>Previous</span>
   </PaginationLink>
 )
@@ -68,14 +68,14 @@ const PaginationNext = ({ className, ...props }: ComponentProps<typeof Paginatio
     {...props}
   >
     <span>Next</span>
-    <ChevronRight size={16} strokeWidth={2} />
+    <ChevronRight strokeWidth={2} size={16} />
   </PaginationLink>
 )
 PaginationNext.displayName = 'PaginationNext'
 
 const PaginationEllipsis = ({ className, ...props }: ComponentProps<'span'>) => (
   <span className={cn('flex size-9 items-center justify-center', className)} aria-hidden {...props}>
-    <MoreHorizontal size={16} strokeWidth={2} />
+    <MoreHorizontal strokeWidth={2} size={16} />
     <span className="sr-only">More pages</span>
   </span>
 )

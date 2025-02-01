@@ -21,7 +21,7 @@ export default function Wastes() {
           </IonToolbar>
         </IonHeader>
         <div className="p-4">
-          <DataTable columns={columns} data={data.data} withSearch withPagination />
+          <DataTable columns={columns} data={data.data} withPagination withSearch />
         </div>
       </IonContent>
     </IonPage>

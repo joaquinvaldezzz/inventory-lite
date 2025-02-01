@@ -22,7 +22,7 @@ export default function DailyCount() {
         </IonHeader>
 
         <div className="p-4">
-          <DataTable columns={columns} data={data.data} withSearch withPagination />
+          <DataTable columns={columns} data={data.data} withPagination withSearch />
         </div>
       </IonContent>
     </IonPage>
