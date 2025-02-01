@@ -7,21 +7,21 @@ import DailyCount from './daily-count'
 import Delivery from './delivery'
 import Wastes from './wastes'
 
-export function Tabs() {
+export default function Tabs() {
   return (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Redirect path="/app" to="/app/deliveries" exact />
-          <Route path="/app/deliveries" render={() => <Delivery />} exact />
+          <Redirect path="/app" to="/app/delivery" exact />
+          <Route path="/app/delivery" render={() => <Delivery />} exact />
           <Route path="/app/daily-count" render={() => <DailyCount />} exact />
           <Route path="/app/wastes" render={() => <Wastes />} exact />
         </IonRouterOutlet>
 
         <IonTabBar slot="bottom">
-          <IonTabButton href="/app/deliveries" tab="deliveries">
+          <IonTabButton href="/app/delivery" tab="delivery">
             <IonIcon icon={cube} />
-            <IonLabel>Deliveries</IonLabel>
+            <IonLabel>Delivery</IonLabel>
           </IonTabButton>
 
           <IonTabButton href="/app/daily-count" tab="daily-count">

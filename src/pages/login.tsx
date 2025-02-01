@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-export function Login() {
+export default function Login() {
   const formRef = useRef<HTMLFormElement>(null)
   const [isVisible, setIsVisible] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -127,8 +127,8 @@ export function Login() {
                           <Input
                             className="peer ps-9"
                             placeholder="Enter your username"
-                            disabled={isLoading}
                             autoComplete="username"
+                            disabled={isLoading}
                             {...field}
                           />
                         </FormControl>

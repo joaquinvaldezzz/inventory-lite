@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-export function BranchSelector() {
+export default function BranchSelector() {
   const formRef = useRef<HTMLFormElement>(null)
   const [username, setUsername] = useState<string>('')
   const [branches, setBranches] = useState<Branch[]>([])
@@ -117,21 +117,21 @@ export function BranchSelector() {
             <Form {...form}>
               <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
                 <FormField
-                  control={form.control}
                   name="branch"
+                  control={form.control}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel htmlFor={field.name}>Branch</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                          <Store size={16} strokeWidth={2} aria-hidden="true" />
+                          <Store aria-hidden="true" strokeWidth={2} size={16} />
                         </div>
                         <FormControl>
                           <Select
                             name="branch"
                             defaultValue={field.value}
-                            onValueChange={field.onChange}
                             disabled={isLoading}
+                            onValueChange={field.onChange}
                           >
                             <SelectTrigger className="ps-9" id={field.name}>
                               <SelectValue placeholder="Select a branch" />

@@ -4,10 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Redirect, Route } from 'react-router-dom'
 
 import { Toaster } from '@/components/ui/toaster'
-import { Tabs } from '@/pages/app/tabs'
-import { BranchSelector } from '@/pages/branch-selector'
-import { Home } from '@/pages/home'
-import { Login } from '@/pages/login'
+
+import Tabs from './pages/app/tabs'
+import BranchSelector from './pages/branch-selector'
+import Login from './pages/login'
 
 import './styles/main.css'
 
@@ -21,21 +21,19 @@ export default function App() {
       <IonApp>
         <IonReactRouter>
           <IonRouterOutlet>
-            <Route exact path="/home">
-              <Home />
-            </Route>
-            <Route exact path="/login">
+            <Route path="/login" exact>
               <Login />
             </Route>
-            <Route exact path="/branch-selector">
+
+            <Route path="/branch-selector" exact>
               <BranchSelector />
             </Route>
 
-            <Route exact path="/app">
+            <Route path="/app" exact>
               <Tabs />
             </Route>
 
-            <Route exact path="/">
+            <Route path="/" exact>
               <Redirect to="/login" />
             </Route>
           </IonRouterOutlet>
