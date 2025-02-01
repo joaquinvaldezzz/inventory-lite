@@ -1,5 +1,3 @@
-'use client'
-
 import type { HTMLAttributes } from 'react'
 import type { Column } from '@tanstack/react-table'
 import { ChevronsUpDown } from 'lucide-react'
