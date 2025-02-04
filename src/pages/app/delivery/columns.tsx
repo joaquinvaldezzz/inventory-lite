@@ -17,7 +17,10 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
   {
     accessorKey: 'date_delivered',
     header: ({ column }) => <DataTableColumnHeader title="Date delivered" column={column} />,
-    cell: (cell) => formatDate(new Date(cell.row.original.date_delivered), 'MMMM d, yyyy'),
+    cell: (cell) =>
+      cell.row.original.date_delivered !== '0000-00-00'
+        ? formatDate(cell.row.original.date_delivered, 'MMMM d, yyyy')
+        : '',
   },
   {
     accessorKey: 'branch',
@@ -44,12 +47,7 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
     header: 'Status',
     cell: (cell) => {
       const status = cell.row.original.status
-
-      return (
-        <Badge variant={status === '2' ? 'outline' : 'destructive'}>
-          {status === '2' ? 'Delivered' : 'Pending'}
-        </Badge>
-      )
+      return <Badge variant="outline">{status}</Badge>
     },
   },
 ]
