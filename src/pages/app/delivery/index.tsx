@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { add } from 'ionicons/icons'
 import { CalendarIcon, Container } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 
 import { createDeliveryEntry, getDeliveryEntries } from '@/lib/api'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
@@ -32,6 +32,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -54,7 +55,15 @@ export default function Delivery() {
       supplier: '',
       date_request: new Date(),
       remarks: '',
-      items: [],
+      items: [
+        {
+          ingredient: '',
+          quantity: 0,
+          unit: '',
+          unit_price: 0,
+          total_amount: 0,
+        },
+      ],
     },
     resolver: zodResolver(newDeliveryFormSchema),
   })
@@ -69,27 +78,24 @@ export default function Delivery() {
 
       if (!parsedValues.success) {
         console.error('Form data is invalid:', parsedValues.error)
+        return
       }
 
       setIsLoading(true)
 
-      startTransition(() => {
-        void (async () => {
-          if (formRef.current == null) {
-            console.error('Form reference is not available')
-            return
-          }
+      async function submitForm() {
+        try {
+          await createDeliveryEntry(formValues)
+        } catch (error) {
+          console.error('Form submission failed:', error)
+        } finally {
+          setIsLoading(false)
+          setIsOpen(false)
+        }
+      }
 
-          try {
-            // TODO: Fix type error
-            await createDeliveryEntry(formValues)
-          } catch (error) {
-            console.error('Form submission failed:', error)
-          } finally {
-            setIsLoading(false)
-            setIsOpen(false)
-          }
-        })()
+      startTransition(() => {
+        void submitForm()
       })
     })(event)
   }
@@ -100,6 +106,21 @@ export default function Delivery() {
 
   function closeModal() {
     setIsOpen(false)
+  }
+
+  const { fields, append } = useFieldArray({
+    name: 'items',
+    control: form.control,
+  })
+
+  function handleClick() {
+    append({
+      ingredient: '',
+      quantity: 0,
+      unit: '',
+      unit_price: 0,
+      total_amount: 0,
+    })
   }
 
   const { isFetching, isPending, error, data } = useQuery({
@@ -251,6 +272,140 @@ export default function Delivery() {
                     </FormItem>
                   )}
                 />
+
+                <div className="grid grid-cols-1 border-y whitespace-nowrap">
+                  <div className="relative w-full overflow-auto">
+                    <div className="table w-full caption-bottom text-sm">
+                      <div className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                          Ingredients
+                        </div>
+                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                          Quantity
+                        </div>
+                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                          Unit
+                        </div>
+                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                          Unit Price
+                        </div>
+                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                          Total
+                        </div>
+                      </div>
+
+                      {fields.map((_, index) => (
+                        <div className="table-row *:px-1" key={index}>
+                          <div className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            <FormField
+                              name={`items.${index}.ingredient`}
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Select
+                                      name={field.name}
+                                      defaultValue={field.value}
+                                      onValueChange={field.onChange}
+                                    >
+                                      <SelectTrigger className="min-w-48" id={field.name}>
+                                        <SelectValue placeholder="Select an ingredient" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="1">Supplier 1</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="table-cell [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            <FormField
+                              name={`items.${index}.quantity`}
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Input type="number" {...field} />
+                                  </FormControl>
+
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            <FormField
+                              name={`items.${index}.unit`}
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Select
+                                      name={field.name}
+                                      defaultValue={field.value}
+                                      onValueChange={field.onChange}
+                                    >
+                                      <SelectTrigger className="min-w-48" id={field.name}>
+                                        <SelectValue placeholder="Select a unit" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="1">Supplier 1</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="table-cell [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            <FormField
+                              name={`items.${index}.unit_price`}
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Input type="number" {...field} />
+                                  </FormControl>
+
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="table-cell [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            <FormField
+                              name={`items.${index}.total_amount`}
+                              control={form.control}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Input type="number" {...field} />
+                                  </FormControl>
+
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button type="button" variant="ghost" onClick={handleClick}>
+                    Add more ingredients
+                  </Button>
+                </div>
 
                 <div className="mt-1 flex flex-col gap-3">
                   <Button type="submit" disabled={isLoading}>
