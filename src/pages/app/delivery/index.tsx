@@ -7,6 +7,7 @@ import {
   IonIcon,
   IonModal,
   IonPage,
+  IonProgressBar,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
@@ -43,6 +44,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { columns } from './columns'
 
+// eslint-disable-next-line complexity -- This component has complex logic that is necessary for its functionality
 export default function Delivery() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const modalRef = useRef<HTMLIonModalElement>(null)
@@ -85,6 +87,7 @@ export default function Delivery() {
             console.error('Form submission failed:', error)
           } finally {
             setIsLoading(false)
+            setIsOpen(false)
           }
         })()
       })
@@ -99,8 +102,8 @@ export default function Delivery() {
     setIsOpen(false)
   }
 
-  const { isPending, error, data } = useQuery({
-    queryKey: ['delivery-entries'],
+  const { isFetching, isPending, error, data } = useQuery({
+    queryKey: ['delivery-entries', isLoading],
     queryFn: async () => await getDeliveryEntries(),
   })
 
@@ -116,6 +119,7 @@ export default function Delivery() {
               <IonIcon icon={add} />
             </IonButton>
           </IonButtons>
+          {isFetching && !isPending && <IonProgressBar type="indeterminate" />}
         </IonToolbar>
       </IonHeader>
 
@@ -252,7 +256,7 @@ export default function Delivery() {
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? 'Submitting...' : 'Submit'}
                   </Button>
-                  <Button type="button" variant="ghost" onClick={closeModal}>
+                  <Button type="button" disabled={isLoading} variant="ghost" onClick={closeModal}>
                     Cancel
                   </Button>
                 </div>
