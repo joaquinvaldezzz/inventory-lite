@@ -15,7 +15,7 @@ export async function getCurrentUser(): Promise<LoginResult | null> {
     try {
       return JSON.parse(currentUser)
     } catch (error) {
-      console.error('Failed to parse `currentUser`:', error)
+      console.error('Failed to access `currentUser`:', error)
       return null
     }
   }
@@ -37,6 +37,30 @@ export async function getUserBranches(): Promise<Branch[] | null> {
       return currentUser.data.user.branches
     } catch (error) {
       console.error('Failed to access branches from `currentUser`:', error)
+      return null
+    }
+  }
+
+  return null
+}
+
+/**
+ * Retrieves the branch selected by the current user.
+ *
+ * @returns {Promise<number | null>} A promise that resolves to the ID of the selected branch if
+ *   found, or null if the branch is not found.
+ */
+export async function getUserSelectedBranch(): Promise<number | null> {
+  const selectedBranch = await getFromStorage('currentBranch')
+
+  if (selectedBranch != null) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Safe to assign
+      const branch = JSON.parse(selectedBranch) as Record<string, string>
+      const branchId = Object.values(branch)[0]
+      return Number(branchId)
+    } catch (error) {
+      console.error('Failed to access `currentBranch`:', error)
       return null
     }
   }

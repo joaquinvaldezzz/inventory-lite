@@ -22,14 +22,25 @@ export const branchSelectorFormSchema = z.object({
 export type BranchSelectorFormSchema = z.infer<typeof branchSelectorFormSchema>
 
 export const newDeliveryFormSchema = z.object({
-  supplier: z.string().min(1, { message: 'Supplier selection is required.' }).trim(),
-  branch: z.string().min(1, { message: 'Branch selection is required.' }).trim(),
-  date: z.coerce.date({ message: 'Please select a date.' }),
+  supplier: z.string().min(1, { message: 'Please select a supplier from the list.' }).trim(),
+  date_request: z.coerce.date({ message: 'Please select a date.' }),
   remarks: z
     .string()
     .max(256, { message: 'Remarks must not exceed 256 characters.' })
     .trim()
     .optional(),
+  items: z.array(
+    z.object({
+      ingredient: z
+        .string()
+        .min(1, { message: 'Please select an ingredient from the list.' })
+        .trim(),
+      quantity: z.number().min(0.01, { message: 'Quantity must be greater than zero.' }),
+      unit: z.string().min(1, { message: 'Please select a unit from the list.' }).trim(),
+      unit_price: z.number().min(0.01, { message: 'Unit price must be greater than zero.' }),
+      total_amount: z.number().min(0.01, { message: 'Total amount must be greater than zero.' }),
+    }),
+  ),
 })
 
 export type NewDeliveryFormSchema = z.infer<typeof newDeliveryFormSchema>

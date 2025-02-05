@@ -46,3 +46,24 @@ export interface Delivery {
 }
 
 export type DeliveryItem = Delivery['data']
+
+export interface AddDeliveryItem {
+  supplier: number
+  date_request: string
+  date_order: string
+  date_delivered: string
+  date_received: string
+  grand_total: number
+  remarks: string
+  status: number
+  items: Array<{
+    item: number
+    quantity_po: number
+    quantity_actual: number
+    unit_po: string
+    quantity_dr: number
+    unit_dr: string
+    price: number
+    total_amount: number
+  }>
+}
