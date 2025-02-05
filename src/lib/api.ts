@@ -63,12 +63,11 @@ export async function createDeliveryEntry(delivery: AddDeliveryItem): Promise<vo
     throw new Error('User or branch not found')
   }
 
-  const data = JSON.stringify({
+  const deliveryEntryDetails = JSON.stringify({
     user_id: user.value.data.user.id,
     token: user.value.data.token,
     branch,
     action: 'add',
-
     supplier: Number(delivery.supplier),
     date_request: format(delivery.date_request, 'yyyy-MM-dd'),
     date_order: format(delivery.date_request, 'yyyy-MM-dd'),
@@ -77,24 +76,14 @@ export async function createDeliveryEntry(delivery: AddDeliveryItem): Promise<vo
     grand_total: 0,
     remarks: delivery.remarks,
     status: 2,
-
-    // This is a dummy item for testing purposes
-    items: [
-      {
-        item: 2,
-        quantity_po: 1.0,
-        quantity_actual: 1.0,
-        unit_po: '',
-        quantity_dr: 2.0,
-        unit_dr: '',
-        price: 100.0,
-        total_amount: 100.0,
-      },
-    ],
+    items: [...delivery.items],
   })
 
   try {
-    const request = await axios.post<AddDeliveryItem>(env.VITE_DELIVERY_API_URL, data)
+    const request = await axios.post<AddDeliveryItem>(
+      env.VITE_DELIVERY_API_URL,
+      deliveryEntryDetails,
+    )
     console.log('Delivery entry created:', request.data)
   } catch (error) {
     console.error('Error creating delivery entry:', error)
