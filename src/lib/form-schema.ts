@@ -35,10 +35,12 @@ export const newDeliveryFormSchema = z.object({
         .string()
         .min(1, { message: 'Please select an ingredient from the list.' })
         .trim(),
-      quantity: z.number().min(0.01, { message: 'Quantity must be greater than zero.' }),
+      quantity: z.coerce.number().min(0.01, { message: 'Quantity must be greater than zero.' }),
       unit: z.string().min(1, { message: 'Please select a unit from the list.' }).trim(),
-      unit_price: z.number().min(0.01, { message: 'Unit price must be greater than zero.' }),
-      total_amount: z.number().min(0.01, { message: 'Total amount must be greater than zero.' }),
+      unit_price: z.coerce.number().min(0.01, { message: 'Unit price must be greater than zero.' }),
+      total_amount: z.coerce
+        .number()
+        .min(0.01, { message: 'Total amount must be greater than zero.' }),
     }),
   ),
 })
