@@ -99,7 +99,7 @@ export default function Delivery() {
     setIsOpen(false)
   }
 
-  const { error, data } = useQuery({
+  const { isPending, error, data } = useQuery({
     queryKey: ['delivery-entries'],
     queryFn: async () => await getDeliveryEntries(),
   })
@@ -132,7 +132,13 @@ export default function Delivery() {
         </IonHeader>
 
         <div className="ion-padding">
-          <DataTable columns={columns} data={data ?? []} withPagination withSearch />
+          <DataTable
+            columns={columns}
+            data={data ?? []}
+            isFetching={isPending}
+            withPagination
+            withSearch
+          />
         </div>
 
         <IonModal isOpen={isOpen} ref={modalRef}>
