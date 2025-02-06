@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
 import { startTransition, useRef, useState, type FormEvent } from 'react'
 import {
   IonButton,
@@ -15,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { add } from 'ionicons/icons'
-import { CalendarIcon, Container } from 'lucide-react'
+import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
 import { createDeliveryEntry, getDeliveryEntries } from '@/lib/api'
@@ -45,7 +46,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { columns } from './columns'
 
-// eslint-disable-next-line complexity -- This component has complex logic that is necessary for its functionality
+// eslint-disable-next-line complexity -- This page has complex logic that is necessary for its functionality
 export default function Delivery() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const modalRef = useRef<HTMLIonModalElement>(null)
@@ -58,10 +59,10 @@ export default function Delivery() {
       items: [
         {
           ingredient: '',
-          quantity: 0,
+          quantity: 5,
           unit: '',
-          unit_price: 0,
-          total_amount: 0,
+          unit_price: 50.0,
+          total_amount: 50.0,
         },
       ],
     },
@@ -108,7 +109,7 @@ export default function Delivery() {
     setIsOpen(false)
   }
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: 'items',
     control: form.control,
   })
@@ -116,11 +117,15 @@ export default function Delivery() {
   function handleClick() {
     append({
       ingredient: '',
-      quantity: 0,
+      quantity: 5,
       unit: '',
-      unit_price: 0,
-      total_amount: 0,
+      unit_price: 50.0,
+      total_amount: 50.0,
     })
+  }
+
+  function handleRemove(index: number) {
+    remove(index)
   }
 
   const { isFetching, isPending, error, data } = useQuery({
@@ -275,139 +280,199 @@ export default function Delivery() {
 
                 <div className="grid grid-cols-1 border-y whitespace-nowrap">
                   <div className="relative w-full overflow-auto">
-                    <div className="table w-full caption-bottom text-sm">
-                      <div className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                          Ingredients
-                        </div>
-                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                          Quantity
-                        </div>
-                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                          Unit
-                        </div>
-                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                          Unit Price
-                        </div>
-                        <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                          Total
+                    <div className="table w-full caption-bottom text-sm" aria-label="table">
+                      <div className="table-header-group" aria-label="thead">
+                        <div
+                          className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                          aria-label="tr"
+                        >
+                          <div
+                            className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                            aria-label="th"
+                          >
+                            Ingredients
+                          </div>
+                          <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            Quantity
+                          </div>
+                          <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            Unit
+                          </div>
+                          <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            Unit Price
+                          </div>
+                          <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                            Total
+                          </div>
                         </div>
                       </div>
 
-                      {fields.map((_, index) => (
-                        <div className="table-row *:px-1" key={index}>
-                          <div className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                            <FormField
-                              name={`items.${index}.ingredient`}
-                              control={form.control}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Select
-                                      name={field.name}
-                                      defaultValue={field.value}
-                                      onValueChange={field.onChange}
-                                    >
-                                      <SelectTrigger className="min-w-48" id={field.name}>
-                                        <SelectValue placeholder="Select an ingredient" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="1">Supplier 1</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
+                      <div
+                        className="table-row-group **:aria-[label=td]:px-2 **:aria-[label=td]:pb-4"
+                        aria-label="tbody"
+                      >
+                        {fields.map((_, index) => (
+                          <div
+                            className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                            aria-label="tr"
+                            key={index}
+                          >
+                            <div
+                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              aria-label="td"
+                            >
+                              <FormField
+                                name={`items.${index}.ingredient`}
+                                control={form.control}
+                                render={({ field }) => (
+                                  <FormItem className="space-y-0">
+                                    <FormControl>
+                                      <Select
+                                        name={field.name}
+                                        defaultValue={field.value}
+                                        onValueChange={field.onChange}
+                                      >
+                                        <SelectTrigger className="min-w-48" id={field.name}>
+                                          <SelectValue placeholder="Select an ingredient" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="1">Supplier 1</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </FormControl>
 
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div
+                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              aria-label="td"
+                            >
+                              <FormField
+                                name={`items.${index}.quantity`}
+                                control={form.control}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input type="number" {...field} />
+                                    </FormControl>
+
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div
+                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              aria-label="td"
+                            >
+                              <FormField
+                                name={`items.${index}.unit`}
+                                control={form.control}
+                                render={({ field }) => (
+                                  <FormItem className="space-y-0">
+                                    <FormControl>
+                                      <Select
+                                        name={field.name}
+                                        defaultValue={field.value}
+                                        onValueChange={field.onChange}
+                                      >
+                                        <SelectTrigger className="min-w-48" id={field.name}>
+                                          <SelectValue placeholder="Select a unit" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="1">Supplier 1</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </FormControl>
+
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div
+                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              aria-label="td"
+                            >
+                              <FormField
+                                name={`items.${index}.unit_price`}
+                                control={form.control}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input
+                                        className="min-w-40 text-right"
+                                        type="number"
+                                        disabled
+                                        {...field}
+                                      />
+                                    </FormControl>
+
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div
+                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              aria-label="td"
+                            >
+                              <FormField
+                                name={`items.${index}.total_amount`}
+                                control={form.control}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <Input
+                                        className="min-w-40 text-right"
+                                        type="number"
+                                        disabled
+                                        {...field}
+                                      />
+                                    </FormControl>
+
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+
+                            <div
+                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              aria-label="td"
+                            >
+                              <Button
+                                className="text-destructive"
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => {
+                                  handleRemove(index)
+                                }}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
                           </div>
-
-                          <div className="table-cell [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                            <FormField
-                              name={`items.${index}.quantity`}
-                              control={form.control}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Input type="number" {...field} />
-                                  </FormControl>
-
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                            <FormField
-                              name={`items.${index}.unit`}
-                              control={form.control}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Select
-                                      name={field.name}
-                                      defaultValue={field.value}
-                                      onValueChange={field.onChange}
-                                    >
-                                      <SelectTrigger className="min-w-48" id={field.name}>
-                                        <SelectValue placeholder="Select a unit" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="1">Supplier 1</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
-
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="table-cell [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                            <FormField
-                              name={`items.${index}.unit_price`}
-                              control={form.control}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Input type="number" {...field} />
-                                  </FormControl>
-
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="table-cell [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                            <FormField
-                              name={`items.${index}.total_amount`}
-                              control={form.control}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Input type="number" {...field} />
-                                  </FormControl>
-
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
-
-                  <Button type="button" variant="ghost" onClick={handleClick}>
-                    Add more ingredients
-                  </Button>
                 </div>
 
                 <div className="mt-1 flex flex-col gap-3">
+                  <Button type="button" variant="ghost" onClick={handleClick}>
+                    <span>Add more ingredients</span>
+                    <Plus className="ms-2 -me-1" aria-hidden="true" strokeWidth={2} size={16} />
+                  </Button>
+
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? 'Submitting...' : 'Submit'}
                   </Button>
