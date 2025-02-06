@@ -2,7 +2,7 @@
   "apps": [
     {
       "appId": "f8ca9dc4",
-      "dependencyInstallCommand": "npm i -g pnpm && pnpm i",
+      "dependencyInstallCommand": "pnpm i",
       "webBuildCommand": "pnpm build"
     }
   ]
