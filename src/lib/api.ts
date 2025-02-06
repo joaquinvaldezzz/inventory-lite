@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { getCurrentUser, getUserSelectedBranch } from './dal'
 import { env } from './env'
 import type { NewDeliveryFormSchema } from './form-schema'
-import type { Delivery, DeliveryItem } from './types'
+import type { Delivery, DeliveryItem, Supplier, SupplierResponse } from './types'
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error('API URL is not defined')
@@ -89,5 +89,40 @@ export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Prom
   } catch (error) {
     console.error('Error creating delivery entry:', error)
     throw new Error('Error creating delivery entry')
+  }
+}
+
+/**
+ * Fetches the list of suppliers for the current user and selected branch.
+ *
+ * This function retrieves the current user and the selected branch concurrently. If either the user
+ * or the branch is not found or not selected, it throws an error. It then sends a POST request to
+ * the suppliers API with the user ID and token. If the request is successful, it returns the list
+ * of suppliers. If the request fails, it logs the error and throws an error.
+ *
+ * @returns {Promise<Supplier>} A promise that resolves to the list of suppliers.
+ * @throws {Error} If the user or branch is not found or not selected.
+ * @throws {Error} If there is an error fetching the suppliers.
+ */
+export async function getSuppliers(): Promise<Supplier> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const userSessionData = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+  })
+
+  try {
+    const request = await axios.post<SupplierResponse>(env.VITE_SUPPLIERS_API_URL, userSessionData)
+    return Array.isArray(request.data.data) ? request.data.data : []
+  } catch (error) {
+    console.error('Error fetching suppliers:', error)
+    throw new Error('Error fetching suppliers')
   }
 }

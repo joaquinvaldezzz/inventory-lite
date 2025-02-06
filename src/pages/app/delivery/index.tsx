@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { startTransition, useRef, useState, type FormEvent } from 'react'
+import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   IonButton,
   IonButtons,
@@ -19,8 +19,9 @@ import { add } from 'ionicons/icons'
 import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createDeliveryEntry, getDeliveryEntries } from '@/lib/api'
+import { createDeliveryEntry, getDeliveryEntries, getSuppliers } from '@/lib/api'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
+import type { Supplier } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -45,6 +46,8 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 
 import { columns } from './columns'
+
+// TODO: Separate the form into a separate component
 
 // eslint-disable-next-line complexity -- This page has complex logic that is necessary for its functionality
 export default function Delivery() {
@@ -135,6 +138,24 @@ export default function Delivery() {
 
   if (error != null) console.error(error)
 
+  const [suppliers, setSuppliers] = useState<Supplier>([])
+
+  useEffect(() => {
+    // TODO: Save these suppliers locally
+    async function fetchSuppliers() {
+      try {
+        const request = await getSuppliers()
+        setSuppliers(request)
+      } catch (error) {
+        console.error('Error fetching suppliers:', error)
+      }
+    }
+
+    startTransition(() => {
+      void fetchSuppliers()
+    })
+  }, [])
+
   return (
     <IonPage>
       <IonHeader>
@@ -207,7 +228,17 @@ export default function Delivery() {
                               <SelectValue placeholder="Select a supplier" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="1">Supplier 1</SelectItem>
+                              {suppliers.length > 0 ? (
+                                suppliers.map((supplier) => (
+                                  <SelectItem value={supplier.id.toString()} key={supplier.id}>
+                                    {supplier.supplier_name}
+                                  </SelectItem>
+                                ))
+                              ) : (
+                                <SelectItem value="0" aria-disabled="true" disabled>
+                                  No suppliers available
+                                </SelectItem>
+                              )}
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -467,6 +498,7 @@ export default function Delivery() {
                   </div>
                 </div>
 
+                {/* Make these buttons sticky at the bottom */}
                 <div className="mt-1 flex flex-col gap-3">
                   <Button type="button" variant="ghost" onClick={handleClick}>
                     <span>Add more ingredients</span>

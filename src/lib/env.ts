@@ -10,6 +10,8 @@ export const env = createEnv({
   client: {
     VITE_LOGIN_API_URL: z.string().url(),
     VITE_DELIVERY_API_URL: z.string().url(),
+    VITE_SUPPLIERS_API_URL: z.string().url(),
+    VITE_INGREDIENTS_API_URL: z.string().url(),
   },
 
   runtimeEnv: import.meta.env,
