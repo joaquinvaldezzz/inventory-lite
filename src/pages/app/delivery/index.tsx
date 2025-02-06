@@ -9,6 +9,7 @@ import {
   IonModal,
   IonPage,
   IonProgressBar,
+  IonSpinner,
   IonTitle,
   IonToolbar,
 } from '@ionic/react'
@@ -183,13 +184,13 @@ export default function Delivery() {
         </IonHeader>
 
         <div className="ion-padding">
-          <DataTable
-            columns={columns}
-            data={data ?? []}
-            isFetching={isPending}
-            withPagination
-            withSearch
-          />
+          {isPending ? (
+            <div className="flex h-96 items-center justify-center">
+              <IonSpinner />
+            </div>
+          ) : (
+            <DataTable columns={columns} data={data ?? []} withPagination withSearch />
+          )}
         </div>
 
         <IonModal isOpen={isOpen} ref={modalRef}>

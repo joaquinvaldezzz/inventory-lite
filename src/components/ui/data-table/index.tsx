@@ -1,6 +1,5 @@
 /* eslint-disable complexity -- This component has complex logic that is necessary for its functionality */
 import { useState } from 'react'
-import { IonSpinner } from '@ionic/react'
 import {
   flexRender,
   getCoreRowModel,
@@ -35,7 +34,6 @@ import {
 } from '@/components/ui/table'
 
 interface DataTableProps<TData, TValue> {
-  isFetching?: boolean
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
   withSearch?: boolean
@@ -43,7 +41,6 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
-  isFetching,
   columns,
   data,
   withSearch,
@@ -101,13 +98,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {(isFetching ?? false) ? (
-              <TableRow>
-                <TableCell className="h-24 text-center" colSpan={columns.length}>
-                  <IonSpinner />
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length > 0 ? (
+            {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
