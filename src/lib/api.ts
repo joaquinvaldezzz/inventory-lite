@@ -4,7 +4,8 @@ import { format } from 'date-fns'
 
 import { getCurrentUser, getUserSelectedBranch } from './dal'
 import { env } from './env'
-import type { AddDeliveryItem, Delivery, DeliveryItem } from './types'
+import type { NewDeliveryFormSchema } from './form-schema'
+import type { Delivery, DeliveryItem } from './types'
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error('API URL is not defined')
@@ -49,12 +50,12 @@ export async function getDeliveryEntries(): Promise<DeliveryItem[]> {
  * provided delivery details. It requires the current user and the selected branch to be available.
  * If either is not found, an error is thrown.
  *
- * @param {AddDeliveryItem} delivery - The delivery item details to be added.
+ * @param {NewDeliveryFormSchema} delivery - The delivery item details to be added.
  * @returns {Promise<void>} A promise that resolves when the delivery entry is successfully created.
  * @throws {Error} If the user is not found or the branch is not selected, or if there is an error
  *   creating the delivery entry.
  */
-export async function createDeliveryEntry(delivery: AddDeliveryItem): Promise<void> {
+export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Promise<void> {
   const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
 
   if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
@@ -80,7 +81,7 @@ export async function createDeliveryEntry(delivery: AddDeliveryItem): Promise<vo
   })
 
   try {
-    const request = await axios.post<AddDeliveryItem>(
+    const request = await axios.post<NewDeliveryFormSchema>(
       env.VITE_DELIVERY_API_URL,
       deliveryEntryDetails,
     )
