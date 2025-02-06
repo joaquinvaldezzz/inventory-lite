@@ -73,7 +73,7 @@ export function DataTable<TData, TValue>({
           <Input
             className="peer ps-9"
             type="search"
-            placeholder="Search by DR no."
+            placeholder="Search by DR no. or PO no."
             value={table.getColumn('dr_no')?.getFilterValue()?.toString() ?? ''}
             onChange={(event) => table.getColumn('dr_no')?.setFilterValue(event.target.value)}
           />
