@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import { env } from '@/lib/env'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
 import { saveToStorage } from '@/lib/storage'
-import type { LoginResult } from '@/lib/types'
+import type { LoginResponse } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
@@ -63,7 +63,7 @@ export default function Login() {
 
           try {
             const formData = new FormData(formRef.current)
-            const request = await axios.post<LoginResult>(
+            const request = await axios.post<LoginResponse>(
               env.VITE_LOGIN_API_URL,
               JSON.stringify(Object.fromEntries(formData)),
             )
