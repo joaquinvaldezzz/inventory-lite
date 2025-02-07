@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return -- Safe to ignore */
 import { getFromStorage } from './storage'
-import type { Branch, LoginResult } from './types'
+import type { Branch, LoginResponse } from './types'
 
 /**
  * Retrieves the current user from storage.
  *
- * @returns {Promise<LoginResult | null>} A promise that resolves to the current user's login result
- *   if found, or null if the user is not found or an error occurs while parsing the user data.
+ * @returns {Promise<LoginResponse | null>} A promise that resolves to the current user's login
+ *   result if found, or null if the user is not found or an error occurs while parsing the user
+ *   data.
  */
-export async function getCurrentUser(): Promise<LoginResult | null> {
+export async function getCurrentUser(): Promise<LoginResponse | null> {
   const currentUser = await getFromStorage('currentUser')
 
   if (currentUser != null) {
