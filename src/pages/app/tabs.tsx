@@ -5,6 +5,7 @@ import { Redirect, Route } from 'react-router'
 
 import DailyCount from './daily-count'
 import Delivery from './delivery'
+import DeliveryRecord from './delivery/delivery'
 import Wastes from './wastes'
 
 export default function Tabs() {
@@ -16,6 +17,8 @@ export default function Tabs() {
           <Route path="/app/delivery" render={() => <Delivery />} exact />
           <Route path="/app/daily-count" render={() => <DailyCount />} exact />
           <Route path="/app/wastes" render={() => <Wastes />} exact />
+
+          <Route path="/app/delivery/:id" render={(props) => <DeliveryRecord {...props} />} exact />
         </IonRouterOutlet>
 
         <IonTabBar slot="bottom">
