@@ -11,7 +11,7 @@
     "dev:ios": "ionic capacitor run ios --livereload",
     "format": "prettier --write .",
     "format:src": "prettier --write src",
-    "lint": "eslint",
+    "lint": "eslint --cache",
     "lint:fix": "eslint --fix",
     "prepare": "husky install",
     "preview": "vite preview",
