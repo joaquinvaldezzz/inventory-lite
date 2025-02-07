@@ -12,6 +12,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -33,14 +34,14 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends { id: string | number }, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
   withSearch?: boolean
   withPagination?: boolean
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string | number }, TValue>({
   columns,
   data,
   withSearch,
@@ -103,6 +104,10 @@ export function DataTable<TData, TValue>({
                 <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
+                      <Link
+                        className="absolute inset-0 size-full"
+                        to={`/app/delivery/${cell.row.original.id}`}
+                      />
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
