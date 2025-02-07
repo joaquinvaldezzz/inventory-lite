@@ -20,9 +20,9 @@ import { add } from 'ionicons/icons'
 import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createDeliveryEntry, getDeliveryEntries, getSuppliers } from '@/lib/api'
+import { createDeliveryEntry, getDeliveryEntries, getItems, getSuppliers } from '@/lib/api'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
-import type { Supplier } from '@/lib/types'
+import type { Items, Supplier } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -56,6 +56,8 @@ export default function Delivery() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const modalRef = useRef<HTMLIonModalElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const [suppliers, setSuppliers] = useState<Supplier>([])
+  const [items, setItems] = useState<Items>([])
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: '',
@@ -144,8 +146,6 @@ export default function Delivery() {
 
   if (error != null) console.error(error)
 
-  const [suppliers, setSuppliers] = useState<Supplier>([])
-
   useEffect(() => {
     // TODO: Save these suppliers locally
     async function fetchSuppliers() {
@@ -159,6 +159,22 @@ export default function Delivery() {
 
     startTransition(() => {
       void fetchSuppliers()
+    })
+  }, [])
+
+  useEffect(() => {
+    // TODO: Save these items locally
+    async function fetchItems() {
+      try {
+        const request = await getItems()
+        setItems(request)
+      } catch (error) {
+        console.error('Error fetching items:', error)
+      }
+    }
+
+    startTransition(() => {
+      void fetchItems()
     })
   }, [])
 
@@ -317,7 +333,7 @@ export default function Delivery() {
 
                 <div className="grid grid-cols-1 border-y whitespace-nowrap">
                   <div className="relative w-full overflow-auto">
-                    <div className="table w-full caption-bottom text-sm" aria-label="table">
+                    <div className="table w-full caption-bottom pb-2 text-sm" aria-label="table">
                       <div className="table-header-group" aria-label="thead">
                         <div
                           className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
@@ -341,11 +357,12 @@ export default function Delivery() {
                           <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
                             Total
                           </div>
+                          <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5" />
                         </div>
                       </div>
 
                       <div
-                        className="table-row-group **:aria-[label=td]:px-2 **:aria-[label=td]:pb-4"
+                        className="table-row-group **:aria-[label=td]:px-1 **:aria-[label=td]:py-1"
                         aria-label="tbody"
                       >
                         {fields.map((_, index) => (
@@ -370,14 +387,17 @@ export default function Delivery() {
                                         onValueChange={field.onChange}
                                       >
                                         <SelectTrigger className="min-w-48" id={field.name}>
-                                          <SelectValue placeholder="Select an ingredient" />
+                                          <SelectValue placeholder="Select an item" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="1">Supplier 1</SelectItem>
+                                          {items.map((item) => (
+                                            <SelectItem value={item.id.toString()} key={item.id}>
+                                              {item.raw_material}
+                                            </SelectItem>
+                                          ))}
                                         </SelectContent>
                                       </Select>
                                     </FormControl>
-
                                     <FormMessage />
                                   </FormItem>
                                 )}
