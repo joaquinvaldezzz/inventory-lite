@@ -24,13 +24,13 @@ Ensure the following software is installed on your machine:
 1. Download or clone this repository to your local device by running the following command:
 
    ```bash
-   git clone https://github.com/joaquinvaldezzz/inventory-lite-ionic-capacitor.git
+   git clone https://github.com/joaquinvaldezzz/inventory-lite.git
    ```
 
 2. Navigate to the project directory using the following command:
 
    ```bash
-   cd inventory-lite-ionic-capacitor
+   cd inventory-lite
    ```
 
 3. Install the project dependencies by running the following command:
