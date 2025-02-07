@@ -5,7 +5,13 @@ import { format } from 'date-fns'
 import { getCurrentUser, getUserSelectedBranch } from './dal'
 import { env } from './env'
 import type { NewDeliveryFormSchema } from './form-schema'
-import type { Delivery, DeliveryItem, Supplier, SupplierResponse } from './types'
+import type {
+  DeliveryItem,
+  DeliveryRecord,
+  DeliveryResponse,
+  Supplier,
+  SupplierResponse,
+} from './types'
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error('API URL is not defined')
@@ -35,7 +41,7 @@ export async function getDeliveryEntries(): Promise<DeliveryItem[]> {
   })
 
   try {
-    const request = await axios.post<Delivery>(env.VITE_DELIVERY_API_URL, data)
+    const request = await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
     return Array.isArray(request.data.data) ? request.data.data : []
   } catch (error) {
     console.error('Error fetching delivery entries:', error)
@@ -81,11 +87,7 @@ export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Prom
   })
 
   try {
-    const request = await axios.post<NewDeliveryFormSchema>(
-      env.VITE_DELIVERY_API_URL,
-      deliveryEntryDetails,
-    )
-    console.log('Delivery entry created:', request.data)
+    await axios.post<NewDeliveryFormSchema>(env.VITE_DELIVERY_API_URL, deliveryEntryDetails)
   } catch (error) {
     console.error('Error creating delivery entry:', error)
     throw new Error('Error creating delivery entry')
@@ -124,5 +126,31 @@ export async function getSuppliers(): Promise<Supplier> {
   } catch (error) {
     console.error('Error fetching suppliers:', error)
     throw new Error('Error fetching suppliers')
+  }
+}
+
+export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[]> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const data = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    branch,
+    action: 'fetch',
+    id,
+  })
+
+  try {
+    const request = await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
+    return Array.isArray(request.data.data) ? request.data.data : []
+  } catch (error) {
+    console.error('Error fetching delivery record:', error)
+    throw new Error('Error fetching delivery record')
   }
 }
