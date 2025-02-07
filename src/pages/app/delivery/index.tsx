@@ -24,6 +24,7 @@ import { createDeliveryEntry, getDeliveryEntries, getSuppliers } from '@/lib/api
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
 import type { Supplier } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { DataTable } from '@/components/ui/data-table'
@@ -73,6 +74,7 @@ export default function Delivery() {
     resolver: zodResolver(newDeliveryFormSchema),
   })
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { toast } = useToast()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -96,6 +98,9 @@ export default function Delivery() {
         } finally {
           setIsLoading(false)
           setIsOpen(false)
+          toast({
+            description: 'Delivery entry created successfully',
+          })
         }
       }
 
