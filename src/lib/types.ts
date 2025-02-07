@@ -23,7 +23,7 @@ export interface Branch {
   branch: string
 }
 
-export interface Delivery {
+export interface DeliveryResponse {
   success: boolean
   message: string
   data: {
@@ -45,7 +45,7 @@ export interface Delivery {
   }
 }
 
-export type DeliveryItem = Delivery['data']
+export type DeliveryItem = DeliveryResponse['data']
 
 export interface AddDeliveryItem {
   supplier: number
@@ -65,6 +65,54 @@ export interface AddDeliveryItem {
     unit_dr: string
     price: number
     total_amount: number
+  }>
+}
+
+export interface DeliveryRecord {
+  id: number
+  po_no: string
+  dr_no: string
+  branch_id: number
+  branch: string
+  supplier_id: number
+  supplier_name: string
+  date_request: string
+  date_order: string
+  date_delivered: string
+  remarks: string
+  status_id: number
+  status: string
+  count: number
+  total_amount: number
+  items: Array<{
+    id: number
+    purchase_id: number
+    date_request: string
+    date_order: string
+    date_delivered: string
+    date_received: string
+    branch_id: number
+    branch: string
+    supplier_id: number
+    supplier_name: string
+    item_id: number
+    barcode: string
+    raw_material: string
+    raw_material_type_id: number
+    raw_material_type: string
+    sku: string
+    packaging: string
+    quantity_po: number
+    quantity_actual: number
+    unit_po: string
+    quantity_dr: number
+    unit_dr: string
+    quantity: number
+    unit: string
+    price: number
+    total_amount: number
+    remarks: string
+    status: number
   }>
 }
 
@@ -129,3 +177,24 @@ export interface SupplierResponse {
  * type.
  */
 export type Supplier = SupplierResponse['data']
+
+export interface ItemsResponse {
+  success: boolean
+  message: string
+  data: Array<{
+    id: number
+    barcode: string
+    raw_material: string
+    raw_material_type: number
+    sku: string
+    unit: string
+    packaging: string
+    raw_material_location: string
+    delivery_lead_time: string
+    minimum_stock_level: number
+    maximum_stock_level: number
+    initial_stock_level: number
+  }>
+}
+
+export type Items = ItemsResponse['data']
