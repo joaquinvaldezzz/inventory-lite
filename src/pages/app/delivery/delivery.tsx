@@ -29,7 +29,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
         <IonHeader>
           <IonToolbar>
             <IonButtons slot="start">
-              <IonBackButton />
+              <IonBackButton defaultHref="/app/delivery" />
             </IonButtons>
             <IonTitle>Loading delivery record...</IonTitle>
           </IonToolbar>
@@ -53,7 +53,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton />
+            <IonBackButton defaultHref="/app/delivery" />
           </IonButtons>
           <IonTitle>Edit delivery</IonTitle>
         </IonToolbar>
