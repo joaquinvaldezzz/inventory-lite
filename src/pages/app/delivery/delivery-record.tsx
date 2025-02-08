@@ -3,6 +3,7 @@ import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Container } from 'lucide-react'
+import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
@@ -18,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Input, inputVariants } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -54,6 +55,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     },
     resolver: zodResolver(newDeliveryFormSchema),
   })
+
+  console.log(data.items)
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -130,7 +133,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             <FormItem>
               <FormLabel>PO no.</FormLabel>
               <FormControl>
-                <Input type="text" {...field} />
+                <Input className="read-only:bg-muted" type="text" readOnly {...field} />
               </FormControl>
 
               <FormMessage />
@@ -208,24 +211,27 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     Ingredients
                   </div>
                   <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                    Quantity
+                    Actual Quantity
                   </div>
                   <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                    Unit
+                    PO
                   </div>
                   <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                    DR Quantity
+                  </div>
+                  <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                    DR unit
+                  </div>
+                  <div className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
                     Unit Price
                   </div>
-                  <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
                     Total
                   </div>
                 </div>
               </div>
 
-              <div
-                className="table-row-group **:aria-[label=td]:px-2 **:aria-[label=td]:pb-4"
-                aria-label="tbody"
-              >
+              <div className="table-row-group **:aria-[label=td]:px-3" aria-label="tbody">
                 {data.items.map((item, index) => (
                   <div
                     className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
@@ -233,33 +239,10 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     key={item.id}
                   >
                     <div
-                      className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                      className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                       aria-label="td"
                     >
-                      <FormField
-                        name={`items.${index}.ingredient`}
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem className="space-y-0">
-                            <FormControl>
-                              <Select
-                                name={field.name}
-                                defaultValue={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger className="min-w-48" id={field.name}>
-                                  <SelectValue placeholder="Select an ingredient" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="1">Supplier 1</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {item.raw_material}
                     </div>
 
                     <div
@@ -274,7 +257,6 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                             <FormControl>
                               <Input type="number" {...field} />
                             </FormControl>
-
                             <FormMessage />
                           </FormItem>
                         )}
@@ -282,29 +264,24 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     </div>
 
                     <div
+                      className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                      aria-label="td"
+                    >
+                      {item.quantity_po}
+                    </div>
+
+                    <div
                       className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                       aria-label="td"
                     >
                       <FormField
-                        name={`items.${index}.unit`}
+                        name={`items.${index}.quantity`}
                         control={form.control}
                         render={({ field }) => (
-                          <FormItem className="space-y-0">
+                          <FormItem>
                             <FormControl>
-                              <Select
-                                name={field.name}
-                                defaultValue={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger className="min-w-48" id={field.name}>
-                                  <SelectValue placeholder="Select a unit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="1">Supplier 1</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <Input type="number" {...field} />
                             </FormControl>
-
                             <FormMessage />
                           </FormItem>
                         )}
@@ -345,12 +322,58 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input
-                                className="min-w-40 text-right"
-                                type="number"
-                                disabled
-                                {...field}
-                              />
+                              <ReactNumberField
+                                formatOptions={{
+                                  style: 'currency',
+                                  currency: 'PHP',
+                                  currencySign: 'accounting',
+                                }}
+                                aria-label="Unit Price"
+                                defaultValue={field.value}
+                              >
+                                <ReactInput
+                                  className={cn(
+                                    inputVariants(),
+                                    'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                  )}
+                                  readOnly
+                                />
+                              </ReactNumberField>
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div
+                      className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                      aria-label="td"
+                    >
+                      <FormField
+                        name={`items.${index}.total_amount`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <ReactNumberField
+                                formatOptions={{
+                                  style: 'currency',
+                                  currency: 'PHP',
+                                  currencySign: 'accounting',
+                                }}
+                                aria-label="Total amount"
+                                defaultValue={field.value}
+                              >
+                                <ReactInput
+                                  className={cn(
+                                    inputVariants(),
+                                    'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                  )}
+                                  readOnly
+                                />
+                              </ReactNumberField>
                             </FormControl>
 
                             <FormMessage />
