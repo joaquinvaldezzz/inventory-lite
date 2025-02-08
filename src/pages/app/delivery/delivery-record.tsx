@@ -393,6 +393,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Submitting...' : 'Submit'}
           </Button>
+          <Button type="button" variant="destructive">
+            Delete
+          </Button>
           <Button type="button" disabled={isLoading} variant="ghost" onClick={handleCancel}>
             Cancel
           </Button>
