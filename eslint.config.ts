@@ -3,8 +3,8 @@ import { includeIgnoreFile } from '@eslint/compat'
 import jseslint from '@eslint/js'
 import eslintPluginQuery from '@tanstack/eslint-plugin-query'
 import love from 'eslint-config-love'
-// @ts-expect-error -- eslint-plugin-prettier does not have types
 import eslintConfigPrettier from 'eslint-config-prettier'
+// @ts-expect-error -- eslint-plugin-perfectionist does not have types
 import eslintPluginPerfectionist from 'eslint-plugin-perfectionist'
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended'
 import eslintPluginReact from 'eslint-plugin-react'
@@ -39,6 +39,7 @@ const config: Config = tseslint.config(
       // eslintPluginTailwind.configs['flat/recommended'], eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- ignore
     ],
     plugins: {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Safe to ignore
       perfectionist: eslintPluginPerfectionist,
     },
     rules: {
