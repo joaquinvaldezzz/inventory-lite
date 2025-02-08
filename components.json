@@ -3,7 +3,7 @@
   "style": "default",
   "tailwind": {
     "config": "tailwind.config.js",
-    "css": "src/styles/tailwind.css",
+    "css": "src/styles/main.css",
     "baseColor": "gray",
     "cssVariables": true,
     "prefix": ""
