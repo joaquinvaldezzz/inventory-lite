@@ -15,7 +15,7 @@ export default function Tabs() {
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Redirect path="/app" to="/app/delivery" exact />
+          <Redirect path="/app" to="/app/delivery" />
           <Route path="/app/delivery" render={() => <Delivery />} exact />
           {/* <Route path="/app/daily-count" render={() => <DailyCount />} exact />
           <Route path="/app/wastes" render={() => <Wastes />} exact /> */}

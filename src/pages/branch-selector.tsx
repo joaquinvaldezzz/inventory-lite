@@ -81,7 +81,7 @@ export default function BranchSelector() {
           toast({
             description: 'Branch selected successfully!',
           })
-          router.push('/app')
+          router.push('/app/delivery')
         } catch (error) {
           toast({
             description: 'Failed to select branch. Please try again.',

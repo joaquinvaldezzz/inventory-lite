@@ -29,7 +29,7 @@ export default function App() {
               <BranchSelector />
             </Route>
 
-            <Route path="/app">
+            <Route path="/app/delivery">
               <Tabs />
             </Route>
 
