@@ -1,5 +1,4 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
-import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Container } from 'lucide-react'
@@ -9,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
 import type { DeliveryRecord } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -37,7 +37,6 @@ interface DeliveryRecordFormProps {
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const router = useIonRouter()
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: data.supplier_name,
@@ -55,8 +54,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     },
     resolver: zodResolver(newDeliveryFormSchema),
   })
-
-  console.log(data.items)
+  const { toast } = useToast()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -89,8 +87,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     })(event)
   }
 
-  function handleCancel() {
-    router.goBack()
+  function handleDelete() {
+    toast({
+      description: 'Oops! Deleting a delivery record is not yet implemented. :(',
+      variant: 'destructive',
+    })
   }
 
   return (
@@ -116,7 +117,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                       <SelectValue placeholder="Select a supplier" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">No suppliers available</SelectItem>
+                      <SelectItem value="0" disabled>
+                        No suppliers available
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -133,7 +136,13 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             <FormItem>
               <FormLabel>PO no.</FormLabel>
               <FormControl>
-                <Input className="read-only:bg-muted" type="text" readOnly {...field} />
+                <Input
+                  className="read-only:bg-muted"
+                  type="text"
+                  readOnly
+                  {...field}
+                  value={data.po_no}
+                />
               </FormControl>
 
               <FormMessage />
@@ -391,13 +400,10 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         {/* Make these buttons sticky at the bottom */}
         <div className="mt-1 flex flex-col gap-3">
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Submitting...' : 'Submit'}
+            {isLoading ? 'Saving...' : 'Save'}
           </Button>
-          <Button type="button" variant="destructive">
+          <Button type="button" variant="ghost" onClick={handleDelete}>
             Delete
-          </Button>
-          <Button type="button" disabled={isLoading} variant="ghost" onClick={handleCancel}>
-            Cancel
           </Button>
         </div>
       </form>
