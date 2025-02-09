@@ -1,12 +1,11 @@
 @import 'tailwindcss';
 
-@import '../styles/variables.css' layer(base);
+@import '@ionic/react/css/core.css';
+@import '@ionic/react/css/structure.css';
+@import '@ionic/react/css/palettes/dark.system.css';
+@import '@ionic/react/css/padding.css';
 
-@import '@ionic/react/css/core.css' layer(base);
-@import '@ionic/react/css/structure.css' layer(base);
-@import '@ionic/react/css/palettes/dark.system.css' layer(base);
-
-@import '@ionic/react/css/padding.css' layer(utilities);
+@import './variables.css';
 
 @plugin 'tailwindcss-safe-area';
 @plugin 'tailwindcss-animate';
@@ -100,7 +99,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
+  --color-primary: var(--ion-color-primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -108,11 +107,11 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
+  --color-destructive: var(--ion-color-danger);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
-  --color-ring: var(--ring);
+  --color-ring: var(--ion-color-primary);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);

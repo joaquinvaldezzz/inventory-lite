@@ -2,12 +2,12 @@
 http://ionicframework.com/docs/theming/ */
 
 :root {
-  /* --ion-color-primary: #6e000b;
+  --ion-color-primary: #6e000b;
   --ion-color-primary-rgb: 110, 0, 11;
   --ion-color-primary-contrast: #fff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
   --ion-color-primary-shade: #61000a;
-  --ion-color-primary-tint: #7d1a23; */
+  --ion-color-primary-tint: #7d1a23;
 }
 
 ion-title {
