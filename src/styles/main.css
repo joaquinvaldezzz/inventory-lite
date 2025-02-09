@@ -2,7 +2,7 @@
 
 @import '@ionic/react/css/core.css';
 @import '@ionic/react/css/structure.css';
-@import '@ionic/react/css/palettes/dark.system.css';
+/* @import '@ionic/react/css/palettes/dark.system.css'; */
 @import '@ionic/react/css/padding.css';
 
 @import './variables.css';
@@ -10,7 +10,7 @@
 @plugin 'tailwindcss-safe-area';
 @plugin 'tailwindcss-animate';
 
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* @custom-variant dark (@media (prefers-color-scheme: dark)); */
 
 @theme {
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -63,7 +63,7 @@
   --radius: 0.6rem;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: hsl(224 71.4% 4.1%);
     --foreground: hsl(210 20% 98%);
@@ -90,7 +90,7 @@
     --chart-4: hsl(280 65% 60%);
     --chart-5: hsl(340 75% 55%);
   }
-}
+} */
 
 @theme inline {
   --color-background: var(--background);
