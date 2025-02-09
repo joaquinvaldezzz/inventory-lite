@@ -245,56 +245,74 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
         <div className="grid grid-cols-1 border-y whitespace-nowrap">
           <div className="relative w-full overflow-auto">
-            <div className="table w-full caption-bottom text-sm" aria-label="table">
-              <div className="table-header-group" aria-label="thead">
+            <div className="table w-full caption-bottom text-sm" role="table">
+              <div className="table-header-group" role="thead">
                 <div
                   className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                  aria-label="tr"
+                  role="tr"
                 >
                   <div
                     className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    aria-label="th"
+                    role="th"
                   >
                     Ingredients
                   </div>
-                  <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div
+                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
                     Actual Quantity
                   </div>
-                  <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div
+                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
                     PO
                   </div>
-                  <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div
+                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
                     DR Quantity
                   </div>
-                  <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div
+                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
                     DR unit
                   </div>
-                  <div className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div
+                    className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
                     Unit Price
                   </div>
-                  <div className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
+                  <div
+                    className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
                     Total
                   </div>
                 </div>
               </div>
 
-              <div className="table-row-group **:aria-[label=td]:px-3" aria-label="tbody">
+              <div className="table-row-group **:[[role=td]]:px-3" role="tbody">
                 {data.items.map((item, index) => (
                   <div
                     className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                    aria-label="tr"
+                    role="tr"
                     key={item.id}
                   >
                     <div
                       className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       {item.raw_material}
                     </div>
 
                     <div
                       className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       <FormField
                         name={`items.${index}.quantity`}
@@ -312,14 +330,14 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
                     <div
                       className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       {item.quantity_po}
                     </div>
 
                     <div
                       className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       <FormField
                         name={`items.${index}.quantity`}
@@ -337,7 +355,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
                     <div
                       className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       <FormField
                         name={`items.${index}.unit`}
@@ -345,14 +363,16 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                         render={({ field }) => (
                           <FormItem className="space-y-0">
                             <FormControl>
-                              <Select name={field.name} onValueChange={field.onChange}>
+                              <Select
+                                name={field.name}
+                                defaultValue={field.value}
+                                onValueChange={field.onChange}
+                              >
                                 <SelectTrigger className="min-w-40">
                                   <SelectValue placeholder="Select a unit" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="0" aria-disabled="true" disabled>
-                                    No units available
-                                  </SelectItem>
+                                  <SelectItem value={field.value}>{field.value}</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -364,7 +384,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
                     <div
                       className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       <FormField
                         name={`items.${index}.total_amount`}
@@ -399,7 +419,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
                     <div
                       className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      aria-label="td"
+                      role="td"
                     >
                       <FormField
                         name={`items.${index}.total_amount`}
