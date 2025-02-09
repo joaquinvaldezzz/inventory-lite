@@ -1,12 +1,13 @@
-import { startTransition, useRef, useState, type FormEvent } from 'react'
+import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Container } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 
-import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
-import type { DeliveryRecord } from '@/lib/types'
+import { editDeliveryFormSchema, type EditDeliveryFormSchema } from '@/lib/form-schema'
+import { getFromStorage } from '@/lib/storage'
+import type { DeliveryRecord, Supplier } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -36,32 +37,61 @@ interface DeliveryRecordFormProps {
 
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
+  const [suppliers, setSuppliers] = useState<Supplier>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const form = useForm<NewDeliveryFormSchema>({
+  const form = useForm<EditDeliveryFormSchema>({
     defaultValues: {
-      supplier: data.supplier_name,
+      supplier: data.supplier_id.toString(),
+      po_number: data.po_no,
       date_request: new Date(data.date_request),
       remarks: data.remarks,
       items: data.items.map((item) => ({
         ingredient: item.raw_material,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Safe to use optional chaining
-        quantity: item.quantity ?? '',
+        quantity: item.quantity,
         unit: item.unit,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Safe to use optional chaining
-        unit_price: item.price ?? '',
+        unit_price: item.price,
         total_amount: item.total_amount,
       })),
     },
-    resolver: zodResolver(newDeliveryFormSchema),
+    resolver: zodResolver(editDeliveryFormSchema),
   })
   const { toast } = useToast()
+
+  console.log(data)
+
+  useEffect(() => {
+    // TODO: Save these suppliers locally
+    async function fetchSuppliers() {
+      try {
+        const savedSuppliers = await getFromStorage('suppliers')
+
+        if (savedSuppliers != null) {
+          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown
+
+          if (Array.isArray(parsedSuppliers)) {
+            setSuppliers(parsedSuppliers)
+          } else {
+            console.error('Suppliers data is invalid:', parsedSuppliers)
+          }
+        } else {
+          console.error('No suppliers found in storage')
+        }
+      } catch (error) {
+        console.error('Error fetching suppliers:', error)
+      }
+    }
+
+    startTransition(() => {
+      void fetchSuppliers()
+    })
+  }, [])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     void form.handleSubmit(() => {
       const formValues = form.getValues()
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues)
+      const parsedValues = editDeliveryFormSchema.safeParse(formValues)
 
       if (!parsedValues.success) {
         console.error('Form data is invalid:', parsedValues.error)
@@ -117,9 +147,17 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                       <SelectValue placeholder="Select a supplier" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0" disabled>
-                        No suppliers available
-                      </SelectItem>
+                      {suppliers.length > 0 ? (
+                        suppliers.map((supplier) => (
+                          <SelectItem value={supplier.id.toString()} key={supplier.id}>
+                            {supplier.supplier_name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="0" aria-disabled="true" disabled>
+                          No suppliers available
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -130,7 +168,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         />
 
         <FormField
-          name="remarks"
+          name="po_number"
           control={form.control}
           render={({ field }) => (
             <FormItem>
@@ -155,7 +193,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
+              <FormLabel>Date delivered</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
@@ -302,19 +340,22 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                       aria-label="td"
                     >
                       <FormField
-                        name={`items.${index}.unit_price`}
+                        name={`items.${index}.unit`}
                         control={form.control}
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="space-y-0">
                             <FormControl>
-                              <Input
-                                className="min-w-40 text-right"
-                                type="number"
-                                disabled
-                                {...field}
-                              />
+                              <Select name={field.name} onValueChange={field.onChange}>
+                                <SelectTrigger className="min-w-40">
+                                  <SelectValue placeholder="Select a unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="0" aria-disabled="true" disabled>
+                                    No units available
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
-
                             <FormMessage />
                           </FormItem>
                         )}

@@ -46,3 +46,12 @@ export const newDeliveryFormSchema = z.object({
 })
 
 export type NewDeliveryFormSchema = z.infer<typeof newDeliveryFormSchema>
+
+export const editDeliveryFormSchema = newDeliveryFormSchema.extend({
+  po_number: z.string().trim(),
+  quantity: z.coerce.number(),
+  quantity_dr: z.coerce.number(),
+  unit_dr: z.string().min(1, { message: 'Please select a unit from the list.' }).trim(),
+})
+
+export type EditDeliveryFormSchema = z.infer<typeof editDeliveryFormSchema>
