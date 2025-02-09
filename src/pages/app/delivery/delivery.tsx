@@ -18,12 +18,12 @@ import DeliveryRecordForm from './delivery-record'
 type DeliveryPageProps = RouteComponentProps<{ id: string }>
 
 export default function DeliveryRecord({ match }: DeliveryPageProps) {
-  const { isFetching, data } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ['delivery-entry', match.params.id],
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   })
 
-  if (isFetching) {
+  if (isPending) {
     return (
       <IonPage>
         <IonHeader>
