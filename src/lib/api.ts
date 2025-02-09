@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import { getCurrentUser, getUserSelectedBranch } from './dal'
 import { env } from './env'
 import type { NewDeliveryFormSchema } from './form-schema'
+import { saveToStorage } from './storage'
 import type {
   DeliveryItem,
   DeliveryRecord,
@@ -125,6 +126,7 @@ export async function getSuppliers(): Promise<Supplier> {
 
   try {
     const request = await axios.post<SupplierResponse>(env.VITE_SUPPLIERS_API_URL, userSessionData)
+    await saveToStorage('suppliers', JSON.stringify(request.data.data))
     return Array.isArray(request.data.data) ? request.data.data : []
   } catch (error) {
     console.error('Error fetching suppliers:', error)

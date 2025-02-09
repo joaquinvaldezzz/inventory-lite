@@ -22,6 +22,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 
 import { createDeliveryEntry, getDeliveryEntries, getItems, getSuppliers } from '@/lib/api'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
+import { getFromStorage } from '@/lib/storage'
 import type { Items, Supplier } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
@@ -150,8 +151,21 @@ export default function Delivery() {
     // TODO: Save these suppliers locally
     async function fetchSuppliers() {
       try {
-        const request = await getSuppliers()
-        setSuppliers(request)
+        await getSuppliers()
+
+        const savedSuppliers = await getFromStorage('suppliers')
+
+        if (savedSuppliers != null) {
+          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown
+
+          if (Array.isArray(parsedSuppliers)) {
+            setSuppliers(parsedSuppliers)
+          } else {
+            console.error('Suppliers data is invalid:', parsedSuppliers)
+          }
+        } else {
+          console.error('No suppliers found in storage')
+        }
       } catch (error) {
         console.error('Error fetching suppliers:', error)
       }
@@ -181,7 +195,7 @@ export default function Delivery() {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonTitle>Delivery</IonTitle>
           <IonButtons slot="end" collapse>
             <IonButton onClick={openModal}>
@@ -193,17 +207,6 @@ export default function Delivery() {
       </IonHeader>
 
       <IonContent>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Delivery</IonTitle>
-            <IonButtons slot="end">
-              <IonButton onClick={openModal}>
-                <IonIcon icon={add} />
-              </IonButton>
-            </IonButtons>
-          </IonToolbar>
-        </IonHeader>
-
         <div className="ion-padding">
           {isPending ? (
             <div className="flex h-96 items-center justify-center">
