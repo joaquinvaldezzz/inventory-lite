@@ -220,13 +220,7 @@ export default function Delivery() {
         <IonModal isOpen={isOpen} ref={modalRef}>
           <IonHeader>
             <IonToolbar>
-              <IonButtons slot="start">
-                <IonButton onClick={closeModal}>Cancel</IonButton>
-              </IonButtons>
               <IonTitle className="text-center">New delivery</IonTitle>
-              <IonButtons slot="end">
-                <IonButton>Submit</IonButton>
-              </IonButtons>
             </IonToolbar>
           </IonHeader>
 
