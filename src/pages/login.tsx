@@ -202,7 +202,7 @@ export default function Login() {
               </p>
               <p className="text-center text-sm">
                 <Button className="h-auto p-0" variant="link" asChild>
-                  <Link to="/app">Go to App</Link>
+                  <Link to="/app/delivery">Go to App</Link>
                 </Button>
               </p>
             </div>
