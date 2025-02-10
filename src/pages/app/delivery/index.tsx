@@ -129,7 +129,7 @@ export default function Delivery() {
   function handleClick() {
     append({
       ingredient: '',
-      quantity: 5,
+      quantity: 0,
       unit: '',
       unit_price: 50.0,
       total_amount: 50.0,
@@ -525,7 +525,7 @@ export default function Delivery() {
                 <div className="mt-1 flex flex-col gap-3">
                   <Button type="button" variant="ghost" onClick={handleClick}>
                     <span>Add more ingredients</span>
-                    <Plus className="ms-2 -me-1" aria-hidden="true" strokeWidth={2} size={16} />
+                    <Plus aria-hidden="true" strokeWidth={2} size={16} />
                   </Button>
 
                   <Button type="submit" disabled={isLoading}>
