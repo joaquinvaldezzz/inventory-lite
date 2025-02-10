@@ -1,5 +1,4 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
-import { StatusBar, Style } from '@capacitor/status-bar'
 import { IonReactRouter } from '@ionic/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Redirect, Route } from 'react-router-dom'
@@ -13,14 +12,6 @@ import Login from './pages/login'
 import './styles/main.css'
 
 setupIonicReact()
-
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (status) => {
-  StatusBar.setStyle({
-    style: status.matches ? Style.Dark : Style.Light,
-  }).catch(() => {
-    console.error('Failed to set status bar style')
-  })
-})
 
 const queryClient = new QueryClient()
 
