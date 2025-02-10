@@ -18,6 +18,7 @@ import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { add } from 'ionicons/icons'
 import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
+import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useFieldArray, useForm } from 'react-hook-form'
 
 import { createDeliveryEntry, getDeliveryEntries, getItems, getSuppliers } from '@/lib/api'
@@ -37,7 +38,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { Input, inputVariants } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -381,7 +382,17 @@ export default function Delivery() {
                                       <Select
                                         name={field.name}
                                         defaultValue={field.value}
-                                        onValueChange={field.onChange}
+                                        onValueChange={(event) => {
+                                          field.onChange(event)
+                                          const selectedItem = items.find(
+                                            (item) => item.id === Number(event),
+                                          )
+
+                                          form.setValue(
+                                            `items.${index}.unit`,
+                                            selectedItem != null ? selectedItem.unit : '',
+                                          )
+                                        }}
                                       >
                                         <SelectTrigger className="min-w-48" id={field.name}>
                                           <SelectValue placeholder="Select an item" />
@@ -430,20 +441,13 @@ export default function Delivery() {
                                 render={({ field }) => (
                                   <FormItem className="space-y-0">
                                     <FormControl>
-                                      <Select
-                                        name={field.name}
-                                        defaultValue={field.value}
-                                        onValueChange={field.onChange}
-                                      >
-                                        <SelectTrigger className="min-w-48" id={field.name}>
-                                          <SelectValue placeholder="Select a unit" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="1">Supplier 1</SelectItem>
-                                        </SelectContent>
-                                      </Select>
+                                      <Input
+                                        className="min-w-60 read-only:bg-muted"
+                                        type="text"
+                                        readOnly
+                                        {...field}
+                                      />
                                     </FormControl>
-
                                     <FormMessage />
                                   </FormItem>
                                 )}
@@ -460,12 +464,23 @@ export default function Delivery() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormControl>
-                                      <Input
-                                        className="min-w-40 text-right"
-                                        type="number"
-                                        disabled
-                                        {...field}
-                                      />
+                                      <ReactNumberField
+                                        formatOptions={{
+                                          style: 'currency',
+                                          currency: 'PHP',
+                                          currencySign: 'accounting',
+                                        }}
+                                        aria-label="Unit Price"
+                                        defaultValue={field.value}
+                                      >
+                                        <ReactInput
+                                          className={cn(
+                                            inputVariants(),
+                                            'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                          )}
+                                          readOnly
+                                        />
+                                      </ReactNumberField>
                                     </FormControl>
 
                                     <FormMessage />
@@ -484,12 +499,23 @@ export default function Delivery() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormControl>
-                                      <Input
-                                        className="min-w-40 text-right"
-                                        type="number"
-                                        disabled
-                                        {...field}
-                                      />
+                                      <ReactNumberField
+                                        formatOptions={{
+                                          style: 'currency',
+                                          currency: 'PHP',
+                                          currencySign: 'accounting',
+                                        }}
+                                        aria-label="Total"
+                                        defaultValue={field.value}
+                                      >
+                                        <ReactInput
+                                          className={cn(
+                                            inputVariants(),
+                                            'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                          )}
+                                          readOnly
+                                        />
+                                      </ReactNumberField>
                                     </FormControl>
 
                                     <FormMessage />
