@@ -1,10 +1,13 @@
+/* eslint-disable max-lines -- Safe to disable for this file */
 import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
+import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Container } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 
+import { deleteDeliveryRecord } from '@/lib/api'
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { DeliveryRecord, Supplier } from '@/lib/types'
@@ -56,8 +59,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     resolver: zodResolver(editDeliveryFormSchema),
   })
   const { toast } = useToast()
-
-  console.log(data)
+  const router = useIonRouter()
 
   useEffect(() => {
     // TODO: Save these suppliers locally
@@ -117,11 +119,19 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     })(event)
   }
 
-  function handleDelete() {
-    toast({
-      description: 'Oops! Deleting a delivery record is not yet implemented. :(',
-      variant: 'destructive',
-    })
+  async function handleDelete() {
+    try {
+      await deleteDeliveryRecord(data.id)
+    } catch (error) {
+      console.error('Error deleting delivery record:', error)
+      toast({
+        description: 'An error occurred while deleting the delivery record. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      toast({ description: 'Delivery record deleted' })
+      router.goBack()
+    }
   }
 
   return (
@@ -464,7 +474,13 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             <Button type="submit" disabled={isLoading}>
               {isLoading ? 'Saving...' : 'Save'}
             </Button>
-            <Button type="button" variant="ghost" onClick={handleDelete}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                void handleDelete()
+              }}
+            >
               Delete
             </Button>
           </div>
