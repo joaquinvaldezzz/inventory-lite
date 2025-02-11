@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { DeliveryRecord, Supplier } from '@/lib/types'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn, formatAsCurrency } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -298,162 +298,162 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                 </div>
 
                 <div className="table-row-group **:[[role=td]]:px-3" role="tbody">
-                  {data.items.map((item, index) => (
-                    <div
-                      className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      role="tr"
-                      key={item.id}
-                    >
+                  {data.items.map((item, index) => {
+                    return (
                       <div
-                        className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
+                        className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                        role="tr"
+                        key={item.id}
                       >
-                        {item.raw_material}
+                        <div
+                          className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          {item.raw_material}
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.quantity`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input type="number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          {item.quantity_po}
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.quantity`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input type="number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.unit`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem className="space-y-0">
+                                <FormControl>
+                                  <Select
+                                    name={field.name}
+                                    defaultValue={field.value}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className="min-w-40">
+                                      <SelectValue placeholder="Select a unit" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value={field.value}>{field.value}</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.total_amount`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <ReactNumberField
+                                    formatOptions={{
+                                      style: 'currency',
+                                      currency: 'PHP',
+                                      currencySign: 'accounting',
+                                    }}
+                                    aria-label="Unit Price"
+                                    defaultValue={field.value}
+                                  >
+                                    <ReactInput
+                                      className={cn(
+                                        inputVariants(),
+                                        'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                      )}
+                                      readOnly
+                                    />
+                                  </ReactNumberField>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.total_amount`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <ReactNumberField
+                                    formatOptions={{
+                                      style: 'currency',
+                                      currency: 'PHP',
+                                      currencySign: 'accounting',
+                                    }}
+                                    aria-label="Total amount"
+                                    defaultValue={field.value}
+                                  >
+                                    <ReactInput
+                                      className={cn(
+                                        inputVariants(),
+                                        'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                      )}
+                                      readOnly
+                                    />
+                                  </ReactNumberField>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
                       </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.quantity`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Input type="number" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        {item.quantity_po}
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.quantity`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Input type="number" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.unit`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0">
-                              <FormControl>
-                                <Select
-                                  name={field.name}
-                                  defaultValue={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className="min-w-40">
-                                    <SelectValue placeholder="Select a unit" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={field.value}>{field.value}</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.total_amount`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <ReactNumberField
-                                  formatOptions={{
-                                    style: 'currency',
-                                    currency: 'PHP',
-                                    currencySign: 'accounting',
-                                  }}
-                                  aria-label="Unit Price"
-                                  defaultValue={field.value}
-                                >
-                                  <ReactInput
-                                    className={cn(
-                                      inputVariants(),
-                                      'min-w-40 text-right tabular-nums read-only:bg-muted',
-                                    )}
-                                    readOnly
-                                  />
-                                </ReactNumberField>
-                              </FormControl>
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.total_amount`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <ReactNumberField
-                                  formatOptions={{
-                                    style: 'currency',
-                                    currency: 'PHP',
-                                    currencySign: 'accounting',
-                                  }}
-                                  aria-label="Total amount"
-                                  defaultValue={field.value}
-                                >
-                                  <ReactInput
-                                    className={cn(
-                                      inputVariants(),
-                                      'min-w-40 text-right tabular-nums read-only:bg-muted',
-                                    )}
-                                    readOnly
-                                  />
-                                </ReactNumberField>
-                              </FormControl>
-
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>
@@ -474,7 +474,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       <hr className="my-4" />
       <div className="flex items-center justify-between">
         <div className="font-bold">Total</div>
-        <div className="font-bold tabular-nums">{formatCurrency(data.total_amount)}</div>
+        <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>
       </div>
     </>
   )
