@@ -14,12 +14,12 @@ const multiColumnFilterFn: FilterFn<DeliveryItem> = (row, _columnId, filterValue
 export const columns: Array<ColumnDef<DeliveryItem>> = [
   {
     accessorKey: 'dr_no',
-    header: 'DR no.',
+    header: ({ column }) => <DataTableColumnHeader title="DR no." column={column} />,
     filterFn: multiColumnFilterFn,
   },
   {
     accessorKey: 'po_no',
-    header: 'PO no.',
+    header: ({ column }) => <DataTableColumnHeader title="PO no." column={column} />,
   },
   {
     accessorKey: 'date_delivered',
@@ -31,11 +31,11 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
   },
   {
     accessorKey: 'branch',
-    header: 'Branch',
+    header: ({ column }) => <DataTableColumnHeader title="Branch" column={column} />,
   },
   {
     accessorKey: 'supplier_name',
-    header: 'Supplier',
+    header: ({ column }) => <DataTableColumnHeader title="Supplier" column={column} />,
   },
   {
     accessorKey: 'total_amount',
@@ -51,7 +51,7 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => <DataTableColumnHeader title="Status" column={column} />,
     cell: (cell) => {
       const status = cell.row.original.status
       return <Badge variant="outline">{status}</Badge>
