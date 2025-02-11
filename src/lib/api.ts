@@ -208,3 +208,28 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
     throw new Error('Error fetching delivery record')
   }
 }
+
+export async function deleteDeliveryRecord(id: number): Promise<void> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const data = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    branch,
+    action: 'delete',
+    id,
+  })
+
+  try {
+    await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
+  } catch (error) {
+    console.error('Error deleting delivery record:', error)
+    throw new Error('Error deleting delivery record')
+  }
+}
