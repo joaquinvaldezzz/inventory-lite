@@ -50,8 +50,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       remarks: data.remarks,
       items: data.items.map((item) => ({
         ingredient: item.raw_material,
-        quantity: item.quantity,
-        unit: item.unit,
+        quantity_dr: item.quantity_dr,
+        unit_dr: item.unit,
         unit_price: item.price,
         total_amount: item.total_amount,
       })),
@@ -296,13 +296,13 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                       className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                       role="th"
                     >
-                      Unit Price
+                      Unit price
                     </div>
                     <div
                       className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                       role="th"
                     >
-                      Total
+                      Total amount
                     </div>
                   </div>
                 </div>
@@ -327,7 +327,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.quantity`}
+                            name={`items.${index}.quantity_dr`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem>
@@ -344,7 +344,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                           role="td"
                         >
-                          {item.quantity_po}
+                          {item.unit_dr}
                         </div>
 
                         <div
@@ -352,7 +352,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.quantity`}
+                            name={`items.${index}.quantity_dr`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem>
@@ -370,7 +370,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.unit`}
+                            name={`items.${index}.unit_dr`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="space-y-0">

@@ -67,9 +67,9 @@ export default function Delivery() {
       remarks: '',
       items: [
         {
-          ingredient: '',
-          quantity: 5,
-          unit: '',
+          item: '',
+          quantity_dr: 5,
+          unit_dr: '',
           unit_price: 50.0,
           total_amount: 50.0,
         },
@@ -129,9 +129,9 @@ export default function Delivery() {
 
   function handleClick() {
     append({
-      ingredient: '',
-      quantity: 0,
-      unit: '',
+      item: '',
+      quantity_dr: 0,
+      unit_dr: '',
       unit_price: 50.0,
       total_amount: 50.0,
     })
@@ -374,7 +374,7 @@ export default function Delivery() {
                               role="td"
                             >
                               <FormField
-                                name={`items.${index}.ingredient`}
+                                name={`items.${index}.item`}
                                 control={form.control}
                                 render={({ field }) => (
                                   <FormItem className="space-y-0">
@@ -388,7 +388,7 @@ export default function Delivery() {
                                             (item) => item.id === Number(event),
                                           )
                                           form.setValue(
-                                            `items.${index}.unit`,
+                                            `items.${index}.unit_dr`,
                                             selectedItem != null ? selectedItem.unit : '',
                                           )
                                         }}
@@ -416,7 +416,7 @@ export default function Delivery() {
                               role="td"
                             >
                               <FormField
-                                name={`items.${index}.quantity`}
+                                name={`items.${index}.quantity_dr`}
                                 control={form.control}
                                 render={({ field }) => (
                                   <FormItem>
@@ -434,7 +434,7 @@ export default function Delivery() {
                               role="td"
                             >
                               <FormField
-                                name={`items.${index}.unit`}
+                                name={`items.${index}.unit_dr`}
                                 control={form.control}
                                 render={({ field }) => (
                                   <FormItem className="space-y-0">
