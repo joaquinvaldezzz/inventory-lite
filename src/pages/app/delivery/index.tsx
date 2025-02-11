@@ -331,15 +331,15 @@ export default function Delivery() {
 
                 <div className="grid grid-cols-1 border-y whitespace-nowrap">
                   <div className="relative w-full overflow-auto">
-                    <div className="table w-full caption-bottom pb-2 text-sm" aria-label="table">
-                      <div className="table-header-group" aria-label="thead">
+                    <div className="table w-full caption-bottom pb-2 text-sm" role="table">
+                      <div className="table-header-group" role="thead">
                         <div
                           className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                          aria-label="tr"
+                          role="tr"
                         >
                           <div
                             className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                            aria-label="th"
+                            role="th"
                           >
                             Ingredients
                           </div>
@@ -360,18 +360,18 @@ export default function Delivery() {
                       </div>
 
                       <div
-                        className="table-row-group **:aria-[label=td]:px-1 **:aria-[label=td]:py-1"
-                        aria-label="tbody"
+                        className="table-row-group **:[[role=td]]:px-1 **:[[role=td]]:py-1"
+                        role="tbody"
                       >
                         {fields.map((_, index) => (
                           <div
                             className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                            aria-label="tr"
+                            role="tr"
                             key={index}
                           >
                             <div
                               className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                              aria-label="td"
+                              role="td"
                             >
                               <FormField
                                 name={`items.${index}.ingredient`}
@@ -387,7 +387,6 @@ export default function Delivery() {
                                           const selectedItem = items.find(
                                             (item) => item.id === Number(event),
                                           )
-
                                           form.setValue(
                                             `items.${index}.unit`,
                                             selectedItem != null ? selectedItem.unit : '',
@@ -414,7 +413,7 @@ export default function Delivery() {
 
                             <div
                               className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                              aria-label="td"
+                              role="td"
                             >
                               <FormField
                                 name={`items.${index}.quantity`}
@@ -424,7 +423,6 @@ export default function Delivery() {
                                     <FormControl>
                                       <Input type="number" {...field} />
                                     </FormControl>
-
                                     <FormMessage />
                                   </FormItem>
                                 )}
@@ -433,7 +431,7 @@ export default function Delivery() {
 
                             <div
                               className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                              aria-label="td"
+                              role="td"
                             >
                               <FormField
                                 name={`items.${index}.unit`}
@@ -456,7 +454,7 @@ export default function Delivery() {
 
                             <div
                               className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                              aria-label="td"
+                              role="td"
                             >
                               <FormField
                                 name={`items.${index}.unit_price`}
@@ -482,7 +480,6 @@ export default function Delivery() {
                                         />
                                       </ReactNumberField>
                                     </FormControl>
-
                                     <FormMessage />
                                   </FormItem>
                                 )}
@@ -491,7 +488,7 @@ export default function Delivery() {
 
                             <div
                               className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                              aria-label="td"
+                              role="td"
                             >
                               <FormField
                                 name={`items.${index}.total_amount`}
@@ -526,7 +523,7 @@ export default function Delivery() {
 
                             <div
                               className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                              aria-label="td"
+                              role="td"
                             >
                               <Button
                                 className="text-destructive"
