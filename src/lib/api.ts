@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 
 import { getCurrentUser, getUserSelectedBranch } from './dal'
 import { env } from './env'
-import type { NewDeliveryFormSchema } from './form-schema'
+import type { EditDeliveryFormSchema, NewDeliveryFormSchema } from './form-schema'
 import { saveToStorage } from './storage'
 import type {
   DeliveryItem,
@@ -231,5 +231,42 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
   } catch (error) {
     console.error('Error deleting delivery record:', error)
     throw new Error('Error deleting delivery record')
+  }
+}
+
+export async function editDeliveryRecord(
+  id: number,
+  delivery: EditDeliveryFormSchema,
+): Promise<void> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const deliveryEntryDetails = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    branch,
+    action: 'edit',
+    id,
+    supplier: Number(delivery.supplier),
+    date_request: format(delivery.date_request, 'yyyy-MM-dd'),
+    date_order: format(delivery.date_request, 'yyyy-MM-dd'),
+    date_delivered: format(delivery.date_request, 'yyyy-MM-dd'),
+    date_received: format(delivery.date_request, 'yyyy-MM-dd'),
+    grand_total: 0,
+    remarks: delivery.remarks,
+    status: 2,
+    items: [...delivery.items],
+  })
+
+  try {
+    await axios.post<EditDeliveryFormSchema>(env.VITE_DELIVERY_API_URL, deliveryEntryDetails)
+  } catch (error) {
+    console.error('Error editing delivery record:', error)
+    throw new Error('Error editing delivery record')
   }
 }
