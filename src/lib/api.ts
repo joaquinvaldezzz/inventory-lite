@@ -7,6 +7,8 @@ import { env } from './env'
 import type { EditDeliveryFormSchema, NewDeliveryFormSchema } from './form-schema'
 import { saveToStorage } from './storage'
 import type {
+  DailyCountData,
+  DailyCountResponse,
   DeliveryItem,
   DeliveryRecord,
   DeliveryResponse,
@@ -286,5 +288,62 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
   } catch (error) {
     console.error('Error deleting delivery record:', error)
     throw new Error('Error deleting delivery record')
+  }
+}
+
+/**
+ * Retrieves the current user session, including user ID, token, and selected branch.
+ *
+ * This function concurrently fetches the current user and the selected branch using
+ * `Promise.allSettled`. If either the user or the branch fetch fails or returns null, an error is
+ * thrown.
+ *
+ * @returns {Promise<{ userId: string; token: string; branch: number }>} An object containing the
+ *   user ID, token, and selected branch.
+ * @throws {Error} If the user is not found or the branch is not selected.
+ * @throws {Error} If the user or branch is null.
+ */
+async function getUserSession(): Promise<{ userId: string; token: string; branch: number }> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  }
+
+  if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  return {
+    userId: user.value.data.user.id,
+    token: user.value.data.token,
+    branch: branch.value,
+  }
+}
+
+/**
+ * Fetches the daily count entries for the current user session.
+ *
+ * This function retrieves the user session details including userId, token, and branch, then sends
+ * a POST request to the daily count API to fetch the daily count entries.
+ *
+ * @returns {Promise<DailyCountData[]>} A promise that resolves to an array of daily count data.
+ * @throws {Error} Throws an error if there is an issue fetching the daily count entries.
+ */
+export async function getDailyCountEntries(): Promise<DailyCountData[]> {
+  const { userId, token, branch } = await getUserSession()
+  const data = JSON.stringify({
+    user_id: userId,
+    token,
+    branch,
+    action: 'fetch',
+  })
+
+  try {
+    const request = await axios.post<DailyCountResponse>(env.VITE_DAILY_COUNT_API_URL, data)
+    return Array.isArray(request.data.data) ? request.data.data : []
+  } catch (error) {
+    console.error('Error fetching daily count entries:', error)
+    throw new Error('Error fetching daily count entries')
   }
 }

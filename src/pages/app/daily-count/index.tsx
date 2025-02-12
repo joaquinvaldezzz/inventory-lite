@@ -1,11 +1,21 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react'
+import { useQuery } from '@tanstack/react-query'
 
-import { DataTable } from '@/components/ui/data-table'
+import { getDailyCountEntries } from '@/lib/api'
 
-import data from '../data.json'
 import { columns } from './columns'
+import { DataTable } from './data-table'
 
 export default function DailyCount() {
+  const { isFetching, isPending, error, data } = useQuery({
+    queryKey: ['daily-count-entries'],
+    queryFn: async () => await getDailyCountEntries(),
+  })
+
+  if (data === undefined) {
+    return null
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -14,15 +24,9 @@ export default function DailyCount() {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Daily Count</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
-        <div className="p-4">
-          <DataTable columns={columns} data={data.data} withPagination withSearch />
+      <IonContent className="ion-padding">
+        <div className="space-y-4">
+          <DataTable columns={columns} data={data} />
         </div>
       </IonContent>
     </IonPage>

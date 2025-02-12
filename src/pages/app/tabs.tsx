@@ -1,24 +1,22 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
-import { cube } from 'ionicons/icons'
+import { calendar, cube, trash } from 'ionicons/icons'
 import { Redirect, Route } from 'react-router'
 
+import DailyCount from './daily-count'
 import Delivery from './delivery'
 import DeliveryRecord from './delivery/delivery'
-
-// import { calendar, cube, trash } from 'ionicons/icons'
-// import DailyCount from './daily-count'
-// import Wastes from './wastes'
+import Wastes from './wastes'
 
 export default function Tabs() {
   return (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Redirect path="/app" to="/app/delivery" />
+          <Redirect path="/app" to="/app/delivery" exact />
           <Route path="/app/delivery" render={() => <Delivery />} exact />
-          {/* <Route path="/app/daily-count" render={() => <DailyCount />} exact />
-          <Route path="/app/wastes" render={() => <Wastes />} exact /> */}
+          <Route path="/app/daily-count" render={() => <DailyCount />} exact />
+          <Route path="/app/wastes" render={() => <Wastes />} exact />
 
           <Route path="/app/delivery/:id" render={(props) => <DeliveryRecord {...props} />} exact />
         </IonRouterOutlet>
@@ -29,7 +27,7 @@ export default function Tabs() {
             <IonLabel>Delivery</IonLabel>
           </IonTabButton>
 
-          {/* <IonTabButton href="/app/daily-count" tab="daily-count">
+          <IonTabButton href="/app/daily-count" tab="daily-count">
             <IonIcon icon={calendar} />
             <IonLabel>Daily Count</IonLabel>
           </IonTabButton>
@@ -37,7 +35,7 @@ export default function Tabs() {
           <IonTabButton href="/app/wastes" tab="wastes">
             <IonIcon icon={trash} />
             <IonLabel>Wastes</IonLabel>
-          </IonTabButton> */}
+          </IonTabButton>
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>

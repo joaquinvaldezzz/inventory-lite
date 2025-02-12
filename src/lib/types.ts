@@ -198,3 +198,20 @@ export interface ItemsResponse {
 }
 
 export type Items = ItemsResponse['data']
+
+export interface DailyCountResponse {
+  success: boolean
+  message: string
+  data: {
+    id: number
+    branch_id: number
+    branch: string
+    branch_name: string
+    raw_material_type_id: number
+    raw_material_type: string
+    date: string
+    timestamp: string
+  }
+}
+
+export type DailyCountData = DailyCountResponse['data']
