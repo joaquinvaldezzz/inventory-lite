@@ -7,7 +7,7 @@ import { CalendarIcon, Container } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 
-import { deleteDeliveryRecord } from '@/lib/api'
+import { deleteDeliveryRecord, editDeliveryRecord } from '@/lib/api'
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { DeliveryRecord, Supplier } from '@/lib/types'
@@ -49,7 +49,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       date_request: new Date(data.date_request),
       remarks: data.remarks,
       items: data.items.map((item) => ({
-        ingredient: item.raw_material,
+        item: item.item_id,
+        quantity_actual: item.quantity_actual,
         quantity_dr: item.quantity_dr,
         unit_dr: item.unit,
         unit_price: item.price,
@@ -102,19 +103,23 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
       setIsLoading(true)
 
-      function submitForm() {
+      async function submitForm() {
         try {
-          // await createDeliveryEntry(formValues)
-          console.log('Form submitted:', formValues)
+          await editDeliveryRecord(data.id, formValues)
         } catch (error) {
-          console.error('Form submission failed:', error)
+          toast({
+            description: 'An error occurred while saving changes. Please try again.',
+            variant: 'destructive',
+          })
         } finally {
           setIsLoading(false)
+          toast({ description: 'Successfully saved changes' })
+          router.goBack()
         }
       }
 
       startTransition(() => {
-        submitForm()
+        void submitForm()
       })
     })(event)
   }
@@ -327,7 +332,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.quantity_dr`}
+                            name={`items.${index}.quantity_actual`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem>

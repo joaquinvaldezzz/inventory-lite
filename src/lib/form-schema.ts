@@ -44,11 +44,28 @@ export const newDeliveryFormSchema = z.object({
 
 export type NewDeliveryFormSchema = z.infer<typeof newDeliveryFormSchema>
 
-export const editDeliveryFormSchema = newDeliveryFormSchema.extend({
+export const editDeliveryFormSchema = z.object({
+  supplier: z.string().min(1, { message: 'Please select a supplier from the list.' }).trim(),
   po_number: z.string().trim(),
-  quantity: z.coerce.number(),
-  quantity_dr: z.coerce.number(),
-  unit_dr: z.string().min(1, { message: 'Please select a unit from the list.' }).trim(),
+  date_request: z.coerce.date({ message: 'Please select a date.' }),
+  remarks: z
+    .string()
+    .max(256, { message: 'Remarks must not exceed 256 characters.' })
+    .trim()
+    .optional(),
+  items: z.array(
+    z.object({
+      item: z.coerce.number(),
+      quantity_actual: z.coerce
+        .number()
+        .min(0.01, { message: 'Quantity must be greater than zero.' }),
+      quantity_dr: z.coerce.number(),
+      unit_dr: z.string().min(1, { message: 'Please select a unit from the list.' }).trim(),
+      total_amount: z.coerce
+        .number()
+        .min(0.01, { message: 'Total amount must be greater than zero.' }),
+    }),
+  ),
 })
 
 export type EditDeliveryFormSchema = z.infer<typeof editDeliveryFormSchema>
