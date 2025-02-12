@@ -20,6 +20,7 @@ import { add } from 'ionicons/icons'
 import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useFieldArray, useForm } from 'react-hook-form'
+import { useLocation } from 'react-router-dom'
 
 import { createDeliveryEntry, getDeliveryEntries, getItems, getSuppliers } from '@/lib/api'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
@@ -79,6 +80,7 @@ export default function Delivery() {
   })
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { toast } = useToast()
+  const { pathname } = useLocation()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -142,7 +144,7 @@ export default function Delivery() {
   }
 
   const { isFetching, isPending, error, data } = useQuery({
-    queryKey: ['delivery-entries', isLoading],
+    queryKey: ['delivery-entries', isLoading, pathname],
     queryFn: async () => await getDeliveryEntries(),
   })
 
