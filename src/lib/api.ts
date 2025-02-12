@@ -21,39 +21,6 @@ if (env.VITE_DELIVERY_API_URL.length === 0) {
 }
 
 /**
- * Fetches delivery entries from the API.
- *
- * @returns {Promise<DeliveryItem[]>} A promise that resolves to an array of delivery items. If the
- *   fetch fails or no items are found, it resolves to an empty array.
- * @throws {Error} Throws an error if the API URL is not defined or if the request fails.
- */
-export async function getDeliveryEntries(): Promise<DeliveryItem[]> {
-  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
-
-  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
-    throw new Error('User not found or branch not selected')
-  } else if (user.value == null || branch.value == null) {
-    throw new Error('User or branch not found')
-  }
-
-  // TODO: Move this type of data to the dal.tsx file
-  const data = JSON.stringify({
-    user_id: user.value.data.user.id,
-    token: user.value.data.token,
-    branch,
-    action: 'fetch',
-  })
-
-  try {
-    const request = await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
-    return Array.isArray(request.data.data) ? request.data.data : []
-  } catch (error) {
-    console.error('Error fetching delivery entries:', error)
-    throw new Error('Error fetching delivery entries')
-  }
-}
-
-/**
  * Creates a new delivery entry.
  *
  * This function sends a POST request to the delivery API to create a new delivery entry with the
@@ -95,6 +62,39 @@ export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Prom
   } catch (error) {
     console.error('Error creating delivery entry:', error)
     throw new Error('Error creating delivery entry')
+  }
+}
+
+/**
+ * Fetches delivery entries from the API.
+ *
+ * @returns {Promise<DeliveryItem[]>} A promise that resolves to an array of delivery items. If the
+ *   fetch fails or no items are found, it resolves to an empty array.
+ * @throws {Error} Throws an error if the API URL is not defined or if the request fails.
+ */
+export async function getDeliveryEntries(): Promise<DeliveryItem[]> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  // TODO: Move this type of data to the dal.tsx file
+  const data = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    branch,
+    action: 'fetch',
+  })
+
+  try {
+    const request = await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
+    return Array.isArray(request.data.data) ? request.data.data : []
+  } catch (error) {
+    console.error('Error fetching delivery entries:', error)
+    throw new Error('Error fetching delivery entries')
   }
 }
 
@@ -209,31 +209,15 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
   }
 }
 
-export async function deleteDeliveryRecord(id: number): Promise<void> {
-  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
-
-  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
-    throw new Error('User not found or branch not selected')
-  } else if (user.value == null || branch.value == null) {
-    throw new Error('User or branch not found')
-  }
-
-  const data = JSON.stringify({
-    user_id: user.value.data.user.id,
-    token: user.value.data.token,
-    branch,
-    action: 'delete',
-    id,
-  })
-
-  try {
-    await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
-  } catch (error) {
-    console.error('Error deleting delivery record:', error)
-    throw new Error('Error deleting delivery record')
-  }
-}
-
+/**
+ * Edits a delivery record with the given ID and delivery details.
+ *
+ * @param id - The ID of the delivery record to edit.
+ * @param delivery - The delivery details to update the record with.
+ * @returns A promise that resolves when the delivery record is successfully edited.
+ * @throws An error if the user is not found, the branch is not selected, or if there is an error
+ *   editing the delivery record.
+ */
 export async function editDeliveryRecord(
   id: number,
   delivery: EditDeliveryFormSchema,
@@ -264,9 +248,43 @@ export async function editDeliveryRecord(
   })
 
   try {
+    // TODO: Add the response type
     await axios.post<EditDeliveryFormSchema>(env.VITE_DELIVERY_API_URL, deliveryEntryDetails)
   } catch (error) {
     console.error('Error editing delivery record:', error)
     throw new Error('Error editing delivery record')
+  }
+}
+
+/**
+ * Deletes a delivery record by its ID.
+ *
+ * @param id - The ID of the delivery record to delete.
+ * @returns A promise that resolves when the delivery record is successfully deleted.
+ * @throws Will throw an error if the user is not found, the branch is not selected, or if there is
+ *   an error deleting the delivery record.
+ */
+export async function deleteDeliveryRecord(id: number): Promise<void> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const data = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    branch,
+    action: 'delete',
+    id,
+  })
+
+  try {
+    await axios.post<DeliveryResponse>(env.VITE_DELIVERY_API_URL, data)
+  } catch (error) {
+    console.error('Error deleting delivery record:', error)
+    throw new Error('Error deleting delivery record')
   }
 }
