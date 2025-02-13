@@ -21,7 +21,7 @@ export function DataTableColumnHeader<TData, TValue>({
 
   return (
     <Button
-      className={cn(className)}
+      className={cn('-mx-3', className)}
       variant="ghost"
       onClick={() => {
         column.toggleSorting(column.getIsSorted() === 'asc')
