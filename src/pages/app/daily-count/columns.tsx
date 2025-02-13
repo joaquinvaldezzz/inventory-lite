@@ -2,25 +2,26 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 
 import type { DailyCountData } from '@/lib/types'
+import { DataTableColumnHeader } from '@/components/ui/data-table/column-header'
 
 export const columns: Array<ColumnDef<DailyCountData>> = [
   {
     accessorKey: 'date',
-    header: 'Date',
+    header: ({ column }) => <DataTableColumnHeader title="Date" column={column} />,
     cell: (cell) =>
       cell.row.original.date !== '0000-00-00' ? format(cell.row.original.date, 'MMMM d, yyyy') : '',
   },
   {
     accessorKey: 'branch',
-    header: 'Branch name',
+    header: ({ column }) => <DataTableColumnHeader title="Branch name" column={column} />,
   },
   {
     accessorKey: 'raw_material_type',
-    header: 'Category',
+    header: ({ column }) => <DataTableColumnHeader title="Category" column={column} />,
   },
   {
     accessorKey: 'timestamp',
-    header: 'Date and time encoded',
+    header: ({ column }) => <DataTableColumnHeader title="Date and time encoded" column={column} />,
     cell: (cell) =>
       cell.row.original.timestamp !== '0000-00-00'
         ? format(cell.row.original.timestamp, 'MMMM d, yyyy')

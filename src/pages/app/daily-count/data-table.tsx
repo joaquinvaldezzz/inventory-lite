@@ -1,13 +1,19 @@
+import { useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
   type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
 } from '@tanstack/react-table'
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
 import {
@@ -32,16 +38,40 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
+    state: {
+      columnFilters,
+      sorting,
+    },
   })
 
   return (
-    <>
-      <div className="rounded-md border whitespace-nowrap">
+    <div className="space-y-4">
+      <div className="relative w-full shrink-0">
+        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+          <Search strokeWidth={2} size={16} />
+        </div>
+        <Input
+          className="peer ps-9"
+          type="search"
+          placeholder="Search by category"
+          value={table.getColumn('raw_material_type')?.getFilterValue()?.toString() ?? ''}
+          onChange={(event) =>
+            table.getColumn('raw_material_type')?.setFilterValue(event.target.value)
+          }
+        />
+      </div>
+      <div className="border-y whitespace-nowrap">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -117,7 +147,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                   table.getRowCount(),
                 )}
               </span>{' '}
-              of <span className="text-foreground">{table.getRowCount().toString()}</span>
+              of <span className="text-foreground">{table.getRowCount().toLocaleString()}</span>
             </p>
           </div>
         </div>
@@ -186,6 +216,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </PaginationContent>
         </Pagination>
       </div>
-    </>
+    </div>
   )
 }

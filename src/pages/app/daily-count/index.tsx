@@ -7,6 +7,7 @@ import { columns } from './columns'
 import { DataTable } from './data-table'
 
 export default function DailyCount() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Temporary only
   const { isFetching, isPending, error, data } = useQuery({
     queryKey: ['daily-count-entries'],
     queryFn: async () => await getDailyCountEntries(),
@@ -25,9 +26,7 @@ export default function DailyCount() {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <div className="space-y-4">
-          <DataTable columns={columns} data={data} />
-        </div>
+        <DataTable columns={columns} data={data} />
       </IonContent>
     </IonPage>
   )
