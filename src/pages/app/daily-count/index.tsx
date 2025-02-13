@@ -6,6 +6,7 @@ import {
   IonIcon,
   IonPage,
   IonProgressBar,
+  IonSpinner,
   IonTitle,
   IonToolbar,
   useIonModal,
@@ -21,7 +22,7 @@ import { DataTable } from './data-table'
 import { NewDailyCountModal } from './new-daily-count-modal'
 
 export default function DailyCount() {
-  const { isFetching, data } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ['daily-count-entries'],
     queryFn: async () => await getDailyCountEntries(),
   })
@@ -42,10 +43,6 @@ export default function DailyCount() {
     })
   }
 
-  if (data === undefined) {
-    return null
-  }
-
   return (
     <IonPage>
       <IonHeader>
@@ -56,7 +53,7 @@ export default function DailyCount() {
               <IonIcon icon={add} slot="icon-only" />
             </IonButton>
           </IonButtons>
-          {isFetching && <IonProgressBar type="indeterminate" />}
+          {isPending && <IonProgressBar type="indeterminate" />}
         </IonToolbar>
       </IonHeader>
 
@@ -73,7 +70,13 @@ export default function DailyCount() {
         </IonHeader>
 
         <div className="ion-padding">
-          <DataTable columns={columns} data={data} />
+          {isPending ? (
+            <div className="flex h-96 items-center justify-center">
+              <IonSpinner />
+            </div>
+          ) : (
+            <DataTable columns={columns} data={data ?? []} />
+          )}
         </div>
       </IonContent>
     </IonPage>
