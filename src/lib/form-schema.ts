@@ -69,3 +69,10 @@ export const editDeliveryFormSchema = z.object({
 })
 
 export type EditDeliveryFormSchema = z.infer<typeof editDeliveryFormSchema>
+
+export const newDailyCountFormSchema = z.object({
+  date: z.coerce.date({ message: 'Please select a date.' }),
+  raw_material_type: z.string().min(1, { message: 'Please select a category.' }).trim(),
+})
+
+export type NewDailyCountFormSchema = z.infer<typeof newDailyCountFormSchema>

@@ -7,6 +7,8 @@ import { env } from './env'
 import type { EditDeliveryFormSchema, NewDeliveryFormSchema } from './form-schema'
 import { saveToStorage } from './storage'
 import type {
+  Categories,
+  CategoriesResponse,
   DailyCountData,
   DailyCountResponse,
   DeliveryItem,
@@ -208,6 +210,45 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
   } catch (error) {
     console.error('Error fetching delivery record:', error)
     throw new Error('Error fetching delivery record')
+  }
+}
+
+/**
+ * Fetches categories from the API.
+ *
+ * This function retrieves the current user and the selected branch, then sends a request to the
+ * categories API endpoint to fetch the categories. The fetched categories are saved to storage and
+ * returned.
+ *
+ * @returns {Promise<Categories[]>} A promise that resolves to an array of categories.
+ * @throws {Error} If the user is not found, the branch is not selected, or there is an error
+ *   fetching categories.
+ */
+export async function getCategories(): Promise<Categories[]> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const userSessionData = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    action: 'fetch',
+  })
+
+  try {
+    const request = await axios.post<CategoriesResponse>(
+      env.VITE_CATEGORIES_API_URL,
+      userSessionData,
+    )
+    await saveToStorage('categories', JSON.stringify(request.data.data))
+    return Array.isArray(request.data.data) ? request.data.data : []
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    throw new Error('Error fetching categories')
   }
 }
 

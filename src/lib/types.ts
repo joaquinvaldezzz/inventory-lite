@@ -215,3 +215,14 @@ export interface DailyCountResponse {
 }
 
 export type DailyCountData = DailyCountResponse['data']
+
+export interface CategoriesResponse {
+  success: boolean
+  message: string
+  data: {
+    id: number
+    raw_material_type: string
+  }
+}
+
+export type Categories = CategoriesResponse['data']
