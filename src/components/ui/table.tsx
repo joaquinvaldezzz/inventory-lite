@@ -17,7 +17,9 @@ const Table = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
 Table.displayName = 'Table'
 
 const TableHeader = forwardRef<HTMLTableSectionElement, HTMLAttributes<HTMLTableSectionElement>>(
-  ({ className, ...props }, ref) => <thead className={cn(className)} ref={ref} {...props} />,
+  ({ className, ...props }, ref) => (
+    <thead className={cn('bg-muted/50', className)} ref={ref} {...props} />
+  ),
 )
 TableHeader.displayName = 'TableHeader'
 
