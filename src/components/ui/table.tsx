@@ -73,7 +73,7 @@ TableHead.displayName = 'TableHead'
 const TableCell = forwardRef<HTMLTableCellElement, TdHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
     <td
-      className={cn('p-3 align-middle [&:has([role=checkbox])]:pr-0', className)}
+      className={cn('relative p-3 align-middle [&:has([role=checkbox])]:pr-0', className)}
       ref={ref}
       {...props}
     />
