@@ -136,7 +136,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
             <p className="text-sm whitespace-nowrap text-muted-foreground" aria-live="polite">
               <span className="text-foreground">
-                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
+                {(
+                  table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                  1
+                ).toLocaleString()}{' '}
                 to{' '}
                 {Math.min(
                   Math.max(
@@ -145,7 +148,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     0,
                   ),
                   table.getRowCount(),
-                )}
+                ).toLocaleString()}
               </span>{' '}
               of <span className="text-foreground">{table.getRowCount().toLocaleString()}</span>
             </p>
