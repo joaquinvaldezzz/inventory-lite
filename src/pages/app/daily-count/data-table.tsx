@@ -61,7 +61,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
           <Search strokeWidth={2} size={16} />
         </div>
+        <Label className="sr-only" htmlFor="search">
+          Search by category
+        </Label>
         <Input
+          id="search"
           className="peer ps-9"
           type="search"
           placeholder="Search by category"
@@ -113,14 +117,14 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <div className="flex flex-col gap-4">
         <div className="flex items-center">
           <div className="flex items-center gap-3">
-            <Label className="max-sm:sr-only">Rows per page</Label>
+            <Label htmlFor="rows-per-page">Rows per page</Label>
             <Select
               value={table.getState().pagination.pageSize.toString()}
               onValueChange={(value) => {
                 table.setPageSize(Number(value))
               }}
             >
-              <SelectTrigger className="w-fit whitespace-nowrap">
+              <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
                 <SelectValue placeholder="Select number of results" />
               </SelectTrigger>
               <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
