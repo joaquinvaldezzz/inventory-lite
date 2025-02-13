@@ -4,7 +4,6 @@ import jseslint from '@eslint/js'
 import eslintPluginQuery from '@tanstack/eslint-plugin-query'
 import love from 'eslint-config-love'
 import eslintConfigPrettier from 'eslint-config-prettier'
-// @ts-expect-error -- eslint-plugin-perfectionist does not have types
 import eslintPluginPerfectionist from 'eslint-plugin-perfectionist'
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended'
 import eslintPluginReact from 'eslint-plugin-react'
