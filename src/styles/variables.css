@@ -1,6 +1,22 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
 
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: block;
+  font-style: normal;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: block;
+  font-style: italic;
+  src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
 :root {
   --ion-color-primary: #186a72;
   --ion-color-primary-rgb: 24, 106, 114;
@@ -22,6 +38,10 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
   --ion-color-tertiary-shade: #263e41;
   --ion-color-tertiary-tint: #40595c;
+}
+
+html {
+  --ion-font-family: 'Inter var', sans-serif;
 }
 
 ion-title {
