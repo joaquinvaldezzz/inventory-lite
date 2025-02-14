@@ -10,7 +10,7 @@
 @plugin 'tailwindcss-safe-area';
 @plugin 'tailwindcss-animate';
 
-/* @custom-variant dark (@media (prefers-color-scheme: dark)); */
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --animate-accordion-down: accordion-down 0.2s ease-out;
