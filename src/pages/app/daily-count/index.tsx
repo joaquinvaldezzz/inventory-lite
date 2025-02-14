@@ -15,7 +15,7 @@ import type { OverlayEventDetail } from '@ionic/react/dist/types/components/reac
 import { useQuery } from '@tanstack/react-query'
 import { add } from 'ionicons/icons'
 
-import { getDailyCountEntries } from '@/lib/api'
+import { fetchDailyCountEntries } from '@/lib/api'
 
 import { columns } from './columns'
 import { DataTable } from './data-table'
@@ -24,7 +24,7 @@ import { NewDailyCountModal } from './new-daily-count-modal'
 export default function DailyCount() {
   const { isPending, data } = useQuery({
     queryKey: ['daily-count-entries'],
-    queryFn: async () => await getDailyCountEntries(),
+    queryFn: async () => await fetchDailyCountEntries(),
   })
 
   const [present, dismiss] = useIonModal(NewDailyCountModal, {

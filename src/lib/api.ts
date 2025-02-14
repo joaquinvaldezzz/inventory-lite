@@ -142,7 +142,7 @@ export async function createDailyCountEntry(dailyCount: NewDailyCountFormSchema)
  *
  * @returns {Promise<DeliveryItem[]>} A promise that resolves to an array of delivery items.
  */
-export async function getDeliveryEntries(): Promise<DeliveryItem[]> {
+export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
   const data = await apiRequest<DeliveryResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: 'fetch',
@@ -237,7 +237,7 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
  * @returns {Promise<DailyCountData[]>} A promise that resolves to an array of daily count entries.
  * @throws {Error} If the API request fails.
  */
-export async function getDailyCountEntries(): Promise<DailyCountData[]> {
+export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
   const data = await apiRequest<DailyCountResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: 'fetch',
@@ -253,7 +253,7 @@ export async function getDailyCountEntries(): Promise<DailyCountData[]> {
  * @returns {Promise<Categories[]>} A promise that resolves to an array of category objects.
  * @throws {Error} If the API request fails.
  */
-export async function getCategories(): Promise<Categories[]> {
+export async function fetchCategories(): Promise<Categories[]> {
   const data = await apiRequest<CategoriesResponse>({
     url: env.VITE_CATEGORIES_API_URL,
     action: 'fetch',
@@ -269,7 +269,7 @@ export async function getCategories(): Promise<Categories[]> {
  * @returns {Promise<Ingredients[]>} A promise that resolves to an array of ingredients.
  * @throws {Error} If the API request fails.
  */
-export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
+export async function fetchIngredientsByCategory(category: string): Promise<Ingredients[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: 'fetch',

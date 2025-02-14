@@ -13,7 +13,7 @@ import { format } from 'date-fns'
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createDailyCountEntry, getCategories, getIngredientsByCategory } from '@/lib/api'
+import { createDailyCountEntry, fetchCategories, fetchIngredientsByCategory } from '@/lib/api'
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, Ingredients } from '@/lib/types'
@@ -83,7 +83,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
 
   useEffect(() => {
     async function getCategoryItems() {
-      await getCategories()
+      await fetchCategories()
 
       const savedCategories = await getFromStorage('categories')
 
@@ -107,7 +107,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
         return
       }
 
-      const ingredients = await getIngredientsByCategory(form.getValues('raw_material_type'))
+      const ingredients = await fetchIngredientsByCategory(form.getValues('raw_material_type'))
       setIngredients(ingredients)
       remove()
     }

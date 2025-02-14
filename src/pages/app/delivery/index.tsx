@@ -22,7 +22,7 @@ import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 
-import { createDeliveryEntry, getDeliveryEntries, getItems, getSuppliers } from '@/lib/api'
+import { createDeliveryEntry, fetchDeliveryEntries, getItems, getSuppliers } from '@/lib/api'
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Items, Supplier } from '@/lib/types'
@@ -145,7 +145,7 @@ export default function Delivery() {
 
   const { isFetching, isPending, error, data } = useQuery({
     queryKey: ['delivery-entries', isLoading, pathname],
-    queryFn: async () => await getDeliveryEntries(),
+    queryFn: async () => await fetchDeliveryEntries(),
   })
 
   if (error != null) console.error(error)
