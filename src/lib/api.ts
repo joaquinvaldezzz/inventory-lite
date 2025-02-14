@@ -199,7 +199,7 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
  * @param {EditDeliveryFormSchema} delivery - The updated delivery details.
  * @returns {Promise<void>} Resolves when the record is updated.
  */
-export async function editDeliveryRecord(
+export async function updateDeliveryRecord(
   id: number,
   delivery: EditDeliveryFormSchema,
 ): Promise<void> {

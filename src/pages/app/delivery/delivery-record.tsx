@@ -7,7 +7,7 @@ import { CalendarIcon, Container } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 
-import { deleteDeliveryRecord, editDeliveryRecord } from '@/lib/api'
+import { deleteDeliveryRecord, updateDeliveryRecord } from '@/lib/api'
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { DeliveryRecord, Supplier } from '@/lib/types'
@@ -116,7 +116,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
       async function submitForm() {
         try {
-          await editDeliveryRecord(data.id, formValues)
+          await updateDeliveryRecord(data.id, formValues)
         } catch (error) {
           toast({
             description: 'An error occurred while saving changes. Please try again.',
