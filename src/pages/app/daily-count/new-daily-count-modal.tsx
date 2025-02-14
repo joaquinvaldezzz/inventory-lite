@@ -13,7 +13,7 @@ import { format } from 'date-fns'
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { getCategories } from '@/lib/api'
+import { getCategories, getIngredientsByCategory } from '@/lib/api'
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, Ingredients } from '@/lib/types'
@@ -44,7 +44,7 @@ interface DailyCountModalActions {
 
 export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
   const [categories, setCategories] = useState<Categories[]>([])
-  const [ingredients] = useState<Ingredients[]>([])
+  const [ingredients, setIngredients] = useState<Ingredients[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
@@ -54,7 +54,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
     },
     resolver: zodResolver(newDailyCountFormSchema),
   })
-  const { fields, append, remove } = useFieldArray({
+  const { fields, replace, append, remove } = useFieldArray({
     name: 'items',
     control: form.control,
   })
@@ -63,12 +63,19 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
     append({
       item: '',
       count: 0,
+      unit: '',
     })
   }
 
-  /* function handleGenerate() {
-    replace(ingredients.map((ingredient) => ({ item: ingredient.id.toString(), count: 0 })))
-  } */
+  function handleGenerate() {
+    replace(
+      ingredients.map((ingredient) => ({
+        item: ingredient.id.toString(),
+        count: 0,
+        unit: ingredient.unit,
+      })),
+    )
+  }
 
   function handleRemove(index: number) {
     remove(index)
@@ -93,6 +100,20 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
 
     void getCategoryItems()
   }, [])
+
+  useEffect(() => {
+    async function getIngredientItems() {
+      if (form.getValues('raw_material_type').length === 0) {
+        return
+      }
+
+      const ingredients = await getIngredientsByCategory(form.getValues('raw_material_type'))
+      setIngredients(ingredients)
+      remove()
+    }
+
+    void getIngredientItems()
+  }, [form.watch('raw_material_type')])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -233,6 +254,12 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
               )}
             />
 
+            <div className="flex flex-col gap-3">
+              <Button type="button" variant="secondary" onClick={handleGenerate}>
+                Generate items
+              </Button>
+            </div>
+
             <div className="grid grid-cols-1 border-y whitespace-nowrap">
               <div className="relative w-full overflow-auto">
                 <div className="table w-full caption-bottom pb-2 text-sm" role="table">
@@ -285,7 +312,16 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                                   <Select
                                     name={field.name}
                                     defaultValue={field.value}
-                                    onValueChange={field.onChange}
+                                    onValueChange={(event) => {
+                                      field.onChange(event)
+                                      const selectedItem = ingredients.find(
+                                        (ingredient) => ingredient.id === Number(event),
+                                      )
+                                      form.setValue(
+                                        `items.${index}.unit`,
+                                        selectedItem != null ? selectedItem.unit : '',
+                                      )
+                                    }}
                                   >
                                     <SelectTrigger className="min-w-48" id={field.name}>
                                       <SelectValue placeholder="Select an item" />
@@ -336,6 +372,29 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                           className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                           role="td"
                         >
+                          <FormField
+                            name={`items.${index}.unit`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem className="space-y-0">
+                                <FormControl>
+                                  <Input
+                                    className="min-w-40 read-only:bg-muted"
+                                    type="text"
+                                    readOnly
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
                           <Button
                             className="text-destructive"
                             type="button"
@@ -361,7 +420,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Generating...' : 'Generate'}
+                Submit
               </Button>
               <Button type="button" variant="ghost">
                 Cancel
