@@ -13,6 +13,8 @@ import type {
   Categories,
   CategoriesResponse,
   DailyCountData,
+  DailyCountRecord,
+  DailyCountRecordResponse,
   DailyCountResponse,
   DeliveryItem,
   DeliveryRecord,
@@ -202,6 +204,21 @@ export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
   const data = await apiRequest<DailyCountResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: 'fetch',
+  })
+  return Array.isArray(data.data) ? data.data : []
+}
+
+/**
+ * Fetches a specific delivery record by its ID.
+ *
+ * @param {number} id - The delivery record ID.
+ * @returns {Promise<DeliveryRecord[]>} A promise that resolves to the delivery record data.
+ */
+export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
+  const data = await apiRequest<DailyCountRecordResponse>({
+    url: env.VITE_DAILY_COUNT_API_URL,
+    action: 'fetch',
+    additionalData: { id },
   })
   return Array.isArray(data.data) ? data.data : []
 }

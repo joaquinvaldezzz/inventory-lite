@@ -247,3 +247,35 @@ export interface IngredientsResponse {
 }
 
 export type Ingredients = IngredientsResponse['data']
+
+export interface DailyCountRecordResponse {
+  success: boolean
+  message: string
+  data: {
+    id: number
+    branch_id: number
+    branch: string
+    branch_name: string
+    raw_material_type_id: number
+    raw_material_type: string
+    date: string
+    timestamp: string
+    items: Array<{
+      id: number
+      inventory_count_id: number
+      branch_id: number
+      branch: string
+      branch_name: string
+      date: string
+      raw_material_type_id: number
+      raw_material_type: string
+      item_id: number
+      barcode: string
+      item: string
+      unit: string
+      count: number
+    }>
+  }
+}
+
+export type DailyCountRecord = DailyCountRecordResponse['data']

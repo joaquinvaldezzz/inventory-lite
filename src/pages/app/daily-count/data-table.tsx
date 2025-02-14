@@ -11,7 +11,9 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
+import type { DailyCountData } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,12 +34,12 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-interface DataTableProps<TData, TValue> {
-  columns: Array<ColumnDef<TData, TValue>>
-  data: TData[]
+interface DataTableProps {
+  columns: Array<ColumnDef<DailyCountData>>
+  data: DailyCountData[]
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable({ columns, data }: DataTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const table = useReactTable({
@@ -65,8 +67,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           Search by category
         </Label>
         <Input
-          id="search"
           className="peer ps-9"
+          id="search"
           type="search"
           placeholder="Search by category"
           value={table.getColumn('raw_material_type')?.getFilterValue()?.toString() ?? ''}
@@ -98,6 +100,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                 <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
+                      <Link
+                        className="absolute inset-0"
+                        to={`/app/daily-count/${row.original.id}`}
+                      />
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
