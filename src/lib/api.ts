@@ -193,45 +193,6 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
 }
 
 /**
- * Edits an existing delivery record.
- *
- * @param {number} id - The ID of the delivery record.
- * @param {EditDeliveryFormSchema} delivery - The updated delivery details.
- * @returns {Promise<void>} Resolves when the record is updated.
- */
-export async function updateDeliveryRecord(
-  id: number,
-  delivery: EditDeliveryFormSchema,
-): Promise<void> {
-  await apiRequest({
-    url: env.VITE_DELIVERY_API_URL,
-    action: 'edit',
-    additionalData: {
-      id,
-      supplier: Number(delivery.supplier),
-      date_request: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_order: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_delivered: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_received: format(delivery.date_request, 'yyyy-MM-dd'),
-      grand_total: 0,
-      remarks: delivery.remarks,
-      status: 2,
-      items: delivery.items,
-    },
-  })
-}
-
-/**
- * Deletes a delivery record by ID.
- *
- * @param {number} id - The ID of the record to delete.
- * @returns {Promise<void>} Resolves when the record is deleted.
- */
-export async function deleteDeliveryRecord(id: number): Promise<void> {
-  await apiRequest({ url: env.VITE_DELIVERY_API_URL, action: 'delete', additionalData: { id } })
-}
-
-/**
  * Fetches daily count entries for the current user and branch.
  *
  * @returns {Promise<DailyCountData[]>} A promise that resolves to an array of daily count entries.
@@ -278,4 +239,43 @@ export async function getIngredientsByCategory(category: string): Promise<Ingred
     },
   })
   return Array.isArray(data.data) ? data.data : []
+}
+
+/**
+ * Edits an existing delivery record.
+ *
+ * @param {number} id - The ID of the delivery record.
+ * @param {EditDeliveryFormSchema} delivery - The updated delivery details.
+ * @returns {Promise<void>} Resolves when the record is updated.
+ */
+export async function updateDeliveryRecord(
+  id: number,
+  delivery: EditDeliveryFormSchema,
+): Promise<void> {
+  await apiRequest({
+    url: env.VITE_DELIVERY_API_URL,
+    action: 'edit',
+    additionalData: {
+      id,
+      supplier: Number(delivery.supplier),
+      date_request: format(delivery.date_request, 'yyyy-MM-dd'),
+      date_order: format(delivery.date_request, 'yyyy-MM-dd'),
+      date_delivered: format(delivery.date_request, 'yyyy-MM-dd'),
+      date_received: format(delivery.date_request, 'yyyy-MM-dd'),
+      grand_total: 0,
+      remarks: delivery.remarks,
+      status: 2,
+      items: delivery.items,
+    },
+  })
+}
+
+/**
+ * Deletes a delivery record by ID.
+ *
+ * @param {number} id - The ID of the record to delete.
+ * @returns {Promise<void>} Resolves when the record is deleted.
+ */
+export async function deleteDeliveryRecord(id: number): Promise<void> {
+  await apiRequest({ url: env.VITE_DELIVERY_API_URL, action: 'delete', additionalData: { id } })
 }
