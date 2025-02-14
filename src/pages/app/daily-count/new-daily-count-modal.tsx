@@ -10,13 +10,13 @@ import {
 } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { CalendarIcon, Plus, Trash2 } from 'lucide-react'
+import { useFieldArray, useForm } from 'react-hook-form'
 
 import { getCategories } from '@/lib/api'
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
-import type { Categories } from '@/lib/types'
+import type { Categories, Ingredients } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -28,6 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -43,14 +44,35 @@ interface DailyCountModalActions {
 
 export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
   const [categories, setCategories] = useState<Categories[]>([])
+  const [ingredients] = useState<Ingredients[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(),
       raw_material_type: '',
+      items: [],
     },
     resolver: zodResolver(newDailyCountFormSchema),
   })
+  const { fields, append, remove } = useFieldArray({
+    name: 'items',
+    control: form.control,
+  })
+
+  function handleAdd() {
+    append({
+      item: '',
+      count: 0,
+    })
+  }
+
+  /* function handleGenerate() {
+    replace(ingredients.map((ingredient) => ({ item: ingredient.id.toString(), count: 0 })))
+  } */
+
+  function handleRemove(index: number) {
+    remove(index)
+  }
 
   useEffect(() => {
     async function getCategoryItems() {
@@ -211,7 +233,133 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
               )}
             />
 
+            <div className="grid grid-cols-1 border-y whitespace-nowrap">
+              <div className="relative w-full overflow-auto">
+                <div className="table w-full caption-bottom pb-2 text-sm" role="table">
+                  <div className="table-header-group" role="thead">
+                    <div
+                      className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                      role="tr"
+                    >
+                      <div
+                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                        role="th"
+                      >
+                        Ingredients
+                      </div>
+
+                      <div
+                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                        role="th"
+                      >
+                        Quantity
+                      </div>
+
+                      <div
+                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                        role="th"
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className="table-row-group **:[[role=td]]:px-1 **:[[role=td]]:py-1"
+                    role="tbody"
+                  >
+                    {fields.map((_, index) => (
+                      <div
+                        className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                        role="tr"
+                        key={index}
+                      >
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.item`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem className="space-y-0">
+                                <FormControl>
+                                  <Select
+                                    name={field.name}
+                                    defaultValue={field.value}
+                                    onValueChange={field.onChange}
+                                  >
+                                    <SelectTrigger className="min-w-48" id={field.name}>
+                                      <SelectValue placeholder="Select an item" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {ingredients.length > 0 ? (
+                                        ingredients.map((ingredient) => (
+                                          <SelectItem
+                                            value={ingredient.id.toString()}
+                                            key={ingredient.id}
+                                          >
+                                            {ingredient.raw_material}
+                                          </SelectItem>
+                                        ))
+                                      ) : (
+                                        <SelectItem value="0" aria-disabled disabled>
+                                          No items available
+                                        </SelectItem>
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                </FormControl>
+                                <FormMessage id={field.name} />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <FormField
+                            name={`items.${index}.count`}
+                            control={form.control}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input type="number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          role="td"
+                        >
+                          <Button
+                            className="text-destructive"
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => {
+                              handleRemove(index)
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-3">
+              <Button type="button" variant="ghost" onClick={handleAdd}>
+                <span>Add another product</span>
+                <Plus aria-hidden="true" strokeWidth={2} size={16} />
+              </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? 'Generating...' : 'Generate'}
               </Button>
