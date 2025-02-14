@@ -13,7 +13,7 @@ import { format } from 'date-fns'
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { getCategories, getIngredientsByCategory } from '@/lib/api'
+import { createDailyCountEntry, getCategories, getIngredientsByCategory } from '@/lib/api'
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, Ingredients } from '@/lib/types'
@@ -129,10 +129,9 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
 
       setIsLoading(true)
 
-      function submitForm() {
+      async function submitForm() {
         try {
-          // await createDeliveryEntry(formValues)
-          console.log('Form submitted:', formValues)
+          await createDailyCountEntry(formValues)
         } catch (error) {
           console.error('Form submission failed:', error)
         } finally {
@@ -141,7 +140,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
       }
 
       startTransition(() => {
-        submitForm()
+        void submitForm()
       })
     })(event)
   }
