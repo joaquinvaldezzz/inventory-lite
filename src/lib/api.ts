@@ -48,7 +48,7 @@ export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Prom
   const deliveryEntryDetails = JSON.stringify({
     user_id: user.value.data.user.id,
     token: user.value.data.token,
-    branch,
+    branch: branch.value,
     action: 'add',
     supplier: Number(delivery.supplier),
     date_request: format(delivery.date_request, 'yyyy-MM-dd'),
@@ -89,7 +89,7 @@ export async function getDeliveryEntries(): Promise<DeliveryItem[]> {
   const data = JSON.stringify({
     user_id: user.value.data.user.id,
     token: user.value.data.token,
-    branch,
+    branch: branch.value,
     action: 'fetch',
   })
 
@@ -199,7 +199,7 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
   const data = JSON.stringify({
     user_id: user.value.data.user.id,
     token: user.value.data.token,
-    branch,
+    branch: branch.value,
     action: 'fetch',
     id,
   })
@@ -276,7 +276,7 @@ export async function editDeliveryRecord(
   const deliveryEntryDetails = JSON.stringify({
     user_id: user.value.data.user.id,
     token: user.value.data.token,
-    branch,
+    branch: branch.value,
     action: 'edit',
     id,
     supplier: Number(delivery.supplier),
@@ -292,7 +292,7 @@ export async function editDeliveryRecord(
 
   try {
     // TODO: Add the response type
-    await axios.post<EditDeliveryFormSchema>(env.VITE_DELIVERY_API_URL, deliveryEntryDetails)
+    await axios.post(env.VITE_DELIVERY_API_URL, deliveryEntryDetails)
   } catch (error) {
     console.error('Error editing delivery record:', error)
     throw new Error('Error editing delivery record')
@@ -319,7 +319,7 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
   const data = JSON.stringify({
     user_id: user.value.data.user.id,
     token: user.value.data.token,
-    branch,
+    branch: branch.value,
     action: 'delete',
     id,
   })
