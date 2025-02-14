@@ -14,6 +14,8 @@ import type {
   DeliveryItem,
   DeliveryRecord,
   DeliveryResponse,
+  Ingredients,
+  IngredientsResponse,
   Items,
   ItemsResponse,
   Supplier,
@@ -245,6 +247,42 @@ export async function getCategories(): Promise<Categories[]> {
       userSessionData,
     )
     await saveToStorage('categories', JSON.stringify(request.data.data))
+    return Array.isArray(request.data.data) ? request.data.data : []
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    throw new Error('Error fetching categories')
+  }
+}
+
+/**
+ * Fetches ingredients by category for the current user and selected branch.
+ *
+ * @param {string} category - The category of ingredients to fetch.
+ * @returns {Promise<Ingredients[]>} A promise that resolves to an array of ingredients.
+ * @throws {Error} If the user is not found, the branch is not selected, or there is an error
+ *   fetching the categories.
+ */
+export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+
+  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
+    throw new Error('User not found or branch not selected')
+  } else if (user.value == null || branch.value == null) {
+    throw new Error('User or branch not found')
+  }
+
+  const userSessionData = JSON.stringify({
+    user_id: user.value.data.user.id,
+    token: user.value.data.token,
+    action: 'fetch',
+    category,
+  })
+
+  try {
+    const request = await axios.post<IngredientsResponse>(
+      env.VITE_INGREDIENTS_API_URL,
+      userSessionData,
+    )
     return Array.isArray(request.data.data) ? request.data.data : []
   } catch (error) {
     console.error('Error fetching categories:', error)

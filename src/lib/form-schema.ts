@@ -73,6 +73,12 @@ export type EditDeliveryFormSchema = z.infer<typeof editDeliveryFormSchema>
 export const newDailyCountFormSchema = z.object({
   date: z.coerce.date({ message: 'Please select a date.' }),
   raw_material_type: z.string().min(1, { message: 'Please select a category.' }).trim(),
+  items: z.array(
+    z.object({
+      item: z.string().min(1, { message: 'Please select an item from the list.' }).trim(),
+      count: z.coerce.number().min(0, { message: 'Count must be greater than or equal to zero.' }),
+    }),
+  ),
 })
 
 export type NewDailyCountFormSchema = z.infer<typeof newDailyCountFormSchema>

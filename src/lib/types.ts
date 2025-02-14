@@ -226,3 +226,24 @@ export interface CategoriesResponse {
 }
 
 export type Categories = CategoriesResponse['data']
+
+export interface IngredientsResponse {
+  success: boolean
+  message: string
+  data: {
+    id: number
+    barcode: string
+    raw_material: string
+    raw_material_type: number
+    sku: string
+    unit: string
+    packaging: string
+    raw_material_location: string
+    delivery_lead_time: string
+    minimum_stock_level: number
+    maximum_stock_level: number
+    initial_stock_level: number
+  }
+}
+
+export type Ingredients = IngredientsResponse['data']
