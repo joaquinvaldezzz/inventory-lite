@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Store } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { getCurrentUser, getUserBranches } from '@/lib/dal'
+import { fetchUserBranches, getCurrentUser } from '@/lib/dal'
 import { branchSelectorFormSchema, type BranchSelectorFormSchema } from '@/lib/form-schema'
 import { saveToStorage } from '@/lib/storage'
 import type { Branch } from '@/lib/types'
@@ -43,15 +43,13 @@ export default function BranchSelector() {
   useEffect(() => {
     void (async () => {
       const username = await getCurrentUser()
-      const userBranches = await getUserBranches()
+      const userBranches = await fetchUserBranches()
 
       if (username != null) {
         setUsername(username.data.user.name)
       }
 
-      if (userBranches != null) {
-        setBranches(userBranches)
-      }
+      setBranches(userBranches)
     })()
   }, [])
 
