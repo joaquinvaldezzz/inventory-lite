@@ -269,7 +269,7 @@ export async function fetchCategories(): Promise<Categories[]> {
  * @returns {Promise<Ingredients[]>} A promise that resolves to an array of ingredients.
  * @throws {Error} If the API request fails.
  */
-export async function fetchIngredientsByCategory(category: string): Promise<Ingredients[]> {
+export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: 'fetch',
