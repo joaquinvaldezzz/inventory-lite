@@ -200,7 +200,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                           ))
                         ) : (
                           <SelectItem value="0" aria-disabled="true" disabled>
-                            No suppliers available
+                            No categories available
                           </SelectItem>
                         )}
                       </SelectContent>
