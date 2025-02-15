@@ -198,7 +198,7 @@ export default function Delivery() {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonTitle>Delivery</IonTitle>
           <IonButtons slot="end" collapse>
             <IonButton onClick={openModal}>
