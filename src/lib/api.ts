@@ -288,6 +288,30 @@ export async function updateDeliveryRecord(
 }
 
 /**
+ * Updates an existing daily count record in the database.
+ *
+ * @param {number} id - The unique identifier of the daily count record to update.
+ * @param {NewDailyCountFormSchema} dailyCount - The updated daily count data.
+ * @returns {Promise<void>} Resolves when the update request is successful.
+ * @throws {Error} If the API request fails.
+ */
+export async function updateDailyCountRecord(
+  id: number,
+  dailyCount: NewDailyCountFormSchema,
+): Promise<void> {
+  await apiRequest({
+    url: env.VITE_DAILY_COUNT_API_URL,
+    action: 'edit',
+    additionalData: {
+      id,
+      raw_material_type: dailyCount.raw_material_type,
+      date: format(dailyCount.date, 'yyyy-MM-dd'),
+      items: dailyCount.items,
+    },
+  })
+}
+
+/**
  * Deletes a delivery record by ID.
  *
  * @param {number} id - The ID of the record to delete.

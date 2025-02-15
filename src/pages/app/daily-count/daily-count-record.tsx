@@ -1,13 +1,16 @@
-import { startTransition, useEffect, useState } from 'react'
+import { startTransition, useEffect, useState, type FormEvent } from 'react'
+import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Container } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
+import { updateDailyCountRecord } from '@/lib/api'
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, DailyCountRecord } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,19 +48,21 @@ interface DailyCountRecordFormProps {
 
 export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
   const [categories, setCategories] = useState<Categories[]>([])
-  const [isLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(data.date),
-      raw_material_type: data.raw_material_type,
+      raw_material_type: data.raw_material_type_id.toString(),
       items: data.items.map((item) => ({
-        item: item.raw_material_type_id.toString(),
+        item: item.item_id.toString(),
         count: item.count,
         unit: item.unit,
       })),
     },
     resolver: zodResolver(newDailyCountFormSchema),
   })
+  const router = useIonRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     async function fetchCategories() {
@@ -85,9 +90,41 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
     })
   }, [])
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    void form.handleSubmit(() => {
+      const formValues = form.getValues()
+      const parsedValues = newDailyCountFormSchema.safeParse(formValues)
+
+      if (!parsedValues.success) {
+        console.error('Form data is invalid:', parsedValues.error)
+        return
+      }
+
+      setIsLoading(true)
+
+      async function submitForm() {
+        try {
+          await updateDailyCountRecord(data.id, formValues)
+        } catch (error) {
+          console.error('Form submission failed:', error)
+        } finally {
+          setIsLoading(false)
+          router.goBack()
+          toast({ description: 'Successfully updated daily count record' })
+        }
+      }
+
+      startTransition(() => {
+        void submitForm()
+      })
+    })(event)
+  }
+
   return (
     <Form {...form}>
-      <form className="space-y-5">
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <FormField
           name="date"
           control={form.control}
@@ -151,7 +188,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                     <SelectContent>
                       {categories.length > 0 ? (
                         categories.map((category) => (
-                          <SelectItem value={category.raw_material_type} key={category.id}>
+                          <SelectItem value={category.id.toString()} key={category.id}>
                             {category.raw_material_type}
                           </SelectItem>
                         ))
