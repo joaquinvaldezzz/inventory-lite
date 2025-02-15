@@ -105,9 +105,7 @@ const AlertDialogAction = forwardRef<
   ElementRef<typeof AlertDialogPrimitive.Action>,
   ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
 >(({ className = '', ...props }, ref) => {
-  return (
-    <AlertDialogPrimitive.Action className={cn(buttonVariants(), className)} ref={ref} {...props} />
-  )
+  return <AlertDialogPrimitive.Action className={cn(className)} ref={ref} {...props} />
 })
 AlertDialogAction.displayName = 'AlertDialogAction'
 
