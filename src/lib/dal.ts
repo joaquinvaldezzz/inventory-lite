@@ -10,11 +10,21 @@ import type { Branch, LoginResponse } from './types'
 export async function getCurrentUser(): Promise<LoginResponse | null> {
   try {
     const currentUser = await getFromStorage('currentUser')
-    return currentUser != null ? JSON.parse(currentUser) : null
+
+    if (currentUser == null) return null
+
+    const parsedCurrentUser = JSON.parse(currentUser) as unknown
+
+    if (parsedCurrentUser != null && typeof parsedCurrentUser === 'object') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know the type is correct
+      return parsedCurrentUser as LoginResponse
+    }
   } catch (error) {
     console.error('Error parsing `currentUser` from storage:', error)
     return null
   }
+
+  return null
 }
 
 /**
@@ -38,7 +48,7 @@ export async function getUserSelectedBranch(): Promise<number | null> {
 
     if (selectedBranch == null) return null
 
-    const branch = JSON.parse(selectedBranch)
+    const branch = JSON.parse(selectedBranch) as unknown
 
     if (branch != null && typeof branch === 'object') {
       return Number(Object.values(branch)[0])
