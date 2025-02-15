@@ -13,7 +13,7 @@ import {
 import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-import type { DailyCountData } from '@/lib/types'
+import type { WasteData } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,8 +35,8 @@ import {
 } from '@/components/ui/table'
 
 interface DataTableProps {
-  columns: Array<ColumnDef<DailyCountData>>
-  data: DailyCountData[]
+  columns: Array<ColumnDef<WasteData>>
+  data: WasteData[]
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
