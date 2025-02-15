@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return -- Safe to ignore */
 import { getFromStorage } from './storage'
 import type { Branch, LoginResponse } from './types'
 
@@ -36,9 +35,10 @@ export async function fetchUserBranches(): Promise<Branch[]> {
 export async function getUserSelectedBranch(): Promise<number | null> {
   try {
     const selectedBranch = await getFromStorage('currentBranch')
+
     if (selectedBranch == null) return null
 
-    const branch = JSON.parse(selectedBranch) as unknown
+    const branch = JSON.parse(selectedBranch)
 
     if (branch != null && typeof branch === 'object') {
       return Number(Object.values(branch)[0])
