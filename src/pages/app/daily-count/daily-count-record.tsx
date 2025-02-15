@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { CalendarIcon, Container } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { updateDailyCountRecord } from '@/lib/api'
+import { deleteDailyCountRecordById, updateDailyCountRecord } from '@/lib/api'
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, DailyCountRecord } from '@/lib/types'
@@ -120,6 +120,21 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         void submitForm()
       })
     })(event)
+  }
+
+  async function handleDelete() {
+    try {
+      await deleteDailyCountRecordById(data.id)
+    } catch (error) {
+      console.error('Error deleting daily count record:', error)
+      toast({
+        description: 'An error occurred while deleting the daily count record. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      router.goBack()
+      toast({ description: 'Daily count record deleted' })
+    }
   }
 
   return (
@@ -327,7 +342,16 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
+                <AlertDialogAction
+                  onClick={() => {
+                    void handleDelete()
+                  }}
+                  asChild
+                >
+                  <Button type="button" variant="destructive">
+                    Confirm
+                  </Button>
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

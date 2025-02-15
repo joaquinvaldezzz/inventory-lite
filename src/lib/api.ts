@@ -320,3 +320,13 @@ export async function updateDailyCountRecord(
 export async function deleteDeliveryRecord(id: number): Promise<void> {
   await apiRequest({ url: env.VITE_DELIVERY_API_URL, action: 'delete', additionalData: { id } })
 }
+
+/**
+ * Deletes a daily count record by ID.
+ *
+ * @param {number} id - The ID of the record to delete.
+ * @returns {Promise<void>} Resolves when the record is deleted.
+ */
+export async function deleteDailyCountRecordById(id: number): Promise<void> {
+  await apiRequest({ url: env.VITE_DAILY_COUNT_API_URL, action: 'delete', additionalData: { id } })
+}
