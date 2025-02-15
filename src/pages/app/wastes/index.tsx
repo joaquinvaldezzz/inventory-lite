@@ -1,28 +1,19 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react'
 
-import { DataTable } from '@/components/ui/data-table'
-
-import data from '../data.json'
 import { columns } from './columns'
+import { DataTable } from './data-table'
 
 export default function Wastes() {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="primary">
           <IonTitle>Wastes</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Wastes</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <div className="p-4">
-          <DataTable columns={columns} data={data.data} withPagination withSearch />
-        </div>
+      <IonContent className="ion-padding">
+        <DataTable columns={columns} data={[]} />
       </IonContent>
     </IonPage>
   )
