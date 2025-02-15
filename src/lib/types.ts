@@ -331,3 +331,16 @@ export interface DailyCountRecordResponse {
 }
 
 export type DailyCountRecord = DailyCountRecordResponse['data']
+
+export interface WasteData {
+  id: number
+  branch_id: number
+  branch: string
+  branch_name: string
+  waste_type: string
+  raw_material_type_id: number
+  raw_material_type: string
+  date: string
+}
+
+export type WasteResponse = Prettify<APIResponse<WasteData>>

@@ -25,6 +25,8 @@ import type {
   ItemsResponse,
   Supplier,
   SupplierResponse,
+  WasteData,
+  WasteResponse,
 } from './types'
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
@@ -203,6 +205,20 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
 export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
   const data = await apiRequest<DailyCountResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
+    action: 'fetch',
+  })
+  return Array.isArray(data.data) ? data.data : []
+}
+
+/**
+ * Fetches waste data entries for the current user and branch.
+ *
+ * @returns {Promise<WasteData[]>} A promise that resolves to an array of waste data entries.
+ * @throws {Error} If the API request fails.
+ */
+export async function fetchWasteEntries(): Promise<WasteData[]> {
+  const data = await apiRequest<WasteResponse>({
+    url: env.VITE_WASTE_API_URL,
     action: 'fetch',
   })
   return Array.isArray(data.data) ? data.data : []
