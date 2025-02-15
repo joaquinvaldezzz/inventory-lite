@@ -1,27 +1,79 @@
-export interface LoginResponse {
+/**
+ * Flattens a TypeScript type for improved readability.
+ *
+ * TypeScript sometimes displays deeply nested or extended types in a complex way. `Prettify<T>`
+ * simplifies and flattens the type, making it easier to read in editor tooltips.
+ *
+ * @example
+ *   ```tsx
+ *   type User = { id: string; name: string }
+ *   type UserResponse = Prettify<{ success: boolean; data: User }>
+ *
+ *   // Hovering over `UserResponse` in an IDE will now display:
+ *   // { success: boolean; id: string; name: string }
+ *   ```
+ *
+ * @template T - The type to be prettified.
+ */
+export type Prettify<T> = {
+  [K in keyof T]: T[K]
+} & {}
+
+/**
+ * Generic structure for API responses.
+ *
+ * @template T - The type of the `data` property in the response.
+ */
+interface APIResponse<T> {
+  /** Indicates whether the API request was successful. */
   success: boolean
+
+  /** Message describing the result of the API request. */
   message: string
-  data: {
-    token: string
-    user: {
-      id: string
-      name: string
-      email: string
-      level: string
-      branches: [
-        {
-          id: string
-          branch: string
-        },
-      ]
-    }
+
+  /** The actual data returned by the API. */
+  data: T
+}
+
+/** Represents a branch that a user has access to. */
+export interface Branch {
+  /** Unique identifier of the branch. */
+  id: string | number
+
+  /** Name of the branch. */
+  branch: string
+}
+
+/** Structure of the data returned in a successful login response. */
+interface LoginData {
+  /** Authentication token for the logged-in user. */
+  token: string
+
+  /** Details of the authenticated user. */
+  user: {
+    /** Unique identifier of the user. */
+    id: string
+
+    /** Full name of the user. */
+    name: string
+
+    /** Email address of the user. */
+    email: string
+
+    /** User level or role within the system. */
+    level: string
+
+    /** List of branches the user has access to. */
+    branches: Branch[]
   }
 }
 
-export interface Branch {
-  id: string | number
-  branch: string
-}
+/**
+ * API response for a successful login attempt.
+ *
+ * @extends {APIResponse<LoginData>}
+ */
+export type LoginResponse = Prettify<APIResponse<LoginData>>
 
 export interface DeliveryResponse {
   success: boolean
