@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
 
 import { env } from '@/lib/env'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
@@ -186,26 +185,6 @@ export default function Login() {
                 </div>
               </form>
             </Form>
-
-            <div className="space-y-2">
-              <p className="text-center text-sm text-muted-foreground">
-                Forgot password? Reset your password{' '}
-                <Button className="h-auto p-0" variant="link" asChild>
-                  <a href="">here</a>
-                </Button>
-                .
-              </p>
-              <p className="text-center text-sm">
-                <Button className="h-auto p-0" variant="link" asChild>
-                  <Link to="/branch-selector">Go to Branch Selector</Link>
-                </Button>
-              </p>
-              <p className="text-center text-sm">
-                <Button className="h-auto p-0" variant="link" asChild>
-                  <Link to="/app/delivery">Go to App</Link>
-                </Button>
-              </p>
-            </div>
           </div>
         </div>
       </IonContent>
