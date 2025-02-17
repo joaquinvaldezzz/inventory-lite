@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "build:android": "ionic capacitor build android",
     "dev": "vite",
     "dev:android": "ionic capacitor run android --livereload",
     "dev:ios": "ionic capacitor run ios --livereload",
