@@ -81,14 +81,14 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         </div>
       )}
 
-      <div className="grid grid-cols-1 border-y whitespace-nowrap">
+      <div className="-mx-4 grid grid-cols-1 border-y whitespace-nowrap">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="first:pl-4 last:pr-4" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -103,7 +103,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell className="first:pl-4 last:pr-4" key={cell.id}>
                       <Link
                         className="absolute inset-0 size-full"
                         to={`/app/delivery/${cell.row.original.id}`}

@@ -77,14 +77,14 @@ export function DataTable({ columns, data }: DataTableProps) {
           }
         />
       </div>
-      <div className="border-y whitespace-nowrap">
+      <div className="-mx-4 border-y whitespace-nowrap">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="first:pl-4 last:pr-4" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -99,7 +99,7 @@ export function DataTable({ columns, data }: DataTableProps) {
               table.getRowModel().rows.map((row) => (
                 <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell className="first:pl-4 last:pr-4" key={cell.id}>
                       <Link
                         className="absolute inset-0"
                         to={`/app/daily-count/${row.original.id}`}
