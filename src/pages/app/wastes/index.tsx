@@ -1,5 +1,16 @@
-import { IonContent, IonHeader, IonPage, IonSpinner, IonTitle, IonToolbar } from '@ionic/react'
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonPage,
+  IonSpinner,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react'
 import { useQuery } from '@tanstack/react-query'
+import { add } from 'ionicons/icons'
 
 import { fetchWasteEntries } from '@/lib/api'
 
@@ -17,17 +28,35 @@ export default function Wastes() {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle>Wastes</IonTitle>
+          <IonButtons slot="primary">
+            <IonButton>
+              <IonIcon icon={add} slot="icon-only" />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className="ion-padding">
-        {isPending ? (
-          <div className="flex h-96 items-center justify-center">
-            <IonSpinner />
-          </div>
-        ) : (
-          <DataTable columns={columns} data={data ?? []} />
-        )}
+      <IonContent>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Wastes</IonTitle>
+            <IonButtons slot="primary">
+              <IonButton>
+                <IonIcon icon={add} slot="icon-only" />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+
+        <div className="ion-padding">
+          {isPending ? (
+            <div className="flex h-96 items-center justify-center">
+              <IonSpinner />
+            </div>
+          ) : (
+            <DataTable columns={columns} data={data ?? []} />
+          )}
+        </div>
       </IonContent>
     </IonPage>
   )

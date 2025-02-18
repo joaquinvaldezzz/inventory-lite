@@ -421,7 +421,13 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
               <Button type="submit" disabled={isLoading}>
                 Submit
               </Button>
-              <Button type="button" variant="ghost">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  dismiss(null, 'cancel')
+                }}
+              >
                 Cancel
               </Button>
             </div>

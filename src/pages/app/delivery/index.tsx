@@ -202,7 +202,7 @@ export default function Delivery() {
           <IonTitle>Delivery</IonTitle>
           <IonButtons slot="end" collapse>
             <IonButton onClick={openModal}>
-              <IonIcon icon={add} />
+              <IonIcon icon={add} slot="icon-only" />
             </IonButton>
           </IonButtons>
           {isFetching && !isPending && <IonProgressBar type="indeterminate" />}
@@ -210,6 +210,17 @@ export default function Delivery() {
       </IonHeader>
 
       <IonContent>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Delivery</IonTitle>
+            <IonButtons slot="primary">
+              <IonButton onClick={openModal}>
+                <IonIcon icon={add} slot="icon-only" />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+
         <div className="ion-padding">
           {isPending ? (
             <div className="flex h-96 items-center justify-center">
