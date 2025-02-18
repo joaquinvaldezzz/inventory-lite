@@ -128,14 +128,14 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         <div className="flex flex-col gap-4">
           <div className="flex items-center">
             <div className="flex items-center gap-3">
-              <Label className="max-sm:sr-only">Rows per page</Label>
+              <Label htmlFor="rows-per-page">Rows per page</Label>
               <Select
                 value={table.getState().pagination.pageSize.toString()}
                 onValueChange={(value) => {
                   table.setPageSize(Number(value))
                 }}
               >
-                <SelectTrigger className="w-fit whitespace-nowrap">
+                <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
                   <SelectValue placeholder="Select number of results" />
                 </SelectTrigger>
                 <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
