@@ -23,6 +23,8 @@ export default function Wastes() {
     queryFn: async () => await fetchWasteEntries(),
   })
 
+  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
+
   return (
     <IonPage>
       <IonHeader>
@@ -54,7 +56,7 @@ export default function Wastes() {
               <IonSpinner />
             </div>
           ) : (
-            <DataTable columns={columns} data={data ?? []} />
+            <DataTable columns={columns} data={sortedData} />
           )}
         </div>
       </IonContent>

@@ -27,6 +27,8 @@ export default function DailyCount() {
     queryFn: async () => await fetchDailyCountEntries(),
   })
 
+  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
+
   const [present, dismiss] = useIonModal(NewDailyCountModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role)
@@ -75,7 +77,7 @@ export default function DailyCount() {
               <IonSpinner />
             </div>
           ) : (
-            <DataTable columns={columns} data={data ?? []} />
+            <DataTable columns={columns} data={sortedData} />
           )}
         </div>
       </IonContent>

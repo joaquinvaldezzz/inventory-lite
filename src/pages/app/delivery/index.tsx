@@ -150,6 +150,9 @@ export default function Delivery() {
 
   if (error != null) console.error(error)
 
+  const sortedData =
+    data?.sort((z, a) => (new Date(a.date_delivered) < new Date(z.date_delivered) ? -1 : 1)) ?? []
+
   useEffect(() => {
     // TODO: Save these suppliers locally
     async function fetchSuppliers() {
@@ -227,7 +230,7 @@ export default function Delivery() {
               <IonSpinner />
             </div>
           ) : (
-            <DataTable columns={columns} data={data ?? []} withPagination withSearch />
+            <DataTable columns={columns} data={sortedData} withPagination withSearch />
           )}
         </div>
 
