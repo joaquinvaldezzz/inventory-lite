@@ -9,9 +9,12 @@ import {
   IonModal,
   IonPage,
   IonProgressBar,
+  IonRefresher,
+  IonRefresherContent,
   IonSpinner,
   IonTitle,
   IonToolbar,
+  type RefresherEventDetail,
 } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
@@ -143,7 +146,7 @@ export default function Delivery() {
     remove(index)
   }
 
-  const { isFetching, isPending, error, data } = useQuery({
+  const { isFetching, isPending, error, data, refetch } = useQuery({
     queryKey: ['delivery-entries', isLoading, pathname],
     queryFn: async () => await fetchDeliveryEntries(),
   })
@@ -198,6 +201,16 @@ export default function Delivery() {
     })
   }, [])
 
+  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    try {
+      void refetch()
+    } catch (error) {
+      console.error('Error fetching daily count entries:', error)
+    } finally {
+      event.detail.complete()
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -213,6 +226,10 @@ export default function Delivery() {
       </IonHeader>
 
       <IonContent>
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
+
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Delivery</IonTitle>

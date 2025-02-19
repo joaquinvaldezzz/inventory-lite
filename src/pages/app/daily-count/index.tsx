@@ -6,10 +6,13 @@ import {
   IonIcon,
   IonPage,
   IonProgressBar,
+  IonRefresher,
+  IonRefresherContent,
   IonSpinner,
   IonTitle,
   IonToolbar,
   useIonModal,
+  type RefresherEventDetail,
 } from '@ionic/react'
 import type { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
 import { useQuery } from '@tanstack/react-query'
@@ -22,7 +25,7 @@ import { DataTable } from './data-table'
 import { NewDailyCountModal } from './new-daily-count-modal'
 
 export default function DailyCount() {
-  const { isPending, data } = useQuery({
+  const { isPending, data, refetch } = useQuery({
     queryKey: ['daily-count-entries'],
     queryFn: async () => await fetchDailyCountEntries(),
   })
@@ -45,6 +48,16 @@ export default function DailyCount() {
     })
   }
 
+  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    try {
+      void refetch()
+    } catch (error) {
+      console.error('Error fetching delivery entries:', error)
+    } finally {
+      event.detail.complete()
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -60,6 +73,10 @@ export default function DailyCount() {
       </IonHeader>
 
       <IonContent>
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
+
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Daily Count</IonTitle>

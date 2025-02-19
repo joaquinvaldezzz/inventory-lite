@@ -5,9 +5,12 @@ import {
   IonHeader,
   IonIcon,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonSpinner,
   IonTitle,
   IonToolbar,
+  type RefresherEventDetail,
 } from '@ionic/react'
 import { useQuery } from '@tanstack/react-query'
 import { add } from 'ionicons/icons'
@@ -18,12 +21,22 @@ import { columns } from './columns'
 import { DataTable } from './data-table'
 
 export default function Wastes() {
-  const { isPending, data } = useQuery({
+  const { isPending, data, refetch } = useQuery({
     queryKey: ['wastes'],
     queryFn: async () => await fetchWasteEntries(),
   })
 
   const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
+
+  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    try {
+      void refetch()
+    } catch (error) {
+      console.error('Error fetching delivery entries:', error)
+    } finally {
+      event.detail.complete()
+    }
+  }
 
   return (
     <IonPage>
@@ -39,6 +52,10 @@ export default function Wastes() {
       </IonHeader>
 
       <IonContent>
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
+
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Wastes</IonTitle>
