@@ -59,6 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Try Inventory Lite
 
-- Android: Download the .apk file below to install.
+- Android: Coming soon
 - iOS: Coming soon
 - Web: Test the app here → [Inventory Lite](https://inventory-lite.vercel.app)
