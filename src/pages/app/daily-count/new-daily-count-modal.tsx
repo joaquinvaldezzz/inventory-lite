@@ -10,7 +10,13 @@ import {
 } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, Plus, Trash2 } from 'lucide-react'
+import { CalendarIcon, MinusIcon, Plus, PlusIcon, Trash2 } from 'lucide-react'
+import {
+  Group,
+  NumberField,
+  Button as ReactAriaButton,
+  Input as ReactInput,
+} from 'react-aria-components'
 import { useFieldArray, useForm } from 'react-hook-form'
 
 import { createDailyCountEntry, fetchCategories, getIngredientsByCategory } from '@/lib/api'
@@ -299,14 +305,14 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                         key={index}
                       >
                         <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                           role="td"
                         >
                           <FormField
                             name={`items.${index}.item`}
                             control={form.control}
                             render={({ field }) => (
-                              <FormItem className="space-y-0">
+                              <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
                                   <Select
                                     name={field.name}
@@ -350,16 +356,38 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                         </div>
 
                         <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                           role="td"
                         >
                           <FormField
                             name={`items.${index}.count`}
                             control={form.control}
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <Input type="number" {...field} />
+                                  <NumberField
+                                    className="min-w-40"
+                                    aria-label="Quantity"
+                                    defaultValue={field.value}
+                                    minValue={0}
+                                    onChange={field.onChange}
+                                  >
+                                    <Group className="relative inline-flex h-9 w-full items-center overflow-hidden rounded-md border border-input text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:opacity-50 data-focus-within:border-ring data-focus-within:ring-3 data-focus-within:ring-ring/20 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40">
+                                      <ReactAriaButton
+                                        className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                                        slot="decrement"
+                                      >
+                                        <MinusIcon aria-hidden="true" size={16} />
+                                      </ReactAriaButton>
+                                      <ReactInput className="w-full grow bg-background px-3 py-2 text-center text-foreground tabular-nums" />
+                                      <ReactAriaButton
+                                        className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                                        slot="increment"
+                                      >
+                                        <PlusIcon aria-hidden="true" size={16} />
+                                      </ReactAriaButton>
+                                    </Group>
+                                  </NumberField>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -368,14 +396,14 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                         </div>
 
                         <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                           role="td"
                         >
                           <FormField
                             name={`items.${index}.unit`}
                             control={form.control}
                             render={({ field }) => (
-                              <FormItem className="space-y-0">
+                              <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
                                   <Input
                                     className="min-w-40 read-only:bg-muted"
@@ -391,7 +419,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                         </div>
 
                         <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                           role="td"
                         >
                           <Button
