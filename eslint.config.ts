@@ -38,7 +38,6 @@ const config: Config = tseslint.config(
       // eslintPluginTailwind.configs['flat/recommended'], eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- ignore
     ],
     plugins: {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Safe to ignore
       perfectionist: eslintPluginPerfectionist,
     },
     rules: {
