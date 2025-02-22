@@ -4,15 +4,6 @@
  * TypeScript sometimes displays deeply nested or extended types in a complex way. `Prettify<T>`
  * simplifies and flattens the type, making it easier to read in editor tooltips.
  *
- * @example
- *   ```tsx
- *   type User = { id: string; name: string }
- *   type UserResponse = Prettify<{ success: boolean; data: User }>
- *
- *   // Hovering over `UserResponse` in an IDE will now display:
- *   // { success: boolean; id: string; name: string }
- *   ```
- *
  * @template T - The type to be prettified.
  */
 export type Prettify<T> = {
