@@ -78,10 +78,10 @@ export default function Delivery() {
       items: [
         {
           item: '',
-          quantity_dr: 5,
+          quantity_dr: 0,
           unit_dr: '',
-          unit_price: 50.0,
-          total_amount: 50.0,
+          unit_price: 0,
+          total_amount: 0,
         },
       ],
     },
@@ -143,8 +143,8 @@ export default function Delivery() {
       item: '',
       quantity_dr: 0,
       unit_dr: '',
-      unit_price: 50.0,
-      total_amount: 50.0,
+      unit_price: 0,
+      total_amount: 0,
     })
   }
 
@@ -532,13 +532,13 @@ export default function Delivery() {
                                         }}
                                         aria-label="Unit Price"
                                         defaultValue={field.value}
+                                        onChange={field.onChange}
                                       >
                                         <ReactInput
                                           className={cn(
                                             inputVariants(),
                                             'min-w-40 text-right tabular-nums read-only:bg-muted',
                                           )}
-                                          readOnly
                                         />
                                       </ReactNumberField>
                                     </FormControl>
