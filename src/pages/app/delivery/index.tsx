@@ -436,11 +436,17 @@ export default function Delivery() {
                                           <SelectValue placeholder="Select an item" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          {items.map((item) => (
-                                            <SelectItem value={item.id.toString()} key={item.id}>
-                                              {item.raw_material}
+                                          {items.length > 0 ? (
+                                            items.map((item) => (
+                                              <SelectItem value={item.id.toString()} key={item.id}>
+                                                {item.raw_material}
+                                              </SelectItem>
+                                            ))
+                                          ) : (
+                                            <SelectItem value="0" aria-disabled="true" disabled>
+                                              No items available
                                             </SelectItem>
-                                          ))}
+                                          )}
                                         </SelectContent>
                                       </Select>
                                     </FormControl>
