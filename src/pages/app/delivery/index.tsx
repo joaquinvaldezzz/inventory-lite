@@ -20,8 +20,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { add } from 'ionicons/icons'
-import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
-import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
+import { CalendarIcon, Container, MinusIcon, Plus, PlusIcon, Trash2 } from 'lucide-react'
+import {
+  Group,
+  NumberField,
+  Button as ReactAriaButton,
+  Input as ReactInput,
+  NumberField as ReactNumberField,
+} from 'react-aria-components'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 
@@ -362,12 +368,12 @@ export default function Delivery() {
                   )}
                 />
 
-                <div className="grid grid-cols-1 border-y whitespace-nowrap">
+                <div className="-mx-4 border-y whitespace-nowrap">
                   <div className="relative w-full overflow-auto">
                     <div className="table w-full caption-bottom pb-2 text-sm" role="table">
                       <div className="table-header-group" role="thead">
                         <div
-                          className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                          className="table-row border-b border-border transition-colors *:first:pl-4 *:last:pr-4 hover:bg-muted/50 data-[state=selected]:bg-muted"
                           role="tr"
                         >
                           <div
@@ -393,7 +399,7 @@ export default function Delivery() {
                       </div>
 
                       <div
-                        className="table-row-group **:[[role=td]]:px-1 **:[[role=td]]:py-1"
+                        className="table-row-group **:[[role=td]]:px-1 **:[[role=td]]:py-1 **:[[role=td]]:first:pl-4 **:[[role=td]]:last:pr-4"
                         role="tbody"
                       >
                         {fields.map((_, index) => (
@@ -403,14 +409,14 @@ export default function Delivery() {
                             key={index}
                           >
                             <div
-                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                               role="td"
                             >
                               <FormField
                                 name={`items.${index}.item`}
                                 control={form.control}
                                 render={({ field }) => (
-                                  <FormItem className="space-y-0">
+                                  <FormItem className="flex flex-col gap-2 space-y-0">
                                     <FormControl>
                                       <Select
                                         name={field.name}
@@ -445,16 +451,39 @@ export default function Delivery() {
                             </div>
 
                             <div
-                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                               role="td"
                             >
                               <FormField
                                 name={`items.${index}.quantity_dr`}
                                 control={form.control}
                                 render={({ field }) => (
-                                  <FormItem>
+                                  <FormItem className="flex flex-col gap-2 space-y-0">
                                     <FormControl>
-                                      <Input type="number" {...field} />
+                                      {/* TODO: Make this component reusable */}
+                                      <NumberField
+                                        className="min-w-40"
+                                        aria-label="Quantity"
+                                        defaultValue={field.value}
+                                        minValue={0}
+                                        onChange={field.onChange}
+                                      >
+                                        <Group className="relative inline-flex h-9 w-full items-center overflow-hidden rounded-md border border-input text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:opacity-50 data-focus-within:border-ring data-focus-within:ring-3 data-focus-within:ring-ring/20 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40">
+                                          <ReactAriaButton
+                                            className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                                            slot="decrement"
+                                          >
+                                            <MinusIcon aria-hidden="true" size={16} />
+                                          </ReactAriaButton>
+                                          <ReactInput className="w-full grow bg-background px-3 py-2 text-center text-foreground tabular-nums" />
+                                          <ReactAriaButton
+                                            className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                                            slot="increment"
+                                          >
+                                            <PlusIcon aria-hidden="true" size={16} />
+                                          </ReactAriaButton>
+                                        </Group>
+                                      </NumberField>
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
@@ -463,14 +492,14 @@ export default function Delivery() {
                             </div>
 
                             <div
-                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                               role="td"
                             >
                               <FormField
                                 name={`items.${index}.unit_dr`}
                                 control={form.control}
                                 render={({ field }) => (
-                                  <FormItem className="space-y-0">
+                                  <FormItem className="flex flex-col gap-2 space-y-0">
                                     <FormControl>
                                       <Input
                                         className="min-w-60 read-only:bg-muted"
@@ -486,14 +515,14 @@ export default function Delivery() {
                             </div>
 
                             <div
-                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                               role="td"
                             >
                               <FormField
                                 name={`items.${index}.unit_price`}
                                 control={form.control}
                                 render={({ field }) => (
-                                  <FormItem>
+                                  <FormItem className="flex flex-col gap-2 space-y-0">
                                     <FormControl>
                                       <ReactNumberField
                                         formatOptions={{
@@ -520,14 +549,14 @@ export default function Delivery() {
                             </div>
 
                             <div
-                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                               role="td"
                             >
                               <FormField
                                 name={`items.${index}.total_amount`}
                                 control={form.control}
                                 render={({ field }) => (
-                                  <FormItem>
+                                  <FormItem className="flex flex-col gap-2 space-y-0">
                                     <FormControl>
                                       <ReactNumberField
                                         formatOptions={{
@@ -555,7 +584,7 @@ export default function Delivery() {
                             </div>
 
                             <div
-                              className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                              className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                               role="td"
                             >
                               <Button
