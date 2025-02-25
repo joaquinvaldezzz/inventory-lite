@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added pull-to-refresh to refresh data in data tables
+
+### Changed
+
 - Sorted records from latest to oldest by default
 
 ## [1.0.0] - 2025-02-17
