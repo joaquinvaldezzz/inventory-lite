@@ -1,7 +1,7 @@
 import { lazy, StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { Loading } from './components/Loading'
+import { Loading } from './components/loading'
 
 const App = lazy(async () => await import('./app'))
 

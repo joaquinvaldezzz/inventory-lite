@@ -6,7 +6,7 @@ import { Redirect, Route } from 'react-router-dom'
 
 import { Toaster } from '@/components/ui/toaster'
 
-import { Loading } from './components/Loading'
+import { Loading } from './components/loading'
 
 import './styles/main.css'
 
