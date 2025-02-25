@@ -7,7 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.1] - 2025-02-19
+## [1.3.0] - 2025-02-23
+
+### Added
+
+- Added quantity input controls
+- Added a placeholder when no items are available in the Ingredients select field
+
+### Changed
+
+- Made the unit price input editable
+
+## [1.2.0] - 2025-02-21
+
+### Added
+
+- Enabled dark mode for the entire application
+
+## [1.1.0] - 2025-02-19
 
 ### Added
 
