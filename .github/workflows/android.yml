@@ -10,10 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./android
-
     steps:
       - uses: actions/checkout@v4
       - name: set up JDK 11
@@ -23,14 +19,40 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Install Ionic
+        run: npm install -g @ionic/cli
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Install app dependencies
+        run: npm install
+
+      - name: Build Ionic App for Android
+        run: npm run build:android
+
+      - name: Generate the Android App Bundle
+        working-directory: ./android/
+        run: ./gradlew bundle
+
+      # - name: Setup Gradle
+      #   uses: gradle/actions/setup-gradle@v4
+
+      # - name: Grant execute permission for gradlew
+      #   working-directory: ./android
+      #   run: chmod +x gradlew
+
+      # - name: Build with Gradle
+      #   working-directory: ./android
+      #   run: ./gradlew build
+
+      # - name: Upload dev APK
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: app-dev
+      #     path: apk/app-debug.apk
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
