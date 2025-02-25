@@ -54,6 +54,26 @@ interface LoginData {
     /** User level or role within the system. */
     level: string
 
+    /** Access permissions for various modules. */
+    access: [
+      {
+        /** Name of the module. */
+        module_name: string
+
+        /** Read permission for the module. */
+        read: string
+
+        /** Write permission for the module. */
+        write: string
+
+        /** Edit permission for the module. */
+        edit: string
+
+        /** Delete permission for the module. */
+        delete: string
+      },
+    ]
+
     /** List of branches the user has access to. */
     branches: Branch[]
   }
