@@ -32,7 +32,7 @@ jobs:
         run: npm install
 
       - name: Build Android Dev APK
-        run: ionic capacitor build android
+        run: ionic capacitor build android --no-open --prod
 
       - name: Generate the Android APK
         working-directory: ./android
