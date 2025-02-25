@@ -1,14 +1,12 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
 import { IonContent, IonImg, IonPage, useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import axios from 'axios'
 import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import { env } from '@/lib/env'
+import { authenticateUser } from '@/lib/api'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
 import { saveToStorage } from '@/lib/storage'
-import type { LoginResponse } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,56 +37,47 @@ export default function Login() {
     event.preventDefault()
 
     void form.handleSubmit(() => {
-      if (formRef.current == null) {
-        console.error('Form reference is not available')
-        return
-      }
-
-      const formData = Object.fromEntries(new FormData(formRef.current))
-      const parsedData = loginFormSchema.safeParse(formData)
+      const formValues = form.getValues()
+      const parsedData = loginFormSchema.safeParse(formValues)
 
       if (!parsedData.success) {
         console.error('Form data is invalid:', parsedData.error)
+        return
       }
 
       setIsLoading(true)
 
-      startTransition(() => {
-        void (async () => {
-          if (formRef.current == null) {
-            console.error('Form reference is not available')
-            return
-          }
+      async function loginUser() {
+        const { username, password } = formValues
 
-          try {
-            const formData = new FormData(formRef.current)
-            const request = await axios.post<LoginResponse>(
-              env.VITE_LOGIN_API_URL,
-              JSON.stringify(Object.fromEntries(formData)),
-            )
+        try {
+          const authenticatedUser = await authenticateUser(username, password)
 
-            if (request.data.success) {
-              await saveToStorage('currentUser', JSON.stringify(request.data))
-              toast({
-                description: 'Logged in successfully!',
-              })
-              router.push('/branch-selector')
-            } else {
-              toast({
-                description: 'Failed to log in. Please try again.',
-                variant: 'destructive',
-              })
-            }
-          } catch (error) {
-            console.error('Form submission failed:', error)
+          if (authenticatedUser.success) {
+            await saveToStorage('currentUser', JSON.stringify(authenticatedUser))
             toast({
-              description: 'Failed to log in. Please try again.',
+              description: 'Logged in successfully!',
+            })
+            router.push('/branch-selector')
+          } else {
+            toast({
+              description: 'Invalid username or password. Please try again.',
               variant: 'destructive',
             })
-          } finally {
-            setIsLoading(false)
           }
-        })()
+        } catch (error) {
+          console.error('Form submission failed:', error)
+          toast({
+            description: 'Failed to log in. Please try again.',
+            variant: 'destructive',
+          })
+        } finally {
+          setIsLoading(false)
+        }
+      }
+
+      startTransition(() => {
+        void loginUser()
       })
     })(event)
   }

@@ -23,6 +23,7 @@ import type {
   IngredientsResponse,
   Items,
   ItemsResponse,
+  LoginResponse,
   Supplier,
   SupplierResponse,
   WasteData,
@@ -43,7 +44,7 @@ interface UserSession {
 /** Configuration object for API requests. */
 interface ApiRequestConfig {
   url: string
-  action: string
+  action?: string
   additionalData?: Record<string, unknown>
 }
 
@@ -96,6 +97,28 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
   } catch (error) {
     console.error(`API request failed (${action}):`, error)
     throw new Error(`Failed to ${action} data`)
+  }
+}
+
+/**
+ * Authenticates a user by sending their credentials to the login API.
+ *
+ * @param {string} username - The username of the user attempting to log in.
+ * @param {string} password - The user's password.
+ * @returns {Promise<LoginResponse>} A promise that resolves to the login response data if
+ *   successful.
+ * @throws {Error} If the authentication request fails.
+ */
+export async function authenticateUser(username: string, password: string): Promise<LoginResponse> {
+  try {
+    const authenticatedUser = await axios.post<LoginResponse>(env.VITE_LOGIN_API_URL, {
+      username,
+      password,
+    })
+    return authenticatedUser.data
+  } catch (error) {
+    console.error('Failed to authenticate user:', error)
+    throw new Error('Failed to authenticate user')
   }
 }
 
