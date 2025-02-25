@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-          cache: npm
+          cache: 'npm'
 
       - name: Install Ionic CLI
         run: npm install -g @ionic/cli
@@ -43,4 +43,4 @@ jobs:
         with:
           name: app-dev
           path: |
-            ${{ github.workspace }}/packages/app/android/app/build/outputs/apk/release/*.apk
+            ${{ github.workspace }}/android/app/build/outputs/apk/release/*.apk
