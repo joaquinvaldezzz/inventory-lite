@@ -12,35 +12,30 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: set up JDK 11
+
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
 
-      - name: Setup Node.js
+      - name: Setup Node.js environment, install dependencies, and build the app
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
           cache: 'npm'
+      - run: npm install -g @ionic/cli
+      - run: npm install
+      - run: ionic capacitor build android --no-open --prod
 
-      - name: Install Ionic CLI
-        run: npm install -g @ionic/cli
-
-      - name: Install app dependencies
-        run: npm install
-
-      - name: Build Android Dev APK
-        run: ionic capacitor build android --no-open --prod
-
-      - name: Generate the Android APK
+      - name: Build the Android debug APK
         working-directory: ./android
-        run: ./gradlew build
+        run: ./gradlew assembleDebug
 
-      - name: Upload dev APK
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-dev
+          name: app-debug
           path: |
-            ${{ github.workspace }}/android/app/build/outputs/apk/release/*.apk
+            ${{ github.workspace }}/android/app/build/outputs/apk/debug/*.apk
