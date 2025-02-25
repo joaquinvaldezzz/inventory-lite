@@ -468,11 +468,18 @@ export default function Delivery() {
                                     <FormControl>
                                       {/* TODO: Make this component reusable */}
                                       <NumberField
-                                        className="min-w-40"
+                                        className="min-w-32"
                                         aria-label="Quantity"
                                         defaultValue={field.value}
                                         minValue={0}
-                                        onChange={field.onChange}
+                                        onChange={(event) => {
+                                          field.onChange(event)
+                                          const { items } = form.getValues()
+                                          form.setValue(
+                                            `items.${index}.total_amount`,
+                                            items[index].quantity_dr * items[index].unit_price,
+                                          )
+                                        }}
                                       >
                                         <Group className="relative inline-flex h-9 w-full items-center overflow-hidden rounded-md border border-input text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:opacity-50 data-focus-within:border-ring data-focus-within:ring-3 data-focus-within:ring-ring/20 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40">
                                           <ReactAriaButton
@@ -508,7 +515,7 @@ export default function Delivery() {
                                   <FormItem className="flex flex-col gap-2 space-y-0">
                                     <FormControl>
                                       <Input
-                                        className="min-w-60 read-only:bg-muted"
+                                        className="min-w-32 read-only:bg-muted"
                                         type="text"
                                         readOnly
                                         {...field}
@@ -538,12 +545,19 @@ export default function Delivery() {
                                         }}
                                         aria-label="Unit Price"
                                         defaultValue={field.value}
-                                        onChange={field.onChange}
+                                        onChange={(event) => {
+                                          field.onChange(event)
+                                          const { items } = form.getValues()
+                                          form.setValue(
+                                            `items.${index}.total_amount`,
+                                            items[index].quantity_dr * items[index].unit_price,
+                                          )
+                                        }}
                                       >
                                         <ReactInput
                                           className={cn(
                                             inputVariants(),
-                                            'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                            'min-w-32 text-right tabular-nums read-only:bg-muted',
                                           )}
                                         />
                                       </ReactNumberField>
@@ -570,8 +584,9 @@ export default function Delivery() {
                                           currency: 'PHP',
                                           currencySign: 'accounting',
                                         }}
+                                        value={field.value}
                                         aria-label="Total"
-                                        defaultValue={field.value}
+                                        onChange={field.onChange}
                                       >
                                         <ReactInput
                                           className={cn(
@@ -582,7 +597,6 @@ export default function Delivery() {
                                         />
                                       </ReactNumberField>
                                     </FormControl>
-
                                     <FormMessage />
                                   </FormItem>
                                 )}
