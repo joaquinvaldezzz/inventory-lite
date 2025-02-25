@@ -27,7 +27,7 @@ jobs:
           cache: 'npm'
       - run: npm install -g @ionic/cli
       - run: npm install
-      - run: ionic capacitor build android --no-open --prod
+      - run: ionic capacitor build android --no-open
 
       - name: Build the Android debug APK
         working-directory: ./android
