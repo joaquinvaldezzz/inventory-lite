@@ -94,8 +94,8 @@ export default function Login() {
                 alt="Escobar's Steakhouse"
               />
               <div className="space-y-2 text-center">
-                <h1 className="text-2xl font-semibold">Log in to your account</h1>
-                <p className="text-muted-foreground">Welcome back! Please enter your details.</p>
+                <h1 className="text-2xl font-semibold">Welcome back!</h1>
+                <p className="text-muted-foreground">Please log in to continue.</p>
               </div>
             </div>
 
