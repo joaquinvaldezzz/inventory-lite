@@ -182,6 +182,15 @@ export default function Login() {
                 </div>
               </form>
             </Form>
+
+            <div>
+              <p className="text-center text-sm text-muted-foreground">
+                First time?{' '}
+                <Button className="h-auto p-0" variant="link">
+                  Sign up now
+                </Button>
+              </p>
+            </div>
           </div>
         </div>
       </IonContent>
