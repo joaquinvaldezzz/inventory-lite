@@ -103,7 +103,9 @@ export default function Login() {
               <Alert variant="destructive">
                 <AlertCircle className="size-4" />
                 <AlertTitle>Oops!</AlertTitle>
-                <AlertDescription>{form.formState.errors.root.message}</AlertDescription>
+                <AlertDescription>
+                  <p>{form.formState.errors.root.message}</p>
+                </AlertDescription>
               </Alert>
             )}
 
