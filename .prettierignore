@@ -3,3 +3,4 @@ ios/DerivedData/
 ios/capacitor-cordova-ios-plugins/
 out/
 public/
+pnpm-lock.yaml
