@@ -175,7 +175,7 @@ export default function Login() {
                   )}
                 />
 
-                <div className="mt-1 flex flex-col">
+                <div className="flex flex-col pt-1">
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? 'Logging in...' : 'Log in'}
                   </Button>
