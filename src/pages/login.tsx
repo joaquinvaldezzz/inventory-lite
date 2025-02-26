@@ -1,13 +1,14 @@
 import { startTransition, useRef, useState, type FormEvent } from 'react'
 import { IonContent, IonImg, IonPage, useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff, KeyRound, User } from 'lucide-react'
+import { AlertCircle, Eye, EyeOff, KeyRound, User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import { authenticateUser } from '@/lib/api'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
 import { saveToStorage } from '@/lib/storage'
 import { useToast } from '@/hooks/use-toast'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -60,16 +61,14 @@ export default function Login() {
             })
             router.push('/branch-selector')
           } else {
-            toast({
-              description: 'Invalid username or password. Please try again.',
-              variant: 'destructive',
+            form.setError('root', {
+              message: 'Invalid username or password. Please try again.',
             })
           }
         } catch (error) {
           console.error('Form submission failed:', error)
-          toast({
-            description: 'Failed to log in. Please try again.',
-            variant: 'destructive',
+          form.setError('root', {
+            message: 'Failed to log in. Please try again.',
           })
         } finally {
           setIsLoading(false)
@@ -98,6 +97,14 @@ export default function Login() {
                 <p className="text-muted-foreground">Welcome back! Please enter your details.</p>
               </div>
             </div>
+
+            {form.formState.errors.root != null && (
+              <Alert variant="destructive">
+                <AlertCircle className="size-4" />
+                <AlertTitle>Oops!</AlertTitle>
+                <AlertDescription>{form.formState.errors.root.message}</AlertDescription>
+              </Alert>
+            )}
 
             <Form {...form}>
               <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
