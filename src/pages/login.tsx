@@ -62,7 +62,8 @@ export default function Login() {
             router.push('/branch-selector')
           } else {
             form.setError('root', {
-              message: 'Invalid username or password. Please try again.',
+              message:
+                "Hmm, something went wrong. Please double-check your username and password. If you're still having trouble, you can reset your password.",
             })
           }
         } catch (error) {
