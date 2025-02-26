@@ -183,11 +183,16 @@ export default function Login() {
               </form>
             </Form>
 
-            <div>
-              <p className="text-center text-sm text-muted-foreground">
+            <div className="space-y-3 text-center text-sm">
+              <p className="text-muted-foreground">
                 First time?{' '}
                 <Button className="h-auto p-0" variant="link">
                   Sign up now
+                </Button>
+              </p>
+              <p>
+                <Button className="h-auto p-0" variant="link">
+                  Reset your password
                 </Button>
               </p>
             </div>
