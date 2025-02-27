@@ -34,7 +34,6 @@ import { NewDeliveryModal } from './new-delivery-modal'
  *   present a modal for adding new deliveries. It also includes a refresh mechanism via the
  *   `IonRefresher` component.
  */
-
 export default function Delivery() {
   /**
    * The `useQuery` hook fetches delivery entries from the API, providing loading states, data, and
