@@ -11,7 +11,7 @@ import {
 } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useFieldArray, useForm } from 'react-hook-form'
 
@@ -23,6 +23,14 @@ import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -257,7 +265,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className="ion-padding">
+      <IonContent className="ion-padding space-y-4">
         <Form {...form}>
           <form className="space-y-5" onSubmit={handleSubmit}>
             <FormField
@@ -404,7 +412,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
+                                {/* <FormControl>
                                   <Select
                                     name={field.name}
                                     defaultValue={field.value}
@@ -436,7 +444,72 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                                       )}
                                     </SelectContent>
                                   </Select>
-                                </FormControl>
+                                </FormControl> */}
+
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                        className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                                        role="combobox"
+                                        variant="outline"
+                                      >
+                                        <span
+                                          className={cn(
+                                            'truncate',
+                                            items.length === 0 && 'text-muted-foreground',
+                                          )}
+                                        >
+                                          {items.length > 0
+                                            ? items.find(
+                                                (item) => item.id.toString() === field.value,
+                                              )?.raw_material
+                                            : 'Select an item'}
+                                        </span>
+                                        <ChevronDownIcon
+                                          className="shrink-0 text-muted-foreground/80"
+                                          aria-hidden="true"
+                                          size={16}
+                                        />
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+
+                                  <PopoverContent
+                                    className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                                    align="start"
+                                  >
+                                    <Command>
+                                      <CommandInput placeholder="Search item..." />
+                                      <CommandList>
+                                        <CommandEmpty>No item found.</CommandEmpty>
+                                        <CommandGroup>
+                                          {items.map((item) => (
+                                            <CommandItem
+                                              value={item.raw_material}
+                                              key={item.id}
+                                              onSelect={(value) => {
+                                                const selectedItem = items.find(
+                                                  (item) => item.raw_material === value,
+                                                )
+                                                field.onChange(selectedItem?.id.toString())
+                                                form.setValue(
+                                                  `items.${index}.unit_dr`,
+                                                  selectedItem != null ? selectedItem.unit : '',
+                                                )
+                                              }}
+                                            >
+                                              {item.raw_material}
+                                              {item.id.toString() === field.value && (
+                                                <CheckIcon className="ml-auto" size={16} />
+                                              )}
+                                            </CommandItem>
+                                          ))}
+                                        </CommandGroup>
+                                      </CommandList>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
                                 <FormMessage />
                               </FormItem>
                             )}
