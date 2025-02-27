@@ -20,14 +20,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { add } from 'ionicons/icons'
-import { CalendarIcon, Container, MinusIcon, Plus, PlusIcon, Trash2 } from 'lucide-react'
-import {
-  Group,
-  NumberField,
-  Button as ReactAriaButton,
-  Input as ReactInput,
-  NumberField as ReactNumberField,
-} from 'react-aria-components'
+import { CalendarIcon, Container, Plus, Trash2 } from 'lucide-react'
+import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 
@@ -49,6 +43,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input, inputVariants } from '@/components/ui/input'
+import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -464,14 +459,12 @@ export default function Delivery() {
                                 name={`items.${index}.quantity_dr`}
                                 control={form.control}
                                 render={({ field }) => (
-                                  <FormItem className="flex flex-col gap-2 space-y-0">
+                                  <FormItem>
                                     <FormControl>
-                                      {/* TODO: Make this component reusable */}
-                                      <NumberField
+                                      <NumberInput
                                         className="min-w-32"
+                                        value={field.value}
                                         aria-label="Quantity"
-                                        defaultValue={field.value}
-                                        minValue={0}
                                         onChange={(event) => {
                                           field.onChange(event)
                                           const { items } = form.getValues()
@@ -480,23 +473,7 @@ export default function Delivery() {
                                             items[index].quantity_dr * items[index].unit_price,
                                           )
                                         }}
-                                      >
-                                        <Group className="relative inline-flex h-9 w-full items-center overflow-hidden rounded-md border border-input text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:opacity-50 data-focus-within:border-ring data-focus-within:ring-3 data-focus-within:ring-ring/20 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40">
-                                          <ReactAriaButton
-                                            className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                                            slot="decrement"
-                                          >
-                                            <MinusIcon aria-hidden="true" size={16} />
-                                          </ReactAriaButton>
-                                          <ReactInput className="w-full grow bg-background px-3 py-2 text-center text-foreground tabular-nums" />
-                                          <ReactAriaButton
-                                            className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                                            slot="increment"
-                                          >
-                                            <PlusIcon aria-hidden="true" size={16} />
-                                          </ReactAriaButton>
-                                        </Group>
-                                      </NumberField>
+                                      />
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
