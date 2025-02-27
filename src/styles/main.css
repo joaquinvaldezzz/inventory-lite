@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:is(.dark *));
+
 @import '@ionic/react/css/core.css';
 @import '@ionic/react/css/structure.css';
 @import '@ionic/react/css/palettes/dark.system.css';
@@ -9,8 +11,6 @@
 
 @plugin 'tailwindcss-safe-area';
 @plugin 'tailwindcss-animate';
-
-/* @custom-variant dark (&:is(.dark *)); */
 
 @theme {
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -126,5 +126,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }
