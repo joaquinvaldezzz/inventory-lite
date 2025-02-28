@@ -35,6 +35,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input, inputVariants } from '@/components/ui/input'
+import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -348,7 +349,14 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input type="number" {...field} />
+                                  <NumberInput
+                                    className="min-w-32"
+                                    value={field.value}
+                                    aria-label="Actual Quantity"
+                                    onChange={(event) => {
+                                      field.onChange(event)
+                                    }}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -373,7 +381,14 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input type="number" {...field} />
+                                  <NumberInput
+                                    className="min-w-32"
+                                    value={field.value}
+                                    aria-label="DR Quantity"
+                                    onChange={(event) => {
+                                      field.onChange(event)
+                                    }}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
