@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] 2025-02-27
+
+### Added
+
+- Created NumberField component
+- Separated the modal form from the page
+- Added JSDoc for documentation
+- Added search function to the Ingredient selection in the New Delivery Modal Form
+
+### Changed
+
+- Changed app's icon
+
+## [1.5.0] 2025-02-26
+
+### Added
+
+- Added "Sign up now" link to the login page
+- Added "Reset password" link to the login page
+
+### Changed
+
+- Changed error message (from toast notification) on login failure
+- Updated header text on the login page
+
+## [1.4.0] 2025-02-25
+
+### Changed
+
+- Refactored user authentication
+- Optimized the application by lazy-loading pages
+
 ## [1.3.0] - 2025-02-22
 
 ### Added
