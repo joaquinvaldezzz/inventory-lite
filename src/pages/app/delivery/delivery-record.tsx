@@ -449,7 +449,6 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                         inputVariants(),
                                         'min-w-40 text-right tabular-nums read-only:bg-muted',
                                       )}
-                                      readOnly
                                     />
                                   </ReactNumberField>
                                 </FormControl>
