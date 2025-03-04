@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- It's okay for this file to be long */
 import { startTransition, useEffect, useState, type FormEvent } from 'react'
 import {
   IonButton,
@@ -10,7 +11,15 @@ import {
 } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, MinusIcon, Plus, PlusIcon, Trash2 } from 'lucide-react'
+import {
+  CalendarIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  MinusIcon,
+  Plus,
+  PlusIcon,
+  Trash2,
+} from 'lucide-react'
 import {
   Group,
   NumberField,
@@ -24,8 +33,17 @@ import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/for
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, Ingredients } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -36,13 +54,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
 interface DailyCountModalActions {
   dismiss: (data?: string | number | null, role?: string) => void
@@ -64,6 +75,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
     name: 'items',
     control: form.control,
   })
+  const { toast } = useToast()
 
   function handleAdd() {
     append({
@@ -142,6 +154,10 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
           console.error('Form submission failed:', error)
         } finally {
           setIsLoading(false)
+          toast({
+            description: 'Daily count entry created successfully',
+          })
+          dismiss(null, 'confirm')
         }
       }
 
@@ -226,33 +242,73 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor={field.name}>Category</FormLabel>
+                  <FormLabel>Category</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
-                    <Select
-                      name={field.name}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="ps-9" id={field.name}>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.length > 0 ? (
-                          categories.map((category) => (
-                            <SelectItem value={category.id.toString()} key={category.id}>
-                              {category.raw_material_type}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <SelectItem value="0" aria-disabled="true" disabled>
-                            No categories available
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                              role="combobox"
+                              variant="outline"
+                            >
+                              <span
+                                className={cn(
+                                  'truncate ps-6',
+                                  field.value.length === 0 && 'text-muted-foreground',
+                                )}
+                              >
+                                {categories.length > 0
+                                  ? (categories.find(
+                                      (category) => category.id.toString() === field.value,
+                                    )?.raw_material_type ?? 'Select a category')
+                                  : 'Select a category'}
+                              </span>
+                              <ChevronDownIcon
+                                className="shrink-0 text-muted-foreground/80"
+                                aria-hidden="true"
+                                size={16}
+                              />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+
+                        <PopoverContent
+                          className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput placeholder="Search category..." />
+                            <CommandList>
+                              <CommandEmpty>No category found.</CommandEmpty>
+                              <CommandGroup>
+                                {categories.map((category) => (
+                                  <CommandItem
+                                    value={category.raw_material_type}
+                                    key={category.id}
+                                    onSelect={(value) => {
+                                      const selectedCategory = categories.find(
+                                        (category) => category.raw_material_type === value,
+                                      )
+                                      field.onChange(selectedCategory?.id.toString())
+                                    }}
+                                  >
+                                    {category.raw_material_type}
+                                    {category.id.toString() === field.value && (
+                                      <CheckIcon className="ml-auto" size={16} />
+                                    )}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -314,40 +370,68 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <Select
-                                    name={field.name}
-                                    defaultValue={field.value}
-                                    onValueChange={(event) => {
-                                      field.onChange(event)
-                                      const selectedItem = ingredients.find(
-                                        (ingredient) => ingredient.id === Number(event),
-                                      )
-                                      form.setValue(
-                                        `items.${index}.unit`,
-                                        selectedItem != null ? selectedItem.unit : '',
-                                      )
-                                    }}
-                                  >
-                                    <SelectTrigger className="min-w-48" id={field.name}>
-                                      <SelectValue placeholder="Select an item" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {ingredients.length > 0 ? (
-                                        ingredients.map((ingredient) => (
-                                          <SelectItem
-                                            value={ingredient.id.toString()}
-                                            key={ingredient.id}
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <FormControl>
+                                        <Button
+                                          className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                                          role="combobox"
+                                          variant="outline"
+                                        >
+                                          <span
+                                            className={cn(
+                                              'truncate',
+                                              field.value.length === 0 && 'text-muted-foreground',
+                                            )}
                                           >
-                                            {ingredient.raw_material}
-                                          </SelectItem>
-                                        ))
-                                      ) : (
-                                        <SelectItem value="0" aria-disabled disabled>
-                                          No items available
-                                        </SelectItem>
-                                      )}
-                                    </SelectContent>
-                                  </Select>
+                                            {ingredients.length > 0
+                                              ? (ingredients.find(
+                                                  (ingredient) =>
+                                                    ingredient.id.toString() === field.value,
+                                                )?.raw_material ?? 'Select an ingredient')
+                                              : 'Select an ingredient'}
+                                          </span>
+                                          <ChevronDownIcon
+                                            className="shrink-0 text-muted-foreground/80"
+                                            aria-hidden="true"
+                                            size={16}
+                                          />
+                                        </Button>
+                                      </FormControl>
+                                    </PopoverTrigger>
+
+                                    <PopoverContent
+                                      className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                                      align="start"
+                                    >
+                                      <Command>
+                                        <CommandInput placeholder="Search ingredient..." />
+                                        <CommandList>
+                                          <CommandEmpty>No category found.</CommandEmpty>
+                                          <CommandGroup>
+                                            {ingredients.map((ingredient) => (
+                                              <CommandItem
+                                                value={ingredient.raw_material}
+                                                key={ingredient.id}
+                                                onSelect={(value) => {
+                                                  const selectedIngredient = ingredients.find(
+                                                    (ingredient) =>
+                                                      ingredient.raw_material === value,
+                                                  )
+                                                  field.onChange(selectedIngredient?.id.toString())
+                                                }}
+                                              >
+                                                {ingredient.raw_material}
+                                                {ingredient.id.toString() === field.value && (
+                                                  <CheckIcon className="ml-auto" size={16} />
+                                                )}
+                                              </CommandItem>
+                                            ))}
+                                          </CommandGroup>
+                                        </CommandList>
+                                      </Command>
+                                    </PopoverContent>
+                                  </Popover>
                                 </FormControl>
                                 <FormMessage id={field.name} />
                               </FormItem>
