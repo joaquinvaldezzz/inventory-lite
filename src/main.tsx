@@ -1,9 +1,7 @@
-import { lazy, StrictMode, Suspense } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { Loading } from './components/loading'
-
-const App = lazy(async () => await import('./app'))
+import App from './app'
 
 const container = document.getElementById('root')
 
@@ -15,8 +13,6 @@ const root = createRoot(container)
 
 root.render(
   <StrictMode>
-    <Suspense fallback={<Loading />}>
-      <App />
-    </Suspense>
+    <App />
   </StrictMode>,
 )
