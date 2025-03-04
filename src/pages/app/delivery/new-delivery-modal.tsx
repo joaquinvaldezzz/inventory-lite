@@ -42,13 +42,6 @@ import {
 import { Input, inputVariants } from '@/components/ui/input'
 import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
 interface DeliveryModalActions {
@@ -279,28 +272,66 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
-                      <Select
-                        name={field.name}
-                        defaultValue={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="ps-9" id={field.name}>
-                          <SelectValue placeholder="Select a supplier" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {suppliers.length > 0 ? (
-                            suppliers.map((supplier) => (
-                              <SelectItem value={supplier.id.toString()} key={supplier.id}>
-                                {supplier.supplier_name}
-                              </SelectItem>
-                            ))
-                          ) : (
-                            <SelectItem value="0" aria-disabled="true" disabled>
-                              No suppliers available
-                            </SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                              role="combobox"
+                              variant="outline"
+                            >
+                              <span
+                                className={cn(
+                                  'truncate ps-6',
+                                  suppliers.length === 0 && 'text-muted-foreground',
+                                )}
+                              >
+                                {suppliers.length > 0
+                                  ? suppliers.find(
+                                      (supplier) => supplier.id.toString() === field.value,
+                                    )?.supplier_name
+                                  : 'Select an item'}
+                              </span>
+                              <ChevronDownIcon
+                                className="shrink-0 text-muted-foreground/80"
+                                aria-hidden="true"
+                                size={16}
+                              />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+
+                        <PopoverContent
+                          className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput placeholder="Search supplier..." />
+                            <CommandList>
+                              <CommandEmpty>No supplier found.</CommandEmpty>
+                              <CommandGroup>
+                                {suppliers.map((supplier) => (
+                                  <CommandItem
+                                    value={supplier.supplier_name}
+                                    key={supplier.id}
+                                    onSelect={(value) => {
+                                      const selectedSupplier = suppliers.find(
+                                        (supplier) => supplier.supplier_name === value,
+                                      )
+                                      field.onChange(selectedSupplier?.id.toString())
+                                    }}
+                                  >
+                                    {supplier.supplier_name}
+                                    {supplier.id.toString() === field.value && (
+                                      <CheckIcon className="ml-auto" size={16} />
+                                    )}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -412,40 +443,6 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
-                                {/* <FormControl>
-                                  <Select
-                                    name={field.name}
-                                    defaultValue={field.value}
-                                    onValueChange={(event) => {
-                                      field.onChange(event)
-                                      const selectedItem = items.find(
-                                        (item) => item.id === Number(event),
-                                      )
-                                      form.setValue(
-                                        `items.${index}.unit_dr`,
-                                        selectedItem != null ? selectedItem.unit : '',
-                                      )
-                                    }}
-                                  >
-                                    <SelectTrigger className="min-w-48" id={field.name}>
-                                      <SelectValue placeholder="Select an item" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {items.length > 0 ? (
-                                        items.map((item) => (
-                                          <SelectItem value={item.id.toString()} key={item.id}>
-                                            {item.raw_material}
-                                          </SelectItem>
-                                        ))
-                                      ) : (
-                                        <SelectItem value="0" aria-disabled="true" disabled>
-                                          No items available
-                                        </SelectItem>
-                                      )}
-                                    </SelectContent>
-                                  </Select>
-                                </FormControl> */}
-
                                 <Popover>
                                   <PopoverTrigger asChild>
                                     <FormControl>
