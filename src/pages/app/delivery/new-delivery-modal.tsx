@@ -283,14 +283,14 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                               <span
                                 className={cn(
                                   'truncate ps-6',
-                                  suppliers.length === 0 && 'text-muted-foreground',
+                                  field.value.length === 0 && 'text-muted-foreground',
                                 )}
                               >
                                 {suppliers.length > 0
-                                  ? suppliers.find(
+                                  ? (suppliers.find(
                                       (supplier) => supplier.id.toString() === field.value,
-                                    )?.supplier_name
-                                  : 'Select an item'}
+                                    )?.supplier_name ?? 'Select a supplier')
+                                  : 'Select a supplier'}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
@@ -454,13 +454,13 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                                         <span
                                           className={cn(
                                             'truncate',
-                                            items.length === 0 && 'text-muted-foreground',
+                                            field.value.length === 0 && 'text-muted-foreground',
                                           )}
                                         >
                                           {items.length > 0
-                                            ? items.find(
+                                            ? (items.find(
                                                 (item) => item.id.toString() === field.value,
-                                              )?.raw_material
+                                              )?.raw_material ?? 'Select an item')
                                             : 'Select an item'}
                                         </span>
                                         <ChevronDownIcon
