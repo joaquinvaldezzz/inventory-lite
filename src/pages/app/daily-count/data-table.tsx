@@ -63,12 +63,12 @@ export function DataTable({ columns, data }: DataTableProps) {
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
           <Search strokeWidth={2} size={16} />
         </div>
-        <Label className="sr-only" htmlFor="search">
+        <Label className="sr-only" htmlFor="search-daily-count">
           Search by category
         </Label>
         <Input
           className="peer ps-9"
-          id="search"
+          id="search-daily-count"
           type="search"
           placeholder="Search by category"
           value={table.getColumn('raw_material_type')?.getFilterValue()?.toString() ?? ''}
