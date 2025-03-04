@@ -3,7 +3,7 @@ import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent 
 import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, Container } from 'lucide-react'
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from 'lucide-react'
 import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
 import { useForm } from 'react-hook-form'
 
@@ -26,6 +26,14 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -166,28 +174,66 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     <Container aria-hidden="true" strokeWidth={2} size={16} />
                   </div>
                   <FormControl>
-                    <Select
-                      name={field.name}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="ps-9" id={field.name}>
-                        <SelectValue placeholder="Select a supplier" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {suppliers.length > 0 ? (
-                          suppliers.map((supplier) => (
-                            <SelectItem value={supplier.id.toString()} key={supplier.id}>
-                              {supplier.supplier_name}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <SelectItem value="0" aria-disabled="true" disabled>
-                            No suppliers available
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                            role="combobox"
+                            variant="outline"
+                          >
+                            <span
+                              className={cn(
+                                'truncate ps-6',
+                                field.value.length === 0 && 'text-muted-foreground',
+                              )}
+                            >
+                              {suppliers.length > 0
+                                ? (suppliers.find(
+                                    (supplier) => supplier.id.toString() === field.value,
+                                  )?.supplier_name ?? 'Select a supplier')
+                                : 'Select a supplier'}
+                            </span>
+                            <ChevronDownIcon
+                              className="shrink-0 text-muted-foreground/80"
+                              aria-hidden="true"
+                              size={16}
+                            />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+
+                      <PopoverContent
+                        className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                        align="start"
+                      >
+                        <Command>
+                          <CommandInput placeholder="Search supplier..." />
+                          <CommandList>
+                            <CommandEmpty>No supplier found.</CommandEmpty>
+                            <CommandGroup>
+                              {suppliers.map((supplier) => (
+                                <CommandItem
+                                  value={supplier.supplier_name}
+                                  key={supplier.id}
+                                  onSelect={(value) => {
+                                    const selectedSupplier = suppliers.find(
+                                      (supplier) => supplier.supplier_name === value,
+                                    )
+                                    field.onChange(selectedSupplier?.id.toString())
+                                  }}
+                                >
+                                  {supplier.supplier_name}
+                                  {supplier.id.toString() === field.value && (
+                                    <CheckIcon className="ml-auto" size={16} />
+                                  )}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </FormControl>
                 </div>
                 <FormMessage />
