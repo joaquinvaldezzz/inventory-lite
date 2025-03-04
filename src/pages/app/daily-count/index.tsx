@@ -42,7 +42,7 @@ export default function DailyCount() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === 'confirm') {
-          console.log('You entered: ', event.detail.data)
+          void refetch()
         }
       },
     })
