@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
-import { startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
+import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
 import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
@@ -152,7 +152,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   }
 
   return (
-    <>
+    <Fragment>
       <Form {...form}>
         <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
           <FormField
@@ -538,6 +538,6 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         <div className="font-bold">Total</div>
         <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>
       </div>
-    </>
+    </Fragment>
   )
 }
