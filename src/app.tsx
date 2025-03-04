@@ -7,12 +7,12 @@ import { Redirect, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 
 import { Loading } from './components/loading'
+import BranchSelector from './pages/branch-selector'
+import Login from './pages/login'
 
 import './styles/main.css'
 
 const Tabs = lazy(async () => await import('./pages/app/tabs'))
-const BranchSelector = lazy(async () => await import('./pages/branch-selector'))
-const Login = lazy(async () => await import('./pages/login'))
 
 setupIonicReact()
 
@@ -21,30 +21,30 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<Loading />}>
-        <IonApp>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route path="/login" exact>
-                <Login />
-              </Route>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route path="/login" exact>
+              <Login />
+            </Route>
 
-              <Route path="/branch-selector" exact>
-                <BranchSelector />
-              </Route>
+            <Route path="/branch-selector" exact>
+              <BranchSelector />
+            </Route>
 
+            <Suspense fallback={<Loading />}>
               <Route path="/app/*">
                 <Tabs />
               </Route>
+            </Suspense>
 
-              <Route path="/" exact>
-                <Redirect to="/login" />
-              </Route>
-            </IonRouterOutlet>
-          </IonReactRouter>
-          <Toaster />
-        </IonApp>
-      </Suspense>
+            <Route path="/" exact>
+              <Redirect to="/login" />
+            </Route>
+          </IonRouterOutlet>
+        </IonReactRouter>
+        <Toaster />
+      </IonApp>
     </QueryClientProvider>
   )
 }
