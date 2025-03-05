@@ -1,3 +1,4 @@
+import { useRef, type FormEvent } from 'react'
 import { IonContent, IonImg, IonPage } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -14,12 +15,29 @@ import {
 import { InputPIN, InputPINGroup, InputPINSlot } from '@/components/ui/input-pin'
 
 export default function PIN() {
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const form = useForm<PinFormSchema>({
     defaultValues: {
       pin: '',
     },
     resolver: zodResolver(pinFormSchema),
   })
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    void form.handleSubmit(() => {
+      const formValues = form.getValues()
+      const parsedData = pinFormSchema.safeParse(formValues)
+
+      if (!parsedData.success) {
+        console.error('Form data is invalid:', parsedData.error)
+        return
+      }
+
+      console.log(formValues)
+    })(event)
+  }
 
   return (
     <IonPage>
@@ -39,7 +57,7 @@ export default function PIN() {
             </div>
 
             <Form {...form}>
-              <form className="space-y-5">
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 <FormField
                   name="pin"
                   control={form.control}
@@ -50,6 +68,7 @@ export default function PIN() {
                         <InputPIN
                           maxLength={6}
                           pushPasswordManagerStrategy="none"
+                          onComplete={() => buttonRef.current?.click()}
                           autoFocus
                           {...field}
                         >
@@ -63,10 +82,14 @@ export default function PIN() {
                           </InputPINGroup>
                         </InputPIN>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-center" />
                     </FormItem>
                   )}
                 />
+
+                <button className="sr-only" type="submit" ref={buttonRef}>
+                  Continue
+                </button>
               </form>
             </Form>
 
