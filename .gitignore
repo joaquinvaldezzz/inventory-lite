@@ -135,6 +135,8 @@ temp/
 .tmp/
 hooks/
 
+!src/hooks/
+
 # Ionic 3 plugins files
 platforms/
 plugins/
