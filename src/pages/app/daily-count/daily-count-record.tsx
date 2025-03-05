@@ -2,7 +2,7 @@ import { startTransition, useEffect, useState, type FormEvent } from 'react'
 import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, Container } from 'lucide-react'
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import { deleteDailyCountRecordById, updateDailyCountRecord } from '@/lib/api'
@@ -24,6 +24,14 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -192,7 +200,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                   <Container aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>
-                  <Select
+                  {/* <Select
                     name={field.name}
                     defaultValue={field.value}
                     onValueChange={field.onChange}
@@ -213,7 +221,68 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                         </SelectItem>
                       )}
                     </SelectContent>
-                  </Select>
+                  </Select> */}
+
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                          role="combobox"
+                          variant="outline"
+                        >
+                          <span
+                            className={cn(
+                              'truncate ps-6',
+                              field.value.length === 0 && 'text-muted-foreground',
+                            )}
+                          >
+                            {categories.length > 0
+                              ? (categories.find(
+                                  (category) => category.id.toString() === field.value,
+                                )?.raw_material_type ?? 'Select a category')
+                              : 'Select a category'}
+                          </span>
+                          <ChevronDownIcon
+                            className="shrink-0 text-muted-foreground/80"
+                            aria-hidden="true"
+                            size={16}
+                          />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+
+                    <PopoverContent
+                      className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                      align="start"
+                    >
+                      <Command>
+                        <CommandInput placeholder="Search supplier..." />
+                        <CommandList>
+                          <CommandEmpty>No supplier found.</CommandEmpty>
+                          <CommandGroup>
+                            {categories.map((category) => (
+                              <CommandItem
+                                value={category.raw_material_type}
+                                key={category.id}
+                                onSelect={(value) => {
+                                  const selectedSupplier = categories.find(
+                                    (supplier) => supplier.raw_material_type === value,
+                                  )
+                                  field.onChange(selectedSupplier?.id.toString())
+                                }}
+                              >
+                                {category.raw_material_type}
+                                {category.id.toString() === field.value && (
+                                  <CheckIcon className="ml-auto" size={16} />
+                                )}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </FormControl>
               </div>
               <FormMessage id={field.name} />
