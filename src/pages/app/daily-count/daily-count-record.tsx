@@ -40,7 +40,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -348,7 +348,14 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input type="number" {...field} />
+                                <NumberInput
+                                  className="min-w-32"
+                                  value={field.value}
+                                  aria-label="Inventory count"
+                                  onChange={(event) => {
+                                    field.onChange(event)
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
