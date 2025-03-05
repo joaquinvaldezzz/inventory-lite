@@ -10,8 +10,10 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
+  useIonModal,
   type RefresherEventDetail,
 } from '@ionic/react'
+import type { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
 import { useQuery } from '@tanstack/react-query'
 import { add } from 'ionicons/icons'
 
@@ -19,6 +21,7 @@ import { fetchWasteEntries } from '@/lib/api'
 
 import { columns } from './columns'
 import { DataTable } from './data-table'
+import { NewWastesModal } from './new-wastes-modal'
 
 export default function Wastes() {
   const { isPending, data, refetch } = useQuery({
@@ -27,6 +30,23 @@ export default function Wastes() {
   })
 
   const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
+
+  /** Initializes the `useIonModal` hook with the `NewWastesModal` component. */
+  const [present, dismiss] = useIonModal(NewWastesModal, {
+    dismiss: (data: string, role: string) => {
+      dismiss(data, role)
+    },
+  })
+
+  function presentModal() {
+    present({
+      onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
+        if (event.detail.role === 'confirm') {
+          void refetch()
+        }
+      },
+    })
+  }
 
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
     try {
@@ -44,7 +64,7 @@ export default function Wastes() {
         <IonToolbar color="primary">
           <IonTitle>Wastes</IonTitle>
           <IonButtons slot="primary">
-            <IonButton>
+            <IonButton onClick={presentModal}>
               <IonIcon icon={add} slot="icon-only" />
             </IonButton>
           </IonButtons>
