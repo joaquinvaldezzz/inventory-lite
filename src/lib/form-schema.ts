@@ -15,6 +15,12 @@ export const loginFormSchema = z.object({
 
 export type LoginFormSchema = z.infer<typeof loginFormSchema>
 
+export const pinFormSchema = z.object({
+  pin: z.string().min(6, { message: 'PIN must be at least 6 characters long.' }).trim(),
+})
+
+export type PinFormSchema = z.infer<typeof pinFormSchema>
+
 export const branchSelectorFormSchema = z.object({
   branch: z.string().min(1, { message: 'Please select a branch from the list.' }).trim(),
 })
