@@ -4,6 +4,7 @@ import jseslint from '@eslint/js'
 import eslintPluginQuery from '@tanstack/eslint-plugin-query'
 import love from 'eslint-config-love'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import jsdoc from 'eslint-plugin-jsdoc'
 import eslintPluginPerfectionist from 'eslint-plugin-perfectionist'
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended'
 import eslintPluginReact from 'eslint-plugin-react'
@@ -35,7 +36,7 @@ const config: Config = tseslint.config(
     extends: [
       eslintPluginReact.configs.flat.recommended,
       eslintPluginQuery.configs['flat/recommended'],
-      // eslintPluginTailwind.configs['flat/recommended'], eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- ignore
+      jsdoc.configs['flat/recommended-typescript'],
     ],
     plugins: {
       perfectionist: eslintPluginPerfectionist,
@@ -44,6 +45,7 @@ const config: Config = tseslint.config(
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/prefer-destructuring': 'off',
       'react/react-in-jsx-scope': 'off',
+      'jsdoc/tag-lines': 'off',
       'perfectionist/sort-jsx-props': [
         'error',
         {
