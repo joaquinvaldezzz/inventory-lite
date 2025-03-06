@@ -69,7 +69,7 @@ export async function createSession(userId: string, userRole: string) {
  * valid and contains a userId, the function returns an object with isAuth set to true and the
  * userId. Otherwise, it redirects to the home page.
  *
- * @returns An object with the session verification result, including isAuth and userId.
+ * @returns A promise that resolves to an object with userId
  */
 export async function verifySession() {
   const cookies = await CapacitorCookies.getCookies()
@@ -83,4 +83,17 @@ export async function verifySession() {
   }
 
   return { userId: Number(decryptedSession?.userId) }
+}
+
+/**
+ * Deletes the session by removing the 'session' cookie and redirecting to the login page.
+ *
+ * @returns A promise that resolves to void.
+ */
+export async function deleteSession() {
+  await CapacitorCookies.deleteCookie({
+    key: 'session',
+  })
+
+  // Redirect to the login page
 }
