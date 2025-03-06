@@ -65,24 +65,20 @@ export async function createSession(userId: string, userRole: string) {
 }
 
 /**
- * Verifies the session by checking the session cookie and decrypting it. If the session cookie is
- * valid and contains a userId, the function returns an object with isAuth set to true and the
- * userId. Otherwise, it redirects to the home page.
+ * Verifies the session by decrypting the 'session' cookie and checking if the userId is present.
  *
- * @returns A promise that resolves to an object with userId
+ * @returns A promise that resolves to the userId if the session is valid, or null otherwise.
  */
-export async function verifySession() {
+export async function verifySession(): Promise<{ userId: number } | null> {
   const cookies = await CapacitorCookies.getCookies()
   const sessionCookie = cookies.session
   const decryptedSession = await decrypt(sessionCookie)
 
-  if (decryptedSession?.userId == null) {
-    console.log('redirect to home')
-  } else {
-    console.log('session is valid')
+  if (decryptedSession?.userId != null) {
+    return { userId: Number(decryptedSession.userId) }
   }
 
-  return { userId: Number(decryptedSession?.userId) }
+  return null
 }
 
 /**
