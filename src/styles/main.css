@@ -12,7 +12,24 @@
 @plugin 'tailwindcss-safe-area';
 @plugin 'tailwindcss-animate';
 
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: block;
+  font-style: normal;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter var';
+  font-weight: 100 900;
+  font-display: block;
+  font-style: italic;
+  src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
 @theme {
+  --font-sans: 'Inter var';
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-caret-blink: caret-blink 1.25s ease-out infinite;

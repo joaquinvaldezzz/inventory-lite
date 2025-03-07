@@ -24,6 +24,11 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-tertiary-tint: #40595c;
 }
 
+html {
+  --ion-dynamic-font: var(--ion-default-dynamic-font);
+  --ion-font-family: 'Inter var';
+}
+
 ion-title {
   @apply px-5;
 }
