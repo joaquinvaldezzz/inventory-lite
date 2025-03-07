@@ -287,14 +287,31 @@ export async function fetchEmployees(): Promise<EmployeeData[]> {
 }
 
 /**
- * Fetches a specific delivery record by its ID.
+ * Fetches a specific daily count record by its ID.
  *
- * @param id The delivery record ID.
- * @returns A promise that resolves to the delivery record data.
+ * @param id The daily count record ID.
+ * @returns A promise that resolves to the daily count record data.
  */
 export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
   const data = await apiRequest<DailyCountRecordResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
+    action: 'fetch',
+    additionalData: { id },
+  })
+  return Array.isArray(data.data) ? data.data : []
+}
+
+// TODO: Change the apiRequest and return types
+
+/**
+ * Fetches a specific waste record by its ID.
+ *
+ * @param id The waste record ID.
+ * @returns A promise that resolves to the waste record data.
+ */
+export async function getSpecificWastesRecordById(id: number): Promise<DailyCountRecord[]> {
+  const data = await apiRequest<DailyCountRecordResponse>({
+    url: env.VITE_WASTE_API_URL,
     action: 'fetch',
     additionalData: { id },
   })
