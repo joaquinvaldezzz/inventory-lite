@@ -77,10 +77,10 @@ async function getUserSession(): Promise<UserSession> {
  * Sends an API request with the given configuration.
  *
  * @template T The expected response type.
- * @param config - The API request configuration.
- * @param config.url - The URL of the API endpoint.
- * @param config.action - The action to perform.
- * @param config.additionalData - Additional data to include in the request.
+ * @param config The API request configuration.
+ * @param config.url The URL of the API endpoint.
+ * @param config.action The action to perform.
+ * @param config.additionalData Additional data to include in the request.
  * @returns A promise that resolves to the response data.
  * @throws {Error} If the API request fails.
  */
@@ -107,8 +107,8 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
 /**
  * Authenticates a user by sending their credentials to the login API.
  *
- * @param username - The username of the user attempting to log in.
- * @param password - The user's password.
+ * @param username The username of the user attempting to log in.
+ * @param password The user's password.
  * @returns A promise that resolves to the login response data if successful.
  * @throws {Error} If the authentication request fails.
  */
@@ -128,7 +128,7 @@ export async function authenticateUser(username: string, password: string): Prom
 /**
  * Creates a new delivery entry.
  *
- * @param delivery - The delivery details.
+ * @param delivery The delivery details.
  * @returns Resolves when the delivery entry is created.
  */
 export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Promise<void> {
@@ -152,7 +152,7 @@ export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Prom
 /**
  * Creates a new daily count entry.
  *
- * @param dailyCount - The daily count details.
+ * @param dailyCount The daily count details.
  * @returns Resolves when the entry is created.
  */
 export async function createDailyCountEntry(dailyCount: NewDailyCountFormSchema): Promise<void> {
@@ -229,7 +229,7 @@ export async function getItems(): Promise<Items> {
 /**
  * Fetches a specific delivery record by its ID.
  *
- * @param id - The delivery record ID.
+ * @param id The delivery record ID.
  * @returns A promise that resolves to the delivery record data.
  */
 export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[]> {
@@ -272,7 +272,7 @@ export async function fetchWasteEntries(): Promise<WasteData[]> {
 /**
  * Fetches a specific delivery record by its ID.
  *
- * @param id - The delivery record ID.
+ * @param id The delivery record ID.
  * @returns A promise that resolves to the delivery record data.
  */
 export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
@@ -304,7 +304,7 @@ export async function fetchCategories(): Promise<Categories[]> {
 /**
  * Fetches a list of ingredients filtered by category.
  *
- * @param category - The category of ingredients to fetch.
+ * @param category The category of ingredients to fetch.
  * @returns A promise that resolves to an array of ingredients.
  * @throws {Error} If the API request fails.
  */
@@ -322,8 +322,8 @@ export async function getIngredientsByCategory(category: string): Promise<Ingred
 /**
  * Edits an existing delivery record.
  *
- * @param id - The ID of the delivery record.
- * @param delivery - The updated delivery details.
+ * @param id The ID of the delivery record.
+ * @param delivery The updated delivery details.
  * @returns Resolves when the record is updated.
  */
 export async function updateDeliveryRecord(
@@ -351,8 +351,8 @@ export async function updateDeliveryRecord(
 /**
  * Updates an existing daily count record in the database.
  *
- * @param id - The unique identifier of the daily count record to update.
- * @param dailyCount - The updated daily count data.
+ * @param id The unique identifier of the daily count record to update.
+ * @param dailyCount The updated daily count data.
  * @returns Resolves when the update request is successful.
  * @throws {Error} If the API request fails.
  */
@@ -375,7 +375,7 @@ export async function updateDailyCountRecord(
 /**
  * Deletes a delivery record by ID.
  *
- * @param id - The ID of the record to delete.
+ * @param id The ID of the record to delete.
  * @returns Resolves when the record is deleted.
  */
 export async function deleteDeliveryRecord(id: number): Promise<void> {
@@ -385,7 +385,7 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
 /**
  * Deletes a daily count record by ID.
  *
- * @param id - The ID of the record to delete.
+ * @param id The ID of the record to delete.
  * @returns Resolves when the record is deleted.
  */
 export async function deleteDailyCountRecordById(id: number): Promise<void> {
