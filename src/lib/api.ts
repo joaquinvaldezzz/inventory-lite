@@ -20,6 +20,8 @@ import type {
   DeliveryItem,
   DeliveryRecord,
   DeliveryResponse,
+  EmployeeData,
+  EmployeesResponse,
   Ingredients,
   IngredientsResponse,
   Items,
@@ -265,6 +267,20 @@ export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
 export async function fetchWasteEntries(): Promise<WasteData[]> {
   const data = await apiRequest<WasteResponse>({
     url: env.VITE_WASTE_API_URL,
+    action: 'fetch',
+  })
+  return Array.isArray(data.data) ? data.data : []
+}
+
+/**
+ * Fetches employees from the API endpoint.
+ *
+ * @returns A promise that resolves to an array of employees.
+ * @throws {Error} If the API request fails.
+ */
+export async function fetchEmployees(): Promise<EmployeeData[]> {
+  const data = await apiRequest<EmployeesResponse>({
+    url: env.VITE_EMPLOYEES_API_URL,
     action: 'fetch',
   })
   return Array.isArray(data.data) ? data.data : []
