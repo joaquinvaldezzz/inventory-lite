@@ -37,6 +37,7 @@ const config: Config = tseslint.config(
       eslintPluginReact.configs.flat.recommended,
       eslintPluginQuery.configs['flat/recommended'],
       jsdoc.configs['flat/recommended-typescript'],
+      jsdoc.configs['flat/stylistic-typescript'],
     ],
     plugins: {
       perfectionist: eslintPluginPerfectionist,
@@ -46,6 +47,7 @@ const config: Config = tseslint.config(
       '@typescript-eslint/prefer-destructuring': 'off',
       'react/react-in-jsx-scope': 'off',
       'jsdoc/tag-lines': 'off',
+      'jsdoc/check-line-alignment': 'off',
       'perfectionist/sort-jsx-props': [
         'error',
         {
