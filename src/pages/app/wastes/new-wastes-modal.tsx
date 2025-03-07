@@ -11,12 +11,19 @@ import {
 } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from 'lucide-react'
-import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
+import {
+  CalendarIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  Container,
+  PackageSearch,
+  Plus,
+  Trash2,
+} from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createDeliveryEntry, getItems, getSuppliers } from '@/lib/api'
-import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
+import { createWasteEntry, getItems, getSuppliers } from '@/lib/api'
+import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Items, Supplier } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -39,35 +46,57 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input, inputVariants } from '@/components/ui/input'
+import { Input } from '@/components/ui/input'
 import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface WastesModalActions {
   dismiss: (data?: string | number | null, role?: string) => void
 }
 
+/**
+ * A modal for creating new waste entries.
+ *
+ * @param actions Actions to be performed when the modal is dismissed
+ * @param actions.dismiss Function to dismiss the modal
+ * @returns The rendered component.
+ */
+
+/**
+ * Component for creating a new waste entry.
+ *
+ * @param props The properties for the modal.
+ * @param props.dismiss Function to dismiss the modal.
+ * @returns The rendered NewWastesModal component.
+ * @todo Save fetched suppliers and items locally.
+ */
 export function NewWastesModal({ dismiss }: WastesModalActions) {
   const [suppliers, setSuppliers] = useState<Supplier>([])
   const [items, setItems] = useState<Items>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const form = useForm<NewDeliveryFormSchema>({
+  const form = useForm<NewWasteFormSchema>({
     defaultValues: {
-      supplier: '',
-      date_request: new Date(),
-      remarks: '',
+      date: new Date(),
+      raw_material_type: '',
+      waste_type: '',
       items: [
         {
           item: '',
-          quantity_dr: 0,
-          unit_dr: '',
-          unit_price: 0,
-          total_amount: 0,
+          waste: 0,
+          unit: '',
+          reason: '',
+          employee: '',
         },
       ],
     },
-    resolver: zodResolver(newDeliveryFormSchema),
+    resolver: zodResolver(newWasteFormSchema),
   })
   const { fields, append, remove } = useFieldArray({
     name: 'items',
@@ -76,7 +105,14 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
   const { toast } = useToast()
 
   useEffect(() => {
-    // TODO: Save these suppliers locally
+    /**
+     * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
+     *
+     * @returns A promise that resolves when the suppliers have been fetched and the state has been
+     *   updated.
+     * @throws Will log an error message to the console if there is an error during the fetch
+     *   operation.
+     */
     async function fetchSuppliers() {
       try {
         await getSuppliers()
@@ -105,7 +141,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
   }, [])
 
   useEffect(() => {
-    // TODO: Save these items locally
+    /** Fetches items from the API endpoint and updates the state with the retrieved items. */
     async function fetchItems() {
       try {
         const request = await getItems()
@@ -120,27 +156,37 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
     })
   }, [])
 
+  /** Adds a new row to the form */
   function handleAdd() {
     append({
       item: '',
-      quantity_dr: 0,
-      unit_dr: '',
-      unit_price: 0,
-      total_amount: 0,
+      waste: 0,
+      unit: '',
+      reason: '',
+      employee: '',
     })
   }
 
+  /**
+   * Removes a row from the form
+   *
+   * @param index The index of the row to be removed
+   */
   function handleRemove(index: number) {
     remove(index)
   }
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     void form.handleSubmit(() => {
       const formValues = form.getValues()
-
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues)
+      const parsedValues = newWasteFormSchema.safeParse(formValues)
 
       if (!parsedValues.success) {
         console.error('Form data is invalid:', parsedValues.error)
@@ -149,9 +195,11 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
 
       setIsLoading(true)
 
+      /** Submits the form data */
       async function submitForm() {
         try {
-          await createDeliveryEntry(formValues)
+          await createWasteEntry(formValues)
+          // console.log(formValues)
         } catch (error) {
           console.error('Form submission failed:', error)
         } finally {
@@ -199,11 +247,52 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
         <Form {...form}>
           <form className="space-y-5" onSubmit={handleSubmit}>
             <FormField
-              name="supplier"
+              name="date"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor={field.name}>Supplier</FormLabel>
+                  <FormLabel>Date</FormLabel>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                    </div>
+                    <Popover modal>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            className={cn('w-full justify-start ps-9 text-left font-normal')}
+                            variant="outline"
+                          >
+                            {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
+                              format(field.value, 'PP')
+                            ) : (
+                              <span>Select a date</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="raw_material_type"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
@@ -277,55 +366,31 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
             />
 
             <FormField
-              name="date_request"
+              name="waste_type"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel>Type</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                      <PackageSearch aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
-                    <Popover modal>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            className={cn('w-full justify-start ps-9 text-left font-normal')}
-                            variant="outline"
-                          >
-                            {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                              format(field.value, 'PP')
-                            ) : (
-                              <span>Select a date</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Select
+                      name={field.name}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="ps-9">
+                          <SelectValue placeholder="Select a type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="waste">Waste</SelectItem>
+                        <SelectItem value="return">Return</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="remarks"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Remarks</FormLabel>
-                  <FormControl>
-                    <Textarea className="min-h-24" placeholder="Enter your remarks" {...field} />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -343,7 +408,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                         className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                         role="th"
                       >
-                        Ingredients
+                        Items
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
                         Quantity
@@ -352,10 +417,10 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                         Unit
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Unit Price
+                        Reason
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Total
+                        Person(s) in charge
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5" />
                     </div>
@@ -428,7 +493,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                                 )
                                                 field.onChange(selectedItem?.id.toString())
                                                 form.setValue(
-                                                  `items.${index}.unit_dr`,
+                                                  `items.${index}.unit`,
                                                   selectedItem != null ? selectedItem.unit : '',
                                                 )
                                               }}
@@ -455,7 +520,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.quantity_dr`}
+                            name={`items.${index}.waste`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem>
@@ -466,11 +531,6 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                     aria-label="Quantity"
                                     onChange={(event) => {
                                       field.onChange(event)
-                                      const { items } = form.getValues()
-                                      form.setValue(
-                                        `items.${index}.total_amount`,
-                                        items[index].quantity_dr * items[index].unit_price,
-                                      )
                                     }}
                                   />
                                 </FormControl>
@@ -485,7 +545,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.unit_dr`}
+                            name={`items.${index}.unit`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
@@ -508,35 +568,12 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.unit_price`}
+                            name={`items.${index}.reason`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <ReactNumberField
-                                    formatOptions={{
-                                      style: 'currency',
-                                      currency: 'PHP',
-                                      currencySign: 'accounting',
-                                    }}
-                                    aria-label="Unit Price"
-                                    defaultValue={field.value}
-                                    onChange={(event) => {
-                                      field.onChange(event)
-                                      const { items } = form.getValues()
-                                      form.setValue(
-                                        `items.${index}.total_amount`,
-                                        items[index].quantity_dr * items[index].unit_price,
-                                      )
-                                    }}
-                                  >
-                                    <ReactInput
-                                      className={cn(
-                                        inputVariants(),
-                                        'min-w-32 text-right tabular-nums read-only:bg-muted',
-                                      )}
-                                    />
-                                  </ReactNumberField>
+                                  <Input className="min-w-40" type="text" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -549,29 +586,12 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.total_amount`}
+                            name={`items.${index}.employee`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <ReactNumberField
-                                    formatOptions={{
-                                      style: 'currency',
-                                      currency: 'PHP',
-                                      currencySign: 'accounting',
-                                    }}
-                                    value={field.value}
-                                    aria-label="Total"
-                                    onChange={field.onChange}
-                                  >
-                                    <ReactInput
-                                      className={cn(
-                                        inputVariants(),
-                                        'min-w-40 text-right tabular-nums read-only:bg-muted',
-                                      )}
-                                      readOnly
-                                    />
-                                  </ReactNumberField>
+                                  <Input className="min-w-40" type="text" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
