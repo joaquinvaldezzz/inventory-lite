@@ -23,6 +23,13 @@ import { columns } from './columns'
 import { DataTable } from './data-table'
 import { NewWastesModal } from './new-wastes-modal'
 
+/**
+ * The `Wastes` component is responsible for displaying and managing waste entries. It fetches waste
+ * data using the `useQuery` hook and provides functionalities to refresh the data and present a
+ * modal for adding new waste entries.
+ *
+ * @returns The rendered component.
+ */
 export default function Wastes() {
   const { isPending, data, refetch } = useQuery({
     queryKey: ['wastes'],
@@ -31,13 +38,19 @@ export default function Wastes() {
 
   const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
 
-  /** Initializes the `useIonModal` hook with the `NewWastesModal` component. */
   const [present, dismiss] = useIonModal(NewWastesModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role)
     },
   })
 
+  /**
+   * Presents a modal and handles its dismissal event.
+   *
+   * This function triggers the presentation of a modal using the `present` method. It also sets up
+   * an event listener for the modal's dismissal event (`onWillDismiss`). If the modal is dismissed
+   * with the role of 'confirm', it triggers a refetch operation.
+   */
   function presentModal() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
@@ -48,6 +61,15 @@ export default function Wastes() {
     })
   }
 
+  /**
+   * Handles the refresh event for the waste entries page.
+   *
+   * @param event The refresh event containing the refresher details.
+   *
+   *   This function attempts to refetch the data when the refresh event is triggered. If an error
+   *   occurs during the refetch, it logs the error to the console. Regardless of the outcome, it
+   *   signals the completion of the refresh event.
+   */
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
     try {
       void refetch()
