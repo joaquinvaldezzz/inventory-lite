@@ -19,6 +19,11 @@ setupIonicReact()
 
 const queryClient = new QueryClient()
 
+/**
+ * The main application component that sets up the routing and context providers.
+ *
+ * @returns The rendered component.
+ */
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
