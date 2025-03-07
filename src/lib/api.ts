@@ -180,6 +180,7 @@ export async function createWasteEntry(waste: NewWasteFormSchema): Promise<void>
     action: 'add',
     additionalData: {
       raw_material_type: waste.raw_material_type,
+      waste_type: waste.waste_type,
       date: format(waste.date, 'yyyy-MM-dd'),
       items: waste.items,
     },
