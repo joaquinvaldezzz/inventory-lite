@@ -89,3 +89,20 @@ export const newDailyCountFormSchema = z.object({
 })
 
 export type NewDailyCountFormSchema = z.infer<typeof newDailyCountFormSchema>
+
+export const newWasteFormSchema = z.object({
+  date: z.coerce.date({ message: 'Please select a date.' }),
+  raw_material_type: z.string().min(1, { message: 'Please select a category.' }).trim(),
+  waste_type: z.string().min(1, { message: 'Please select a waste type.' }).trim(),
+  items: z.array(
+    z.object({
+      item: z.string().min(1, { message: 'Please select an item from the list.' }).trim(),
+      waste: z.coerce.number().min(0, { message: 'Count must be greater than or equal to zero.' }),
+      unit: z.string().min(1, { message: 'Please select a unit from the list.' }).trim(),
+      reason: z.string().min(1, { message: 'Please provide a reason.' }).trim(),
+      employee: z.string().min(1, { message: 'Please select employee(s) from the list.' }).trim(),
+    }),
+  ),
+})
+
+export type NewWasteFormSchema = z.infer<typeof newWasteFormSchema>
