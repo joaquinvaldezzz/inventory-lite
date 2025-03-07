@@ -39,6 +39,14 @@ interface DataTableProps {
   data: WasteData[]
 }
 
+/**
+ * DataTable component renders a table with sorting, filtering, and pagination functionalities.
+ *
+ * @param props The properties for the DataTable component.
+ * @param props.columns The columns configuration for the table.
+ * @param props.data The data to be displayed in the table.
+ * @returns The rendered DataTable component.
+ */
 export function DataTable({ columns, data }: DataTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
@@ -100,10 +108,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                 <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell className="first:pl-4 last:pr-4" key={cell.id}>
-                      <Link
-                        className="absolute inset-0"
-                        to={`/app/daily-count/${row.original.id}`}
-                      />
+                      <Link className="absolute inset-0" to={`/app/wastes/${row.original.id}`} />
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
