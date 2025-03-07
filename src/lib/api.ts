@@ -7,6 +7,7 @@ import type {
   EditDeliveryFormSchema,
   NewDailyCountFormSchema,
   NewDeliveryFormSchema,
+  NewWasteFormSchema,
 } from './form-schema'
 import { saveToStorage } from './storage'
 import type {
@@ -162,6 +163,25 @@ export async function createDailyCountEntry(dailyCount: NewDailyCountFormSchema)
       raw_material_type: dailyCount.raw_material_type,
       date: format(dailyCount.date, 'yyyy-MM-dd'),
       items: dailyCount.items,
+    },
+  })
+}
+
+/**
+ * Creates a new waste entry by sending a request to the waste API.
+ *
+ * @param waste The waste data to be submitted.
+ * @returns A promise that resolves when the waste entry is successfully created.
+ * @throws {Error} Throws an error if the API request fails.
+ */
+export async function createWasteEntry(waste: NewWasteFormSchema): Promise<void> {
+  await apiRequest({
+    url: env.VITE_WASTE_API_URL,
+    action: 'add',
+    additionalData: {
+      raw_material_type: waste.raw_material_type,
+      date: format(waste.date, 'yyyy-MM-dd'),
+      items: waste.items,
     },
   })
 }
