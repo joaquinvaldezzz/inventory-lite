@@ -22,10 +22,10 @@ import {
 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createWasteEntry, getItems, getSuppliers } from '@/lib/api'
+import { createWasteEntry, fetchCategories, getItems } from '@/lib/api'
 import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
-import type { Items, Supplier } from '@/lib/types'
+import type { Categories, Items } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -78,7 +78,7 @@ interface WastesModalActions {
  * @todo Save fetched suppliers and items locally.
  */
 export function NewWastesModal({ dismiss }: WastesModalActions) {
-  const [suppliers, setSuppliers] = useState<Supplier>([])
+  const [categories, setCategories] = useState<Categories[]>([])
   const [items, setItems] = useState<Items>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewWasteFormSchema>({
@@ -106,38 +106,27 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
 
   useEffect(() => {
     /**
-     * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
+     * Fetches categories and retrieves saved categories from storage.
      *
-     * @returns A promise that resolves when the suppliers have been fetched and the state has been
-     *   updated.
-     * @throws Will log an error message to the console if there is an error during the fetch
-     *   operation.
+     * @returns A promise that resolves when the operation is complete.
      */
-    async function fetchSuppliers() {
-      try {
-        await getSuppliers()
+    async function getCategoryItems() {
+      await fetchCategories()
 
-        const savedSuppliers = await getFromStorage('suppliers')
+      const savedCategories = await getFromStorage('categories')
 
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown
+      if (savedCategories != null) {
+        const parsedCategories = JSON.parse(savedCategories) as unknown
 
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers)
-          } else {
-            console.error('Suppliers data is invalid:', parsedSuppliers)
-          }
+        if (Array.isArray(parsedCategories)) {
+          setCategories(parsedCategories)
         } else {
-          console.error('No suppliers found in storage')
+          console.error('Categories data is invalid:', parsedCategories)
         }
-      } catch (error) {
-        console.error('Error fetching suppliers:', error)
       }
     }
 
-    startTransition(() => {
-      void fetchSuppliers()
-    })
+    void getCategoryItems()
   }, [])
 
   useEffect(() => {
@@ -199,7 +188,6 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
       async function submitForm() {
         try {
           await createWasteEntry(formValues)
-          // console.log(formValues)
         } catch (error) {
           console.error('Form submission failed:', error)
         } finally {
@@ -312,11 +300,11 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                   field.value.length === 0 && 'text-muted-foreground',
                                 )}
                               >
-                                {suppliers.length > 0
-                                  ? (suppliers.find(
-                                      (supplier) => supplier.id.toString() === field.value,
-                                    )?.supplier_name ?? 'Select a supplier')
-                                  : 'Select a supplier'}
+                                {categories.length > 0
+                                  ? (categories.find(
+                                      (category) => category.id.toString() === field.value,
+                                    )?.raw_material_type ?? 'Select a category')
+                                  : 'Select a category'}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
@@ -332,23 +320,23 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                           align="start"
                         >
                           <Command>
-                            <CommandInput placeholder="Search supplier..." />
+                            <CommandInput placeholder="Search category..." />
                             <CommandList>
-                              <CommandEmpty>No supplier found.</CommandEmpty>
+                              <CommandEmpty>No category found.</CommandEmpty>
                               <CommandGroup>
-                                {suppliers.map((supplier) => (
+                                {categories.map((category) => (
                                   <CommandItem
-                                    value={supplier.supplier_name}
-                                    key={supplier.id}
+                                    value={category.raw_material_type}
+                                    key={category.id}
                                     onSelect={(value) => {
-                                      const selectedSupplier = suppliers.find(
-                                        (supplier) => supplier.supplier_name === value,
+                                      const selectedSupplier = categories.find(
+                                        (supplier) => supplier.raw_material_type === value,
                                       )
                                       field.onChange(selectedSupplier?.id.toString())
                                     }}
                                   >
-                                    {supplier.supplier_name}
-                                    {supplier.id.toString() === field.value && (
+                                    {category.raw_material_type}
+                                    {category.id.toString() === field.value && (
                                       <CheckIcon className="ml-auto" size={16} />
                                     )}
                                   </CommandItem>
