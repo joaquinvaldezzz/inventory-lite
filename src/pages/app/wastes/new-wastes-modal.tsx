@@ -22,10 +22,10 @@ import {
 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createWasteEntry, fetchCategories, getItems } from '@/lib/api'
+import { createWasteEntry, fetchCategories, getIngredientsByCategory } from '@/lib/api'
 import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
-import type { Categories, Items } from '@/lib/types'
+import type { Categories, Ingredients } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
@@ -79,7 +79,7 @@ interface WastesModalActions {
  */
 export function NewWastesModal({ dismiss }: WastesModalActions) {
   const [categories, setCategories] = useState<Categories[]>([])
-  const [items, setItems] = useState<Items>([])
+  const [ingredients, setIngredients] = useState<Ingredients[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
@@ -130,20 +130,24 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
   }, [])
 
   useEffect(() => {
-    /** Fetches items from the API endpoint and updates the state with the retrieved items. */
-    async function fetchItems() {
-      try {
-        const request = await getItems()
-        setItems(request)
-      } catch (error) {
-        console.error('Error fetching items:', error)
+    /**
+     * Fetches ingredient items based on the selected raw material type from the form. If no raw
+     * material type is selected, the function returns early.
+     *
+     * @returns A promise that resolves when the ingredients are fetched and state is updated.
+     */
+    async function getIngredientItems() {
+      if (form.getValues('raw_material_type').length === 0) {
+        return
       }
+
+      const ingredients = await getIngredientsByCategory(form.getValues('raw_material_type'))
+      setIngredients(ingredients)
+      remove()
     }
 
-    startTransition(() => {
-      void fetchItems()
-    })
-  }, [])
+    void getIngredientItems()
+  }, [form.watch('raw_material_type')])
 
   /** Adds a new row to the form */
   function handleAdd() {
@@ -447,8 +451,8 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                             field.value.length === 0 && 'text-muted-foreground',
                                           )}
                                         >
-                                          {items.length > 0
-                                            ? (items.find(
+                                          {ingredients.length > 0
+                                            ? (ingredients.find(
                                                 (item) => item.id.toString() === field.value,
                                               )?.raw_material ?? 'Select an item')
                                             : 'Select an item'}
@@ -471,13 +475,13 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                       <CommandList>
                                         <CommandEmpty>No item found.</CommandEmpty>
                                         <CommandGroup>
-                                          {items.map((item) => (
+                                          {ingredients.map((ingredient) => (
                                             <CommandItem
-                                              value={item.raw_material}
-                                              key={item.id}
+                                              value={ingredient.raw_material}
+                                              key={ingredient.id}
                                               onSelect={(value) => {
-                                                const selectedItem = items.find(
-                                                  (item) => item.raw_material === value,
+                                                const selectedItem = ingredients.find(
+                                                  (ingredient) => ingredient.raw_material === value,
                                                 )
                                                 field.onChange(selectedItem?.id.toString())
                                                 form.setValue(
@@ -486,8 +490,8 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                                 )
                                               }}
                                             >
-                                              {item.raw_material}
-                                              {item.id.toString() === field.value && (
+                                              {ingredient.raw_material}
+                                              {ingredient.id.toString() === field.value && (
                                                 <CheckIcon className="ml-auto" size={16} />
                                               )}
                                             </CommandItem>
@@ -610,10 +614,9 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
               </div>
             </div>
 
-            {/* Make these buttons sticky at the bottom */}
-            <div className="mt-1 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 pt-1">
               <Button type="button" variant="ghost" onClick={handleAdd}>
-                <span>Add more ingredients</span>
+                <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 
