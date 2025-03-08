@@ -102,7 +102,7 @@ export default function Wastes() {
           <IonToolbar>
             <IonTitle size="large">Wastes</IonTitle>
             <IonButtons slot="primary">
-              <IonButton>
+              <IonButton onClick={presentModal}>
                 <IonIcon icon={add} slot="icon-only" />
               </IonButton>
             </IonButtons>
