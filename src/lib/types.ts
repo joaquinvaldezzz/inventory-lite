@@ -352,6 +352,36 @@ export interface WasteData {
 
 export type WasteResponse = Prettify<APIResponse<WasteData>>
 
+export interface WasteRecordData {
+  id: number
+  branch_id: number
+  branch: string
+  branch_name: string
+  waste_type: string
+  raw_material_type_id: number
+  raw_material_type: string
+  date: string
+  items: Array<{
+    id: number
+    inventory_waste_id: number
+    branch_id: number
+    branch: string
+    branch_name: string
+    date: string
+    raw_material_type_id: number
+    raw_material_type: string
+    item_id: number
+    barcode: string
+    item: string
+    unit: string
+    waste: number
+    reason: string
+    employee: string
+  }>
+}
+
+export type WasteRecordResponse = Prettify<APIResponse<WasteRecordData[]>>
+
 export interface EmployeeData {
   EmployeeID: string
   CompanyID: string
