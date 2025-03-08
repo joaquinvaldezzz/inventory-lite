@@ -27,12 +27,9 @@ import { NewDeliveryModal } from './new-delivery-modal'
 
 /**
  * The `Delivery` component handles displaying and managing delivery entries. It fetches delivery
- * data, sorts it by date, and allows users to add, delete, update, and refresh deliveries.
+ * data, sorts it by date, and allows users to add, update, delete, and refresh deliveries.
  *
- * @remarks
- *   This component uses the `useQuery` hook to fetch delivery entries and the `useIonModal` hook to
- *   present a modal for adding new deliveries. It also includes a refresh mechanism via the
- *   `IonRefresher` component.
+ * @returns The rendered component.
  */
 export default function Delivery() {
   /**
@@ -92,12 +89,7 @@ export default function Delivery() {
   /**
    * Handles the refresh event for the delivery page.
    *
-   * This function attempts to refetch the delivery entries. If an error occurs during the fetch, it
-   * logs the error to the console. Regardless of success or failure, it completes the refresh
-   * event.
-   *
-   * @param {CustomEvent<RefresherEventDetail>} event - The refresh event containing the refresher
-   *   details.
+   * @param event The refresh event containing the refresher details.
    */
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
     try {

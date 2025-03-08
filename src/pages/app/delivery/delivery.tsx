@@ -17,6 +17,13 @@ import DeliveryRecordForm from './delivery-record'
 
 type DeliveryPageProps = RouteComponentProps<{ id: string }>
 
+/**
+ * Component for displaying and editing a specific delivery record.
+ *
+ * @param props The properties passed to the component.
+ * @param props.match The match object containing route parameters.
+ * @returns The rendered component.
+ */
 export default function DeliveryRecord({ match }: DeliveryPageProps) {
   const { isPending, data } = useQuery({
     queryKey: ['delivery-entry', match.params.id],
