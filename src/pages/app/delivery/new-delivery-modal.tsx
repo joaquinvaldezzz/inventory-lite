@@ -53,8 +53,9 @@ interface DeliveryModalActions {
  * fields for supplier, date, remarks, and a list of items. The form data is validated with a Zod
  * schema and submitted to create a new entry.
  *
- * @param {DeliveryModalActions} props - The props for the component.
- * @param {Function} props.dismiss - Function to dismiss the modal.
+ * @param props The props for the component.
+ * @param props.dismiss Function to dismiss the modal.
+ * @returns The rendered component.
  */
 export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
   /** Initializes the state variables for suppliers, items, and loading status. */
@@ -92,17 +93,9 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
 
   useEffect(() => {
     // TODO: Save these suppliers locally
+
     /**
-     * Fetches suppliers from an external source and updates the state with the retrieved suppliers.
-     *
-     * This function performs the following steps:
-     *
-     * 1. Calls the `getSuppliers` function to fetch suppliers.
-     * 2. Retrieves the saved suppliers from storage using the `getFromStorage` function.
-     * 3. Parses the retrieved suppliers and updates the state if the data is valid.
-     *
-     * If the suppliers data is invalid or not found in storage, appropriate error messages are
-     * logged.
+     * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
      *
      * @throws Will log an error message if there is an issue fetching suppliers or parsing the
      *   data.
@@ -136,13 +129,8 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
 
   useEffect(() => {
     // TODO: Save these items locally
-    /**
-     * Fetches items from the server and updates the state with the retrieved items.
-     *
-     * This function makes an asynchronous call to `getItems` to retrieve the items. If the request
-     * is successful, it updates the state with the retrieved items using the `setItems` function.
-     * If an error occurs during the request, it logs the error to the console.
-     */
+
+    /** Fetches items from the API endpoint and updates the state with the retrieved items. */
     async function fetchItems() {
       try {
         const request = await getItems()
@@ -172,7 +160,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
    * Handles the removal of a row from the list of delivery items by removing the item at the
    * specified index.
    *
-   * @param {number} index - The index of the item to be removed.
+   * @param index The index of the item to be removed.
    */
   function handleRemove(index: number) {
     remove(index)
@@ -181,7 +169,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
   /**
    * Handles the form submission event.
    *
-   * @param {FormEvent<HTMLFormElement>} event - The form submission event.
+   * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     /** Prevents the default form submission behavior. */
@@ -204,14 +192,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
       /** Sets the loading state to `true`. */
       setIsLoading(true)
 
-      /**
-       * Submits the delivery form by creating a new delivery entry.
-       *
-       * This function handles the form submission process. It attempts to create a new delivery
-       * entry using the provided form values. If the creation is successful, it displays a success
-       * message and dismisses the modal. If an error occurs during the process, it logs the error
-       * to the console.
-       */
+      /** Submits the delivery form by creating a new delivery entry. */
       async function submitForm() {
         try {
           await createDeliveryEntry(formValues)
@@ -302,7 +283,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                         </PopoverTrigger>
 
                         <PopoverContent
-                          className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                          className="w-full max-w-(--radix-popper-anchor-width) min-w-(--radix-popper-anchor-width) border-input p-0"
                           align="start"
                         >
                           <Command>
@@ -321,7 +302,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                                       field.onChange(selectedSupplier?.id.toString())
                                     }}
                                   >
-                                    {supplier.supplier_name}
+                                    <span className="truncate">{supplier.supplier_name}</span>
                                     {supplier.id.toString() === field.value && (
                                       <CheckIcon className="ml-auto" size={16} />
                                     )}
