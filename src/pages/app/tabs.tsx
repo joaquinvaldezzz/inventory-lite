@@ -9,7 +9,15 @@ import Delivery from './delivery'
 import DeliveryRecord from './delivery/delivery'
 import Expenses from './expenses'
 import Wastes from './wastes'
+import WastesRecord from './wastes/wastes'
 
+/**
+ * The `Tabs` component sets up the main tab navigation for the application using Ionic components.
+ * It includes routes and tab buttons for different sections of the app such as Delivery, Daily
+ * Count, Wastes, and Expenses.
+ *
+ * @returns The rendered tab navigation component.
+ */
 export default function Tabs() {
   return (
     <IonReactRouter>
@@ -27,6 +35,7 @@ export default function Tabs() {
             render={(props) => <DailyCountRecord {...props} />}
             exact
           />
+          <Route path="/app/wastes/:id" render={(props) => <WastesRecord {...props} />} exact />
         </IonRouterOutlet>
 
         <IonTabBar slot="bottom">
