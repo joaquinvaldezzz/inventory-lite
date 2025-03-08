@@ -30,6 +30,8 @@ import type {
   Supplier,
   SupplierResponse,
   WasteData,
+  WasteRecordData,
+  WasteRecordResponse,
   WasteResponse,
 } from './types'
 
@@ -301,16 +303,14 @@ export async function getSpecificDailyCountRecordById(id: number): Promise<Daily
   return Array.isArray(data.data) ? data.data : []
 }
 
-// TODO: Change the apiRequest and return types
-
 /**
  * Fetches a specific waste record by its ID.
  *
  * @param id The waste record ID.
  * @returns A promise that resolves to the waste record data.
  */
-export async function getSpecificWastesRecordById(id: number): Promise<DailyCountRecord[]> {
-  const data = await apiRequest<DailyCountRecordResponse>({
+export async function getSpecificWastesRecordById(id: number): Promise<WasteRecordData[]> {
+  const data = await apiRequest<WasteRecordResponse>({
     url: env.VITE_WASTE_API_URL,
     action: 'fetch',
     additionalData: { id },
@@ -407,6 +407,28 @@ export async function updateDailyCountRecord(
 }
 
 /**
+ * Updates an existing waste record in the database.
+ *
+ * @param id The unique identifier of the waste record to update.
+ * @param data The updated waste data.
+ * @returns Resolves when the update request is successful.
+ * @throws {Error} If the API request fails.
+ */
+export async function updateWasteRecord(id: number, data: NewWasteFormSchema): Promise<void> {
+  await apiRequest({
+    url: env.VITE_WASTE_API_URL,
+    action: 'edit',
+    additionalData: {
+      id,
+      raw_material_type: data.raw_material_type,
+      waste_type: data.waste_type,
+      date: format(data.date, 'yyyy-MM-dd'),
+      items: data.items,
+    },
+  })
+}
+
+/**
  * Deletes a delivery record by ID.
  *
  * @param id The ID of the record to delete.
@@ -424,4 +446,14 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
  */
 export async function deleteDailyCountRecordById(id: number): Promise<void> {
   await apiRequest({ url: env.VITE_DAILY_COUNT_API_URL, action: 'delete', additionalData: { id } })
+}
+
+/**
+ * Deletes a waste record by ID.
+ *
+ * @param id The ID of the record to delete.
+ * @returns Resolves when the record is deleted.
+ */
+export async function deleteWasteRecordById(id: number): Promise<void> {
+  await apiRequest({ url: env.VITE_WASTE_API_URL, action: 'delete', additionalData: { id } })
 }
