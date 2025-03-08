@@ -46,8 +46,21 @@ export default function Expenses() {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className="ion-padding">
-        <DataTable columns={columns} data={[]} />
+      <IonContent>
+        <IonHeader collapse="condense">
+          <IonToolbar>
+            <IonTitle size="large">Expenses</IonTitle>
+            <IonButtons slot="primary">
+              <IonButton onClick={presentModal}>
+                <IonIcon icon={add} slot="icon-only" />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+
+        <div className="ion-padding">
+          <DataTable columns={columns} data={[]} />
+        </div>
       </IonContent>
     </IonPage>
   )
