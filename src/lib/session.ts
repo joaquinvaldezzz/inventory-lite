@@ -93,3 +93,40 @@ export async function deleteSession() {
 
   // Redirect to the login page
 }
+
+/**
+ * Retrieves the session token from cookies.
+ *
+ * @returns A promise that resolves to the session token if found, or null otherwise.
+ */
+export async function getSessionToken(): Promise<string | null> {
+  const cookies = await CapacitorCookies.getCookies()
+  return cookies.session ?? null
+}
+
+/**
+ * Sets the session token in cookies.
+ *
+ * @param token - The session token to set.
+ * @param expiresAt - The expiration date of the session token.
+ * @returns A promise that resolves to void.
+ */
+export async function setSessionToken(token: string, expiresAt: Date): Promise<void> {
+  await CapacitorCookies.setCookie({
+    key: 'session',
+    value: token,
+    path: '/',
+    expires: expiresAt.toString(),
+  })
+}
+
+/**
+ * Clears the session token from cookies.
+ *
+ * @returns A promise that resolves to void.
+ */
+export async function clearSessionToken(): Promise<void> {
+  await CapacitorCookies.deleteCookie({
+    key: 'session',
+  })
+}

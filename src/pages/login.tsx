@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 
 import { authenticateUser } from '@/lib/api'
 import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
-import { createSession } from '@/lib/session'
+import { setSessionToken } from '@/lib/session'
 import { saveToStorage } from '@/lib/storage'
 import { useToast } from '@/hooks/use-toast'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -65,7 +65,8 @@ export default function Login() {
             const userId = user.id
             const userRole = user.level
 
-            await createSession(userId, userRole)
+            const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+            await setSessionToken(authenticatedUser.data.token, expiresAt)
 
             router.push('/branch-selector')
           } else {

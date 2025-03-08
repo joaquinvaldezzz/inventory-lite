@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Redirect, Route } from 'react-router-dom'
+import { Redirect, Route, useHistory } from 'react-router-dom'
 
 import { Toaster } from '@/components/ui/toaster'
+import { verifySession } from '@/lib/session'
 
 import { Loading } from './components/loading'
 import BranchSelector from './pages/branch-selector'
@@ -25,6 +26,24 @@ const queryClient = new QueryClient()
  * @returns The rendered component.
  */
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const history = useHistory()
+
+  useEffect(() => {
+    async function checkSession() {
+      const session = await verifySession()
+      setIsAuthenticated(session !== null)
+    }
+
+    void checkSession()
+  }, [])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      history.push('/login')
+    }
+  }, [isAuthenticated, history])
+
   return (
     <QueryClientProvider client={queryClient}>
       <IonApp>
