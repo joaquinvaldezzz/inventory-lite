@@ -236,7 +236,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                       </PopoverTrigger>
 
                       <PopoverContent
-                        className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                        className="w-full max-w-(--radix-popper-anchor-width) min-w-(--radix-popper-anchor-width) border-input p-0"
                         align="start"
                       >
                         <Command>
@@ -255,7 +255,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                     field.onChange(selectedSupplier?.id.toString())
                                   }}
                                 >
-                                  {supplier.supplier_name}
+                                  <span className="truncate"> {supplier.supplier_name}</span>
                                   {supplier.id.toString() === field.value && (
                                     <CheckIcon className="ml-auto" size={16} />
                                   )}
