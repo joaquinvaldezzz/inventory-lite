@@ -27,7 +27,7 @@ type WastesPageProps = RouteComponentProps<{ id: string }>
 export default function WastesRecord({ match }: WastesPageProps) {
   const { pathname } = useLocation()
   const { isPending, data } = useQuery({
-    queryKey: ['delivery-entry', match.params.id, pathname],
+    queryKey: ['waste-entry', match.params.id, pathname],
     queryFn: async () => await getSpecificWastesRecordById(Number(match.params.id)),
   })
 
