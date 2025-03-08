@@ -41,6 +41,19 @@ interface DataTableProps<TData extends { id: string | number }, TValue> {
   withPagination?: boolean
 }
 
+/**
+ * A generic DataTable component that supports sorting, filtering, pagination, and search
+ * functionality.
+ *
+ * @template TData The type of data being displayed in the table. Must include an `id` property.
+ * @template TValue The type of value being used in the table.
+ * @param props The properties for the DataTable component.
+ * @param props.columns The column definitions for the table.
+ * @param props.data The data to be displayed in the table.
+ * @param props.withSearch Whether to include a search input for filtering the table data.
+ * @param props.withPagination Whether to include pagination controls for the table.
+ * @returns The rendered DataTable component.
+ */
 export function DataTable<TData extends { id: string | number }, TValue>({
   columns,
   data,
