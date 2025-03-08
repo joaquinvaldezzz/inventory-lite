@@ -21,6 +21,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
+/**
+ * The `Login` component renders a login form for user authentication. It includes fields for
+ * username and password, and handles form submission with validation and error handling.
+ *
+ * @returns The rendered login form component.
+ */
 export default function Login() {
   const formRef = useRef<HTMLFormElement>(null)
   const [isVisible, setIsVisible] = useState<boolean>(false)
@@ -35,6 +41,11 @@ export default function Login() {
   const router = useIonRouter()
   const { toast } = useToast()
 
+  /**
+   * Handles the form submission event for the login form.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -49,6 +60,11 @@ export default function Login() {
 
       setIsLoading(true)
 
+      /**
+       * Logs in a user using the provided form values.
+       *
+       * @returns A promise that resolves when the login process is complete.
+       */
       async function loginUser() {
         const { username, password } = formValues
 
