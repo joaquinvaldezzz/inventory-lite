@@ -60,6 +60,16 @@ interface DailyCountModalActions {
   dismiss: (data?: string | number | null, role?: string) => void
 }
 
+/**
+ * The `NewDailyCountModal` component renders a modal for creating a new daily count entry. It
+ * provides a form with fields for date, category, and items, allowing users to dynamically add,
+ * generate, and remove items. The form data is validated and submitted to create a new daily count
+ * entry.
+ *
+ * @param props The component props.
+ * @param props.dismiss The function to dismiss the modal.
+ * @returns The rendered component.
+ */
 export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
   const [categories, setCategories] = useState<Categories[]>([])
   const [ingredients, setIngredients] = useState<Ingredients[]>([])
@@ -78,6 +88,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
   })
   const { toast } = useToast()
 
+  /** Adds a new row to the items field array. */
   function handleAdd() {
     append({
       item: '',
@@ -86,6 +97,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
     })
   }
 
+  /** Generates a new list of ingredients with their counts set to 0 and replaces the current list. */
   function handleGenerate() {
     replace(
       ingredients.map((ingredient) => ({
@@ -96,11 +108,21 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
     )
   }
 
+  /**
+   * Handles the removal of a row at the specified index.
+   *
+   * @param index The index of the item to be removed.
+   */
   function handleRemove(index: number) {
     remove(index)
   }
 
   useEffect(() => {
+    /**
+     * Fetches categories from the API endpoint and retrieves saved categories from storage.
+     *
+     * @returns A promise that resolves when the categories are fetched and set.
+     */
     async function getCategoryItems() {
       await fetchCategories()
 
@@ -121,6 +143,12 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
   }, [])
 
   useEffect(() => {
+    /**
+     * Fetches ingredient items from the API endpoint based on the selected raw material type from
+     * the form. If no raw material type is selected, the function returns early.
+     *
+     * @returns A promise that resolves when the ingredients are fetched and state is updated.
+     */
     async function getIngredientItems() {
       if (form.getValues('raw_material_type').length === 0) {
         return
@@ -134,6 +162,11 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
     void getIngredientItems()
   }, [form.watch('raw_material_type')])
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -148,6 +181,11 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
 
       setIsLoading(true)
 
+      /**
+       * Submits the form to create a new daily count entry.
+       *
+       * @returns A promise that resolves when the form submission process is complete.
+       */
       async function submitForm() {
         try {
           await createDailyCountEntry(formValues)
