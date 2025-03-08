@@ -58,6 +58,15 @@ interface DeliveryRecordFormProps {
   data: DeliveryRecord
 }
 
+/**
+ * DeliveryRecordForm component renders a form for editing or deleting a delivery record. It
+ * initializes the form with default values from the provided data and handles form submission and
+ * deletion.
+ *
+ * @param props The props for the DeliveryRecordForm component.
+ * @param props.data The data for the delivery record.
+ * @returns The rendered DeliveryRecordForm component.
+ */
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const [suppliers, setSuppliers] = useState<Supplier>([])
@@ -84,6 +93,14 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
   useEffect(() => {
     // TODO: Save these suppliers locally
+
+    /**
+     * Fetches the list of suppliers from storage and updates the state.
+     *
+     * @returns A promise that resolves when the suppliers have been fetched and the state has been
+     *   updated.
+     * @throws Will log an error message to the console if there is an issue fetching the suppliers.
+     */
     async function fetchSuppliers() {
       try {
         const savedSuppliers = await getFromStorage('suppliers')
@@ -109,6 +126,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     })
   }, [])
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -123,6 +145,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
       setIsLoading(true)
 
+      /**
+       * Submits the form data to update the delivery record.
+       *
+       * @returns A promise that resolves when the form submission process is complete.
+       */
       async function submitForm() {
         try {
           await updateDeliveryRecord(data.id, formValues)
@@ -144,6 +171,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     })(event)
   }
 
+  /**
+   * Handles the deletion of a delivery record.
+   *
+   * @returns A promise that resolves when the deletion process is complete.
+   */
   async function handleDelete() {
     try {
       await deleteDeliveryRecord(data.id)
