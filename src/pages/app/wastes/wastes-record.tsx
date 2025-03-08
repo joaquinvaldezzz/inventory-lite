@@ -1,14 +1,15 @@
+/* eslint-disable max-lines -- This is a large file */
 import { startTransition, useEffect, useState, type FormEvent } from 'react'
 import { useIonRouter } from '@ionic/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from 'lucide-react'
+import { useFieldArray, useForm } from 'react-hook-form'
 
-import { deleteDailyCountRecordById, updateDailyCountRecord } from '@/lib/api'
-import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
+import { deleteWasteRecordById, updateWasteRecord } from '@/lib/api'
+import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
-import type { Categories, DailyCountRecord } from '@/lib/types'
+import type { Categories, WasteRecordData } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -40,6 +41,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -51,7 +53,7 @@ import {
 } from '@/components/ui/select'
 
 interface WastesRecordFormProps {
-  data: DailyCountRecord
+  data: WasteRecordData
 }
 
 /**
@@ -64,20 +66,36 @@ interface WastesRecordFormProps {
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
   const [categories, setCategories] = useState<Categories[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const form = useForm<NewDailyCountFormSchema>({
+  const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(data.date),
       raw_material_type: data.raw_material_type_id.toString(),
+      waste_type: data.waste_type,
       items: data.items.map((item) => ({
         item: item.item_id.toString(),
-        count: item.count,
+        waste: item.waste,
         unit: item.unit,
+        reason: item.reason,
+        employee: item.employee,
       })),
     },
-    resolver: zodResolver(newDailyCountFormSchema),
+    resolver: zodResolver(newWasteFormSchema),
+  })
+  const { fields, remove } = useFieldArray({
+    name: 'items',
+    control: form.control,
   })
   const router = useIonRouter()
   const { toast } = useToast()
+
+  /**
+   * Handles the removal of a row at the specified index.
+   *
+   * @param index The index of the item to be removed.
+   */
+  function handleRemove(index: number) {
+    remove(index)
+  }
 
   useEffect(() => {
     /**
@@ -123,7 +141,9 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
 
     void form.handleSubmit(() => {
       const formValues = form.getValues()
-      const parsedValues = newDailyCountFormSchema.safeParse(formValues)
+      const parsedValues = newWasteFormSchema.safeParse(formValues)
+
+      console.log(parsedValues)
 
       if (!parsedValues.success) {
         console.error('Form data is invalid:', parsedValues.error)
@@ -140,13 +160,14 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
        */
       async function submitForm() {
         try {
-          await updateDailyCountRecord(data.id, formValues)
+          await updateWasteRecord(data.id, formValues)
+          console.log('Form submitted:', formValues)
         } catch (error) {
           console.error('Form submission failed:', error)
         } finally {
           setIsLoading(false)
           router.goBack()
-          toast({ description: 'Successfully updated daily count record' })
+          toast({ description: 'Successfully updated waste record' })
         }
       }
 
@@ -163,16 +184,16 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
    */
   async function handleDelete() {
     try {
-      await deleteDailyCountRecordById(data.id)
+      await deleteWasteRecordById(data.id)
     } catch (error) {
-      console.error('Error deleting daily count record:', error)
+      console.error('Error deleting waste record:', error)
       toast({
-        description: 'An error occurred while deleting the daily count record. Please try again.',
+        description: 'An error occurred while deleting the waste record. Please try again.',
         variant: 'destructive',
       })
     } finally {
       router.goBack()
-      toast({ description: 'Daily count record deleted' })
+      toast({ description: 'Waste record deleted' })
     }
   }
 
@@ -225,7 +246,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor={field.name}>Category</FormLabel>
+              <FormLabel>Category</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <Container aria-hidden="true" strokeWidth={2} size={16} />
@@ -298,6 +319,33 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
           )}
         />
 
+        <FormField
+          name="waste_type"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                  <Container aria-hidden="true" strokeWidth={2} size={16} />
+                </div>
+                <Select name={field.name} defaultValue={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="ps-9">
+                      <SelectValue placeholder="Select a type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="waste">Waste</SelectItem>
+                    <SelectItem value="return">Return</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-1 border-y whitespace-nowrap">
           <div className="relative w-full overflow-auto">
             <div className="table w-full caption-bottom text-sm" role="table">
@@ -332,7 +380,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
               </div>
 
               <div className="table-row-group **:[[role=td]]:px-3" role="tbody">
-                {data.items.map((item, index) => {
+                {fields.map((item, index) => {
                   return (
                     <div
                       className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
@@ -351,7 +399,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                         role="td"
                       >
                         <FormField
-                          name={`items.${index}.count`}
+                          name={`items.${index}.waste`}
                           control={form.control}
                           render={({ field }) => (
                             <FormItem>
@@ -359,7 +407,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                                 <NumberInput
                                   className="min-w-32"
                                   value={field.value}
-                                  aria-label="Inventory count"
+                                  aria-label="Quantity"
                                   onChange={(event) => {
                                     field.onChange(event)
                                   }}
@@ -381,23 +429,69 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                           render={({ field }) => (
                             <FormItem className="space-y-0">
                               <FormControl>
-                                <Select
-                                  name={field.name}
-                                  defaultValue={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className="min-w-40">
-                                    <SelectValue placeholder="Select a unit" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={field.value}>{field.value}</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Input
+                                  className="min-w-40 read-only:bg-muted"
+                                  readOnly
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
+                      </div>
+
+                      <div
+                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                        role="td"
+                      >
+                        <FormField
+                          name={`items.${index}.reason`}
+                          control={form.control}
+                          render={({ field }) => (
+                            <FormItem className="space-y-0">
+                              <FormControl>
+                                <Input className="min-w-40" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div
+                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                        role="td"
+                      >
+                        <FormField
+                          name={`items.${index}.employee`}
+                          control={form.control}
+                          render={({ field }) => (
+                            <FormItem className="space-y-0">
+                              <FormControl>
+                                <Input className="min-w-40" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div
+                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                        role="td"
+                      >
+                        <Button
+                          className="text-destructive"
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => {
+                            handleRemove(index)
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
                       </div>
                     </div>
                   )
