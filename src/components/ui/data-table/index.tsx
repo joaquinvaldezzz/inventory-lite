@@ -1,4 +1,3 @@
-/* eslint-disable complexity -- This component has complex logic that is necessary for its functionality */
 import { useState } from 'react'
 import {
   flexRender,
@@ -37,8 +36,6 @@ import {
 interface DataTableProps<TData extends { id: string | number }, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
-  withSearch?: boolean
-  withPagination?: boolean
 }
 
 /**
@@ -50,15 +47,11 @@ interface DataTableProps<TData extends { id: string | number }, TValue> {
  * @param props The properties for the DataTable component.
  * @param props.columns The column definitions for the table.
  * @param props.data The data to be displayed in the table.
- * @param props.withSearch Whether to include a search input for filtering the table data.
- * @param props.withPagination Whether to include pagination controls for the table.
  * @returns The rendered DataTable component.
  */
 export function DataTable<TData extends { id: string | number }, TValue>({
   columns,
   data,
-  withSearch,
-  withPagination,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -79,26 +72,24 @@ export function DataTable<TData extends { id: string | number }, TValue>({
 
   return (
     <div className="space-y-4">
-      {(withSearch ?? false) && (
-        <div className="relative w-full shrink-0">
-          <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-            <Search strokeWidth={2} size={16} />
-          </div>
-          <label className="sr-only" htmlFor="search-delivery">
-            Search by DR no. or PO no.
-          </label>
-          <Input
-            className="peer ps-9"
-            id="search-delivery"
-            type="search"
-            placeholder="Search by DR no. or PO no."
-            value={table.getColumn('dr_no')?.getFilterValue()?.toString() ?? ''}
-            onChange={(event) => table.getColumn('dr_no')?.setFilterValue(event.target.value)}
-          />
+      <div className="relative w-full shrink-0">
+        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+          <Search strokeWidth={2} size={16} />
         </div>
-      )}
+        <label className="sr-only" htmlFor="search-delivery">
+          Search by DR no. or PO no.
+        </label>
+        <Input
+          className="peer ps-9"
+          id="search-delivery"
+          type="search"
+          placeholder="Search by DR no. or PO no."
+          value={table.getColumn('dr_no')?.getFilterValue()?.toString() ?? ''}
+          onChange={(event) => table.getColumn('dr_no')?.setFilterValue(event.target.value)}
+        />
+      </div>
 
-      <div className="-mx-4 grid grid-cols-1 border-y whitespace-nowrap">
+      <div className="-mx-4 border-y whitespace-nowrap">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -115,6 +106,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
@@ -141,114 +133,112 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         </Table>
       </div>
 
-      {(withPagination ?? false) && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center">
-            <div className="flex items-center gap-3">
-              <Label htmlFor="rows-per-page">Rows per page</Label>
-              <Select
-                value={table.getState().pagination.pageSize.toString()}
-                onValueChange={(value) => {
-                  table.setPageSize(Number(value))
-                }}
-              >
-                <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
-                  <SelectValue placeholder="Select number of results" />
-                </SelectTrigger>
-                <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
-                  {[5, 10, 25, 50].map((pageSize) => (
-                    <SelectItem value={pageSize.toString()} key={pageSize}>
-                      {pageSize}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
-              <p className="text-sm whitespace-nowrap text-muted-foreground" aria-live="polite">
-                <span className="text-foreground">
-                  {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
-                  to{' '}
-                  {Math.min(
-                    Math.max(
-                      table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                        table.getState().pagination.pageSize,
-                      0,
-                    ),
-                    table.getRowCount(),
-                  )}
-                </span>{' '}
-                of <span className="text-foreground">{table.getRowCount().toString()}</span>
-              </p>
-            </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <Label htmlFor="rows-per-page">Rows per page</Label>
+            <Select
+              value={table.getState().pagination.pageSize.toString()}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value))
+              }}
+            >
+              <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
+                <SelectValue placeholder="Select number of results" />
+              </SelectTrigger>
+              <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+                {[5, 10, 25, 50].map((pageSize) => (
+                  <SelectItem value={pageSize.toString()} key={pageSize}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <Button
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  aria-label="Go to first page"
-                  disabled={!table.getCanPreviousPage()}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    table.firstPage()
-                  }}
-                >
-                  <ChevronFirst aria-hidden="true" strokeWidth={2} size={16} />
-                </Button>
-              </PaginationItem>
-
-              <PaginationItem>
-                <Button
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  aria-label="Go to previous page"
-                  disabled={!table.getCanPreviousPage()}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    table.previousPage()
-                  }}
-                >
-                  <ChevronLeft aria-hidden="true" strokeWidth={2} size={16} />
-                </Button>
-              </PaginationItem>
-
-              <PaginationItem>
-                <Button
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  aria-label="Go to next page"
-                  disabled={!table.getCanNextPage()}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    table.nextPage()
-                  }}
-                >
-                  <ChevronRight aria-hidden="true" strokeWidth={2} size={16} />
-                </Button>
-              </PaginationItem>
-
-              <PaginationItem>
-                <Button
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  aria-label="Go to last page"
-                  disabled={!table.getCanNextPage()}
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    table.lastPage()
-                  }}
-                >
-                  <ChevronLast aria-hidden="true" strokeWidth={2} size={16} />
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
+            <p className="text-sm whitespace-nowrap text-muted-foreground" aria-live="polite">
+              <span className="text-foreground">
+                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
+                to{' '}
+                {Math.min(
+                  Math.max(
+                    table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
+                      table.getState().pagination.pageSize,
+                    0,
+                  ),
+                  table.getRowCount(),
+                )}
+              </span>{' '}
+              of <span className="text-foreground">{table.getRowCount().toString()}</span>
+            </p>
+          </div>
         </div>
-      )}
+
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <Button
+                className="disabled:pointer-events-none disabled:opacity-50"
+                aria-label="Go to first page"
+                disabled={!table.getCanPreviousPage()}
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                  table.firstPage()
+                }}
+              >
+                <ChevronFirst aria-hidden="true" strokeWidth={2} size={16} />
+              </Button>
+            </PaginationItem>
+
+            <PaginationItem>
+              <Button
+                className="disabled:pointer-events-none disabled:opacity-50"
+                aria-label="Go to previous page"
+                disabled={!table.getCanPreviousPage()}
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                  table.previousPage()
+                }}
+              >
+                <ChevronLeft aria-hidden="true" strokeWidth={2} size={16} />
+              </Button>
+            </PaginationItem>
+
+            <PaginationItem>
+              <Button
+                className="disabled:pointer-events-none disabled:opacity-50"
+                aria-label="Go to next page"
+                disabled={!table.getCanNextPage()}
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                  table.nextPage()
+                }}
+              >
+                <ChevronRight aria-hidden="true" strokeWidth={2} size={16} />
+              </Button>
+            </PaginationItem>
+
+            <PaginationItem>
+              <Button
+                className="disabled:pointer-events-none disabled:opacity-50"
+                aria-label="Go to last page"
+                disabled={!table.getCanNextPage()}
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                  table.lastPage()
+                }}
+              >
+                <ChevronLast aria-hidden="true" strokeWidth={2} size={16} />
+              </Button>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   )
 }

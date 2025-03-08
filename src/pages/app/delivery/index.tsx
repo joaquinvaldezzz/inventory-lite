@@ -132,11 +132,7 @@ export default function Delivery() {
         </IonHeader>
 
         <div className="ion-padding">
-          {isPending ? (
-            <Loading />
-          ) : (
-            <DataTable columns={columns} data={sortedData} withPagination withSearch />
-          )}
+          {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
         </div>
       </IonContent>
     </IonPage>
