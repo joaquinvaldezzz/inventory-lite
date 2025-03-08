@@ -15,7 +15,7 @@ export interface SessionPayload extends JWTPayload {
 /**
  * Encrypts the given payload using the HS256 algorithm.
  *
- * @param payload - The payload to be encrypted.
+ * @param payload The payload to be encrypted.
  * @returns A promise that resolves to the encrypted token.
  */
 export async function encrypt(payload: SessionPayload) {
@@ -29,7 +29,7 @@ export async function encrypt(payload: SessionPayload) {
 /**
  * Decrypts a session token and returns the payload.
  *
- * @param session - The session token to decrypt.
+ * @param session The session token to decrypt.
  * @returns The payload of the decrypted session token, or null if decryption fails.
  */
 export async function decrypt(session: string | undefined = '') {
@@ -47,8 +47,8 @@ export async function decrypt(session: string | undefined = '') {
 /**
  * Creates a session for the specified user.
  *
- * @param userId - The ID of the user.
- * @param userRole - The role of the user.
+ * @param userId The ID of the user.
+ * @param userRole The role of the user.
  * @returns A promise that resolves to void.
  */
 export async function createSession(userId: string, userRole: string) {
