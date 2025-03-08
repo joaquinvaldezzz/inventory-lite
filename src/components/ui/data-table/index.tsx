@@ -71,8 +71,12 @@ export function DataTable<TData extends { id: string | number }, TValue>({
           <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
             <Search strokeWidth={2} size={16} />
           </div>
+          <label className="sr-only" htmlFor="search-delivery">
+            Search by DR no. or PO no.
+          </label>
           <Input
             className="peer ps-9"
+            id="search-delivery"
             type="search"
             placeholder="Search by DR no. or PO no."
             value={table.getColumn('dr_no')?.getFilterValue()?.toString() ?? ''}
