@@ -72,7 +72,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
       raw_material_type: data.raw_material_type_id.toString(),
       waste_type: data.waste_type,
       items: data.items.map((item) => ({
-        item: item.item_id.toString(),
+        item: item.raw_material_type,
         waste: item.waste,
         unit: item.unit,
         reason: item.reason,
@@ -371,6 +371,18 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                     role="th"
                   >
                     Unit
+                  </div>
+                  <div
+                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
+                    Reason
+                  </div>
+                  <div
+                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
+                    role="th"
+                  >
+                    Person(s) in charge
                   </div>
                   <div
                     className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
