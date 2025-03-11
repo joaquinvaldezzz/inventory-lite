@@ -7,12 +7,15 @@ import { Redirect, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 
 import { Loading } from './components/loading'
-import BranchSelector from './pages/branch-selector'
-import Login from './pages/login'
-import PIN from './pages/pin'
+// import BranchSelector from './pages/branch-selector'
+// import Login from './pages/login'
+// import PIN from './pages/pin'
 
 import './styles/main.css'
 
+const Login = lazy(async () => await import('./pages/login'))
+const PIN = lazy(async () => await import('./pages/pin'))
+const BranchSelector = lazy(async () => await import('./pages/branch-selector'))
 const Tabs = lazy(async () => await import('./pages/app/tabs'))
 
 setupIonicReact()
@@ -27,34 +30,34 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <IonApp>
-        <IonReactRouter>
-          <IonRouterOutlet>
-            <Route path="/login" exact>
-              <Login />
-            </Route>
+      <Suspense fallback={<Loading />}>
+        <IonApp>
+          <IonReactRouter>
+            <IonRouterOutlet>
+              <Route path="/login" exact>
+                <Login />
+              </Route>
 
-            <Route path="/pin" exact>
-              <PIN />
-            </Route>
+              <Route path="/pin" exact>
+                <PIN />
+              </Route>
 
-            <Route path="/branch-selector" exact>
-              <BranchSelector />
-            </Route>
+              <Route path="/branch-selector" exact>
+                <BranchSelector />
+              </Route>
 
-            <Suspense fallback={<Loading />}>
               <Route path="/app/*">
                 <Tabs />
               </Route>
-            </Suspense>
 
-            <Route path="/" exact>
-              <Redirect to="/login" />
-            </Route>
-          </IonRouterOutlet>
-        </IonReactRouter>
-        <Toaster />
-      </IonApp>
+              <Route path="/" exact>
+                <Redirect to="/login" />
+              </Route>
+            </IonRouterOutlet>
+          </IonReactRouter>
+          <Toaster />
+        </IonApp>
+      </Suspense>
     </QueryClientProvider>
   )
 }
