@@ -601,8 +601,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     onClick={() => {
                       void handleDelete()
                     }}
+                    asChild
                   >
-                    Continue
+                    <Button type="button" variant="destructive">
+                      Confirm
+                    </Button>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
