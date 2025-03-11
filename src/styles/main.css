@@ -123,8 +123,8 @@
 }
 
 @theme inline {
-  --color-background: var(--ion-background-color);
-  --color-foreground: var(--ion-text-color);
+  --color-background: var(--ion-background-color, var(--background));
+  --color-foreground: var(--ion-text-color, var(--foreground));
   --color-card: var(--ion-card-background);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
