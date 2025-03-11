@@ -515,7 +515,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the daily count record.
+                  This action cannot be undone. This will permanently delete the waste record.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
