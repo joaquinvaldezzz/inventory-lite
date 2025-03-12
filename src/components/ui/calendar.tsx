@@ -7,6 +7,17 @@ import { buttonVariants } from '@/components/ui/button'
 
 export type CalendarProps = ComponentProps<typeof DayPicker>
 
+/**
+ * Renders a customizable calendar component using the `DayPicker` library.
+ *
+ * @param props The properties passed to the component.
+ * @param props.className Additional class names to apply to the calendar.
+ * @param props.classNames Custom class names for various parts of the calendar.
+ * @param props.showOutsideDays Whether to show days from the previous and next months. Default is
+ *   `true`
+ * @param props.components Custom components for the calendar, such as navigation icons.
+ * @returns The rendered calendar component.
+ */
 export function Calendar({
   className,
   classNames,
@@ -24,7 +35,7 @@ export function Calendar({
         nav: 'flex items-center space-x-1',
         nav_button: cn(
           buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+          'size-7 bg-transparent p-0 opacity-50 hover:opacity-100',
         ),
         nav_button_previous: 'absolute left-1',
         nav_button_next: 'absolute right-1',
@@ -32,10 +43,10 @@ export function Calendar({
         head_row: 'flex',
         head_cell: 'w-9 rounded-md text-[0.8rem] font-normal text-muted-foreground',
         row: 'mt-2 flex w-full',
-        cell: 'relative h-9 w-9 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected].day-range-end)]:rounded-r-md',
+        cell: 'relative size-9 p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected].day-range-end)]:rounded-r-md',
         day: cn(
           buttonVariants({ variant: 'ghost' }),
-          'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
+          'size-9 p-0 font-normal aria-selected:opacity-100',
         ),
         day_range_end: 'day-range-end',
         day_selected:
@@ -50,11 +61,13 @@ export function Calendar({
       }}
       showOutsideDays={showOutsideDays}
       components={{
+        // eslint-disable-next-line react/prop-types -- Idk why this is being flagged
         IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn('h-4 w-4', className)} {...props} />
+          <ChevronLeft className={cn('size-4', className)} {...props} />
         ),
+        // eslint-disable-next-line react/prop-types -- Idk why this is being flagged too
         IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn('h-4 w-4', className)} {...props} />
+          <ChevronRight className={cn('size-4', className)} {...props} />
         ),
       }}
       {...props}
