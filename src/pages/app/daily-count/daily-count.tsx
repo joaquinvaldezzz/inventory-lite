@@ -4,75 +4,31 @@ import {
   IonContent,
   IonHeader,
   IonPage,
-  IonSpinner,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation, type RouteComponentProps } from "react-router";
+import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDailyCountRecordById } from "@/lib/api";
+import { Loading } from "@/components/loading";
 
 import { DailyCountRecordForm } from "./daily-count-record";
 
 type DailyCountPageProps = RouteComponentProps<{ id: string }>;
 
+/**
+ * Component for displaying and editing a specific daily count record.
+ *
+ * @param props The properties passed to the component.
+ * @param props.match The match object containing route parameters.
+ * @returns The rendered component.
+ */
 export default function DailyCountRecord({ match }: DailyCountPageProps) {
-  const { pathname } = useLocation();
   const { isPending, data } = useQuery({
-    queryKey: ["delivery-entry", match.params.id, pathname],
+    queryKey: ["daily-count-entry", match.params.id],
     queryFn: async () => await getSpecificDailyCountRecordById(Number(match.params.id)),
   });
-
-  // if (isPending) {
-  //   return (
-  //     <IonPage>
-  //       <IonHeader>
-  //         <IonToolbar>
-  //           <IonButtons slot="start">
-  //             <IonBackButton defaultHref="/app/delivery" />
-  //           </IonButtons>
-  //           <IonTitle>Loading delivery record...</IonTitle>
-  //         </IonToolbar>
-  //       </IonHeader>
-
-  //       <IonContent className="ion-padding">
-  //         <div className="flex h-full items-center justify-center">
-  //           <IonSpinner />
-  //         </div>
-  //       </IonContent>
-  //     </IonPage>
-  //   )
-  // }
-
-  // if (data == null) {
-  //   return null
-  // }
-
-  if (isPending) {
-    return (
-      <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonBackButton defaultHref="/app/daily-count" />
-            </IonButtons>
-            <IonTitle>Loading daily count record...</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
-        <IonContent className="ion-padding">
-          <div className="flex h-full items-center justify-center">
-            <IonSpinner />
-          </div>
-        </IonContent>
-      </IonPage>
-    );
-  }
-
-  if (data == null) {
-    return null;
-  }
 
   return (
     <IonPage>
@@ -81,12 +37,14 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
           <IonButtons slot="start">
             <IonBackButton defaultHref="/app/daily-count" />
           </IonButtons>
-          <IonTitle>Edit daily count</IonTitle>
+          <IonTitle>
+            {isPending ? "Loading daily count record..." : `Daily Count #${data?.[0].id}`}
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <DailyCountRecordForm data={data[0]} />
+        {data == null ? <Loading /> : <DailyCountRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

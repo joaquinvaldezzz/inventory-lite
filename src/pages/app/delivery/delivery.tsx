@@ -4,7 +4,6 @@ import {
   IonContent,
   IonHeader,
   IonPage,
-  IonSpinner,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
@@ -12,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDeliveryRecord } from "@/lib/api";
+import { Loading } from "@/components/loading";
 
 import DeliveryRecordForm from "./delivery-record";
 
@@ -30,31 +30,6 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   });
 
-  if (isPending) {
-    return (
-      <IonPage>
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonBackButton defaultHref="/app/delivery" />
-            </IonButtons>
-            <IonTitle>Loading delivery record...</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
-        <IonContent className="ion-padding">
-          <div className="flex h-full items-center justify-center">
-            <IonSpinner />
-          </div>
-        </IonContent>
-      </IonPage>
-    );
-  }
-
-  if (data == null) {
-    return null;
-  }
-
   return (
     <IonPage>
       <IonHeader>
@@ -62,12 +37,14 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
           <IonButtons slot="start">
             <IonBackButton defaultHref="/app/delivery" />
           </IonButtons>
-          <IonTitle>Edit delivery</IonTitle>
+          <IonTitle>
+            {isPending ? "Loading delivery record..." : `Delivery #${data?.[0].id}`}
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="ion-padding">
-        <DeliveryRecordForm data={data[0]} />
+        {data == null ? <Loading /> : <DeliveryRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

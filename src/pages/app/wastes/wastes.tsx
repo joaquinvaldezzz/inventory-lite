@@ -18,7 +18,7 @@ import { WastesRecordForm } from "./wastes-record";
 type WastesPageProps = RouteComponentProps<{ id: string }>;
 
 /**
- * This component fetches and displays a specific waste record for editing and deletion.
+ * Component for displaying and editing a specific waste record.
  *
  * @param props The properties passed to the component.
  * @param props.match The match object containing route parameters.
@@ -37,9 +37,7 @@ export default function WastesRecord({ match }: WastesPageProps) {
           <IonButtons slot="start">
             <IonBackButton defaultHref="/app/wastes" />
           </IonButtons>
-          <IonTitle>
-            {isPending ? "Loading wastes record..." : `Edit Wastes Record #${data?.[0].id}`}
-          </IonTitle>
+          <IonTitle>{isPending ? "Loading wastes record..." : `Wastes #${data?.[0].id}`}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
