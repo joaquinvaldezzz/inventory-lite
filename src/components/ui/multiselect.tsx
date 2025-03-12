@@ -1,5 +1,4 @@
-'use client'
-
+/* eslint-disable complexity, max-lines -- We need to handle multiple cases */
 import * as React from 'react'
 import { forwardRef, useEffect } from 'react'
 import { Command as CommandPrimitive, useCommandState } from 'cmdk'
@@ -12,8 +11,10 @@ export interface Option {
   value: string
   label: string
   disable?: boolean
+
   /** Fixed option that can‘t be removed. */
   fixed?: boolean
+
   /** Group the options by providing key. */
   [key: string]: string | boolean | undefined
 }
@@ -22,55 +23,71 @@ type GroupOption = Record<string, Option[]>
 interface MultipleSelectorProps {
   value?: Option[]
   defaultOptions?: Option[]
+
   /** Manually controlled options */
   options?: Option[]
   placeholder?: string
+
   /** Loading component. */
   loadingIndicator?: React.ReactNode
+
   /** Empty component. */
   emptyIndicator?: React.ReactNode
+
   /** Debounce time for async search. Only work with `onSearch`. */
   delay?: number
+
   /**
    * Only work with `onSearch` prop. Trigger search when `onFocus`. For example, when user click on
    * the input, it will trigger the search to get initial options.
    */
   triggerSearchOnFocus?: boolean
+
   /** Async search */
   onSearch?: (value: string) => Promise<Option[]>
+
   /**
    * Sync search. This search will not showing loadingIndicator. The rest props are the same as
    * async search. i.e.: creatable, groupBy, delay.
    */
   onSearchSync?: (value: string) => Option[]
   onChange?: (options: Option[]) => void
+
   /** Limit the maximum number of selected options. */
   maxSelected?: number
+
   /** When the number of selected options exceeds the limit, the onMaxSelected will be called. */
   onMaxSelected?: (maxLimit: number) => void
+
   /** Hide the placeholder when there are options selected. */
   hidePlaceholderWhenSelected?: boolean
   disabled?: boolean
+
   /** Group the options base on provided key. */
   groupBy?: string
   className?: string
   badgeClassName?: string
+
   /**
    * First item selected is a default behavior by cmdk. That is why the default is true. This is a
    * workaround solution by add a dummy item.
    *
-   * @reference: https://github.com/pacocoursey/cmdk/issues/171
+   * @reference https://github.com/pacocoursey/cmdk/issues/171
    */
   selectFirstItem?: boolean
+
   /** Allow user to create option when there is no option matched. */
   creatable?: boolean
+
   /** Props of `Command` */
   commandProps?: React.ComponentPropsWithoutRef<typeof Command>
+
   /** Props of `CommandInput` */
   inputProps?: Omit<
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>,
     'value' | 'placeholder' | 'disabled'
   >
+
   /** Hide the clear all button. */
   hideClearAllButton?: boolean
 }
@@ -82,6 +99,11 @@ export interface MultipleSelectorRef {
   reset: () => void
 }
 
+/**
+ * @param value The value to be debounced.
+ * @param delay The delay time to debounce.
+ * @returns The debounced value.
+ */
 export function useDebounce<T>(value: T, delay?: number): T {
   const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
 
@@ -98,6 +120,11 @@ export function useDebounce<T>(value: T, delay?: number): T {
   return debouncedValue
 }
 
+/**
+ * @param options The options to be grouped.
+ * @param groupBy The key to group the options.
+ * @returns The grouped options.
+ */
 function transToGroupOption(options: Option[], groupBy?: string) {
   if (options.length === 0) {
     return {}
@@ -114,21 +141,32 @@ function transToGroupOption(options: Option[], groupBy?: string) {
     groupOption[key] ||= []
     groupOption[key].push(option)
   })
+
   return groupOption
 }
 
+/**
+ * @param groupOption The grouped options.
+ * @param picked The picked options.
+ * @returns The options without the picked options.
+ */
 function removePickedOption(groupOption: GroupOption, picked: Option[]) {
   const cloneOption = JSON.parse(JSON.stringify(groupOption)) as GroupOption
 
   for (const [key, value] of Object.entries(cloneOption)) {
-    cloneOption[key] = value.filter((val) => !picked.find((p) => p.value === val.value))
+    cloneOption[key] = value.filter((val) => picked.find((p) => p.value === val.value) == null)
   }
   return cloneOption
 }
 
+/**
+ * @param groupOption The grouped options.
+ * @param targetOption The target options to check.
+ * @returns Whether the options exist in the groupOption.
+ */
 function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
   for (const [, value] of Object.entries(groupOption)) {
-    if (value.some((option) => targetOption.find((p) => p.value === option.value))) {
+    if (value.some((option) => targetOption.find((p) => p.value === option.value) != null)) {
       return true
     }
   }
@@ -139,7 +177,7 @@ function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
  * The `CommandEmpty` of shadcn/ui will cause the cmdk empty not rendering correctly. So we create
  * one and copy the `Empty` implementation from `cmdk`.
  *
- * @reference: https://github.com/hsuanyi-chou/shadcn-ui-expansions/issues/34#issuecomment-1949561607
+ * @reference https://github.com/hsuanyi-chou/shadcn-ui-expansions/issues/34#issuecomment-1949561607
  */
 const CommandEmpty = forwardRef<
   HTMLDivElement,
@@ -153,6 +191,7 @@ const CommandEmpty = forwardRef<
     <div
       className={cn('px-2 py-4 text-center text-sm', className)}
       role="presentation"
+      // eslint-disable-next-line react/no-unknown-property -- `cmdk-empty` is a custom attribute
       cmdk-empty=""
       ref={forwardedRef}
       {...props}
@@ -197,12 +236,12 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     const [isLoading, setIsLoading] = React.useState(false)
     const dropdownRef = React.useRef<HTMLDivElement>(null) // Added this
 
-    const [selected, setSelected] = React.useState<Option[]>(value || [])
+    const [selected, setSelected] = React.useState<Option[]>(value ?? [])
     const [options, setOptions] = React.useState<GroupOption>(
       transToGroupOption(arrayDefaultOptions, groupBy),
     )
     const [inputValue, setInputValue] = React.useState('')
-    const debouncedSearchTerm = useDebounce(inputValue, delay || 500)
+    const debouncedSearchTerm = useDebounce(inputValue, delay ?? 500)
 
     React.useImperativeHandle(
       ref,
@@ -219,9 +258,9 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (
-        dropdownRef.current &&
+        dropdownRef.current != null &&
         !dropdownRef.current.contains(event.target as Node) &&
-        inputRef.current &&
+        inputRef.current != null &&
         !inputRef.current.contains(event.target as Node)
       ) {
         setOpen(false)
@@ -241,12 +280,12 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent<HTMLDivElement>) => {
         const input = inputRef.current
-        if (input) {
+        if (input != null) {
           if (e.key === 'Delete' || e.key === 'Backspace') {
             if (input.value === '' && selected.length > 0) {
               const lastSelectOption = selected[selected.length - 1]
               // If last item is fixed, we should not remove it.
-              if (!lastSelectOption.fixed) {
+              if (!(lastSelectOption.fixed ?? false)) {
                 handleUnselect(selected[selected.length - 1])
               }
             }
@@ -276,14 +315,14 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     }, [open])
 
     useEffect(() => {
-      if (value) {
+      if (value != null) {
         setSelected(value)
       }
     }, [value])
 
     useEffect(() => {
       /** If `onSearch` is provided, do not trigger options updated. */
-      if (!arrayOptions || onSearch) {
+      if (arrayOptions == null || onSearch != null) {
         return
       }
       const newOption = transToGroupOption(arrayOptions || [], groupBy)
@@ -297,23 +336,22 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
       const doSearchSync = () => {
         const res = onSearchSync?.(debouncedSearchTerm)
-        setOptions(transToGroupOption(res || [], groupBy))
+        setOptions(transToGroupOption(res ?? [], groupBy))
       }
 
-      const exec = async () => {
-        if (!onSearchSync || !open) return
+      const exec = () => {
+        if (onSearchSync == null || !open) return
 
         if (triggerSearchOnFocus) {
           doSearchSync()
         }
 
-        if (debouncedSearchTerm) {
+        if (debouncedSearchTerm.length > 0) {
           doSearchSync()
         }
       }
 
-      void exec()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      exec()
     }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus])
 
     useEffect(() => {
@@ -322,31 +360,30 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       const doSearch = async () => {
         setIsLoading(true)
         const res = await onSearch?.(debouncedSearchTerm)
-        setOptions(transToGroupOption(res || [], groupBy))
+        setOptions(transToGroupOption(res ?? [], groupBy))
         setIsLoading(false)
       }
 
       const exec = async () => {
-        if (!onSearch || !open) return
+        if (onSearch == null || !open) return
 
         if (triggerSearchOnFocus) {
           await doSearch()
         }
 
-        if (debouncedSearchTerm) {
+        if (debouncedSearchTerm.length > 0) {
           await doSearch()
         }
       }
 
       void exec()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus])
 
     const CreatableItem = () => {
       if (!creatable) return undefined
       if (
         isOptionsExist(options, [{ value: inputValue, label: inputValue }]) ||
-        selected.find((s) => s.value === inputValue)
+        selected.find((s) => s.value === inputValue) != null
       ) {
         return undefined
       }
@@ -375,12 +412,12 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       )
 
       // For normal creatable
-      if (!onSearch && inputValue.length > 0) {
+      if (onSearch == null && inputValue.length > 0) {
         return Item
       }
 
       // For async search creatable. avoid showing creatable item before loading at first.
-      if (onSearch && debouncedSearchTerm.length > 0 && !isLoading) {
+      if (onSearch != null && debouncedSearchTerm.length > 0 && !isLoading) {
         return Item
       }
 
@@ -388,10 +425,10 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     }
 
     const EmptyItem = React.useCallback(() => {
-      if (!emptyIndicator) return undefined
+      if (emptyIndicator === undefined) return undefined
 
       // For async search that showing emptyIndicator
-      if (onSearch && !creatable && Object.keys(options).length === 0) {
+      if (onSearch != null && !creatable && Object.keys(options).length === 0) {
         return (
           <CommandItem value="-" disabled>
             {emptyIndicator}
@@ -409,7 +446,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
     /** Avoid Creatable Selector freezing or lagging when paste a long string. */
     const commandFilter = React.useCallback(() => {
-      if (commandProps?.filter) {
+      if (commandProps?.filter != null) {
         return commandProps.filter
       }
 
@@ -424,30 +461,28 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 
     return (
       <Command
-        ref={dropdownRef}
-        {...commandProps}
         className={cn('h-auto overflow-visible bg-transparent', commandProps?.className)}
         filter={commandFilter()}
+        ref={dropdownRef}
+        shouldFilter={commandProps?.shouldFilter ?? onSearch == null} // When onSearch is provided, we don't want to filter the options. You can still override it.
         onKeyDown={(e) => {
           handleKeyDown(e)
           commandProps?.onKeyDown?.(e)
         }}
-        shouldFilter={
-          commandProps?.shouldFilter !== undefined ? commandProps.shouldFilter : !onSearch
-        } // When onSearch is provided, we don&lsquo;t want to filter the options. You can still override it.
+        {...commandProps}
       >
         <div
           className={cn(
-            'relative min-h-[38px] rounded-lg border border-input text-sm transition-shadow focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/20 focus-within:outline-hidden has-disabled:cursor-not-allowed has-disabled:opacity-50',
+            'relative min-h-9.5 rounded-lg border border-input text-sm transition-shadow focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20 focus-within:outline-hidden has-disabled:cursor-not-allowed has-disabled:opacity-50',
             {
               'p-1': selected.length !== 0,
-              'cursor-text': !disabled && selected.length !== 0,
+              'cursor-text': !(disabled ?? false) && selected.length !== 0,
             },
             !hideClearAllButton && 'pe-9',
             className,
           )}
           onClick={() => {
-            if (disabled) return
+            if (disabled ?? false) return
             inputRef.current?.focus()
           }}
         >
@@ -459,13 +494,13 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                     'animate-fadeIn relative inline-flex h-7 cursor-default items-center rounded-md border border-solid bg-background ps-2 pe-7 pl-2 text-xs font-medium text-secondary-foreground transition-all hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 data-fixed:pe-2',
                     badgeClassName,
                   )}
-                  data-disabled={disabled || undefined}
+                  data-disabled={(disabled ?? false) || undefined}
                   data-fixed={option.fixed}
                   key={option.value}
                 >
                   {option.label}
                   <button
-                    className="absolute -inset-y-px -end-px flex size-7 items-center justify-center rounded-e-lg border border-transparent p-0 text-muted-foreground/80 outline-0 transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70"
+                    className="absolute -inset-y-px -end-px flex size-7 items-center justify-center rounded-e-lg border border-transparent p-0 text-muted-foreground/80 outline-0 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring/70"
                     aria-label="Remove"
                     onClick={() => {
                       handleUnselect(option)
@@ -497,7 +532,9 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 },
                 inputProps?.className,
               )}
-              placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : placeholder}
+              placeholder={
+                (hidePlaceholderWhenSelected ?? false) && selected.length !== 0 ? '' : placeholder
+              }
               value={inputValue}
               disabled={disabled}
               ref={inputRef}
@@ -510,7 +547,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               onFocus={(event) => {
                 setOpen(true)
                 if (triggerSearchOnFocus) {
-                  onSearch?.(debouncedSearchTerm)
+                  void onSearch?.(debouncedSearchTerm)
                 }
                 inputProps?.onFocus?.(event)
               }}
@@ -521,18 +558,18 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             />
             <button
               className={cn(
-                'absolute end-0 top-0 flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70',
+                'absolute end-0 top-0 flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring/70',
                 (hideClearAllButton ||
-                  disabled ||
+                  (disabled ?? false) ||
                   selected.length < 1 ||
-                  selected.filter((s) => s.fixed).length === selected.length) &&
+                  selected.filter((s) => s.fixed ?? false).length === selected.length) &&
                   'hidden',
               )}
               type="button"
               aria-label="Clear all"
               onClick={() => {
-                setSelected(selected.filter((s) => s.fixed))
-                onChange?.(selected.filter((s) => s.fixed))
+                setSelected(selected.filter((s) => s.fixed ?? false))
+                onChange?.(selected.filter((s) => s.fixed ?? false))
               }}
             >
               <X aria-hidden="true" strokeWidth={2} size={16} />
@@ -542,7 +579,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
         <div className="relative">
           <div
             className={cn(
-              'absolute top-2 z-10 w-full overflow-hidden rounded-lg border border-input',
+              'absolute top-2 z-50 w-full overflow-hidden rounded-lg border border-input',
               'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
               !open && 'hidden',
             )}
@@ -576,7 +613,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                               <CommandItem
                                 className={cn(
                                   'cursor-pointer',
-                                  option.disable && 'cursor-not-allowed opacity-50',
+                                  (option.disable ?? false) && 'cursor-not-allowed opacity-50',
                                 )}
                                 value={option.value}
                                 disabled={option.disable}
@@ -615,4 +652,5 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
 )
 
 MultipleSelector.displayName = 'MultipleSelector'
+
 export default MultipleSelector
