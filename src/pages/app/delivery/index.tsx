@@ -1,7 +1,7 @@
 import {
-  IonButton,
-  IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonHeader,
   IonIcon,
   IonPage,
@@ -106,11 +106,6 @@ export default function Delivery() {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle>Delivery</IonTitle>
-          <IonButtons slot="end" collapse>
-            <IonButton onClick={presentModal}>
-              <IonIcon icon={add} slot="icon-only" />
-            </IonButton>
-          </IonButtons>
           {isFetching && !isPending && <IonProgressBar type="indeterminate" />}
         </IonToolbar>
       </IonHeader>
@@ -123,17 +118,18 @@ export default function Delivery() {
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Delivery</IonTitle>
-            <IonButtons slot="primary">
-              <IonButton onClick={presentModal}>
-                <IonIcon icon={add} slot="icon-only" />
-              </IonButton>
-            </IonButtons>
           </IonToolbar>
         </IonHeader>
 
         <div className="ion-padding">
           {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
         </div>
+
+        <IonFab horizontal="end" slot="fixed" vertical="bottom">
+          <IonFabButton onClick={presentModal}>
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );

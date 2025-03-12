@@ -1,13 +1,12 @@
 import {
-  IonButton,
-  IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonHeader,
   IonIcon,
   IonPage,
   IonRefresher,
   IonRefresherContent,
-  IonSpinner,
   IonTitle,
   IonToolbar,
   useIonModal,
@@ -18,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchWasteEntries } from "@/lib/api";
+import { Loading } from "@/components/loading";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -85,11 +85,6 @@ export default function Wastes() {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle>Wastes</IonTitle>
-          <IonButtons slot="primary">
-            <IonButton onClick={presentModal}>
-              <IonIcon icon={add} slot="icon-only" />
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -101,23 +96,18 @@ export default function Wastes() {
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Wastes</IonTitle>
-            <IonButtons slot="primary">
-              <IonButton onClick={presentModal}>
-                <IonIcon icon={add} slot="icon-only" />
-              </IonButton>
-            </IonButtons>
           </IonToolbar>
         </IonHeader>
 
         <div className="ion-padding">
-          {isPending ? (
-            <div className="flex h-96 items-center justify-center">
-              <IonSpinner />
-            </div>
-          ) : (
-            <DataTable columns={columns} data={sortedData} />
-          )}
+          {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
         </div>
+
+        <IonFab horizontal="end" slot="fixed" vertical="bottom">
+          <IonFabButton onClick={presentModal}>
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );

@@ -1,7 +1,7 @@
 import {
-  IonButton,
-  IonButtons,
   IonContent,
+  IonFab,
+  IonFabButton,
   IonHeader,
   IonIcon,
   IonPage,
@@ -16,6 +16,12 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { NewExpensesModal } from "./new-expenses-modal";
 
+/**
+ * The `Expenses` component renders a page that displays a list of expenses. It includes a header
+ * with a title and a floating action button to add new expenses.
+ *
+ * @returns The rendered component.
+ */
 export default function Expenses() {
   const [present, dismiss] = useIonModal(NewExpensesModal, {
     dismiss: (data: string, role: string) => {
@@ -23,6 +29,12 @@ export default function Expenses() {
     },
   });
 
+  /**
+   * Displays a modal and handles its dismissal event.
+   *
+   * This function presents a modal using the `present` function and sets up an event listener for
+   * its dismissal. If dismissed with the role of 'confirm', it triggers a refetch operation.
+   */
   function presentModal() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
@@ -38,11 +50,7 @@ export default function Expenses() {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle>Expenses</IonTitle>
-          <IonButtons slot="end" collapse>
-            <IonButton onClick={presentModal}>
-              <IonIcon icon={add} slot="icon-only" />
-            </IonButton>
-          </IonButtons>
+          {/* {isFetching && !isPending && <IonProgressBar type="indeterminate" />} */}
         </IonToolbar>
       </IonHeader>
 
@@ -50,17 +58,18 @@ export default function Expenses() {
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Expenses</IonTitle>
-            <IonButtons slot="primary">
-              <IonButton onClick={presentModal}>
-                <IonIcon icon={add} slot="icon-only" />
-              </IonButton>
-            </IonButtons>
           </IonToolbar>
         </IonHeader>
 
         <div className="ion-padding">
           <DataTable columns={columns} data={[]} />
         </div>
+
+        <IonFab horizontal="end" slot="fixed" vertical="bottom">
+          <IonFabButton onClick={presentModal}>
+            <IonIcon icon={add} />
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );
