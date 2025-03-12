@@ -22,7 +22,12 @@ import {
 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { createWasteEntry, fetchCategories, getIngredientsByCategory } from '@/lib/api'
+import {
+  createWasteEntry,
+  fetchCategories,
+  fetchEmployees,
+  getIngredientsByCategory,
+} from '@/lib/api'
 import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, Ingredients } from '@/lib/types'
@@ -47,6 +52,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import MultipleSelector, { type Option } from '@/components/ui/multiselect'
 import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -80,6 +86,7 @@ interface WastesModalActions {
 export function NewWastesModal({ dismiss }: WastesModalActions) {
   const [categories, setCategories] = useState<Categories[]>([])
   const [ingredients, setIngredients] = useState<Ingredients[]>([])
+  const [employees, setEmployees] = useState<Option[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
@@ -92,7 +99,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
           waste: 0,
           unit: '',
           reason: '',
-          employee: '',
+          employee: [],
         },
       ],
     },
@@ -156,7 +163,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
       waste: 0,
       unit: '',
       reason: '',
-      employee: '',
+      employee: [],
     })
   }
 
@@ -191,7 +198,9 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
       /** Submits the form data */
       async function submitForm() {
         try {
-          await createWasteEntry(formValues)
+          if (parsedValues.data != null) await createWasteEntry(parsedValues.data)
+
+          console.log(parsedValues.data)
         } catch (error) {
           console.error('Form submission failed:', error)
         } finally {
@@ -208,6 +217,29 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
       })
     })(event)
   }
+
+  useEffect(() => {
+    /**
+     * Fetches the list of employees, maps the data to a specific format, and updates the state with
+     * the formatted data.
+     *
+     * @returns A promise that resolves when the employees have been fetched and the state has been
+     *   updated.
+     */
+    async function getEmployees() {
+      const employees = await fetchEmployees()
+      const data = employees.map((employee) => {
+        return {
+          value: employee.EmployeeID,
+          label: employee.FirstName + ' ' + employee.LastName,
+        }
+      })
+
+      setEmployees(data)
+    }
+
+    void getEmployees()
+  }, [])
 
   return (
     <IonPage>
@@ -583,7 +615,18 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <Input className="min-w-40" type="text" {...field} />
+                                  {/* @ts-expect-error -- Types dot not match yet */}
+                                  <MultipleSelector
+                                    placeholder="Select employee(s)"
+                                    options={employees}
+                                    commandProps={{
+                                      label: 'Select employee(s)',
+                                    }}
+                                    emptyIndicator={
+                                      <p className="text-center text-sm">No employees found.</p>
+                                    }
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>

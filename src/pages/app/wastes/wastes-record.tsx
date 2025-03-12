@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
 
-import { deleteWasteRecordById, updateWasteRecord } from '@/lib/api'
+import { deleteWasteRecordById, fetchEmployees, updateWasteRecord } from '@/lib/api'
 import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
 import { getFromStorage } from '@/lib/storage'
 import type { Categories, WasteRecordData } from '@/lib/types'
@@ -34,6 +34,14 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import {
+  DivTable,
+  DivTableBody,
+  DivTableCell,
+  DivTableHead,
+  DivTableHeader,
+  DivTableRow,
+} from '@/components/ui/div-table'
+import {
   Form,
   FormControl,
   FormField,
@@ -42,6 +50,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import MultipleSelector, { type Option } from '@/components/ui/multiselect'
 import { NumberInput } from '@/components/ui/number-input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -65,6 +74,7 @@ interface WastesRecordFormProps {
  */
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
   const [categories, setCategories] = useState<Categories[]>([])
+  const [employees, setEmployees] = useState<Option[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
@@ -76,7 +86,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         waste: item.waste,
         unit: item.unit,
         reason: item.reason,
-        employee: item.employee,
+        employee: [],
       })),
     },
     resolver: zodResolver(newWasteFormSchema),
@@ -87,6 +97,29 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
   })
   const router = useIonRouter()
   const { toast } = useToast()
+
+  useEffect(() => {
+    /**
+     * Fetches the list of employees, maps the data to a specific format, and updates the state with
+     * the formatted data.
+     *
+     * @returns A promise that resolves when the employees have been fetched and the state has been
+     *   updated.
+     */
+    async function getEmployees() {
+      const employees = await fetchEmployees()
+      const data = employees.map((employee) => {
+        return {
+          value: employee.EmployeeID,
+          label: employee.FirstName + ' ' + employee.LastName,
+        }
+      })
+
+      setEmployees(data)
+    }
+
+    void getEmployees()
+  }, [])
 
   /**
    * Handles the removal of a row at the specified index.
@@ -143,8 +176,6 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
       const formValues = form.getValues()
       const parsedValues = newWasteFormSchema.safeParse(formValues)
 
-      console.log(parsedValues)
-
       if (!parsedValues.success) {
         console.error('Form data is invalid:', parsedValues.error)
         return
@@ -160,8 +191,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
        */
       async function submitForm() {
         try {
-          await updateWasteRecord(data.id, formValues)
-          console.log('Form submitted:', formValues)
+          if (parsedValues.data != null) await updateWasteRecord(data.id, parsedValues.data)
         } catch (error) {
           console.error('Form submission failed:', error)
         } finally {
@@ -171,9 +201,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         }
       }
 
-      startTransition(() => {
-        void submitForm()
-      })
+      void submitForm()
     })(event)
   }
 
@@ -324,7 +352,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Type</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <Container aria-hidden="true" strokeWidth={2} size={16} />
@@ -346,172 +374,120 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-1 border-y whitespace-nowrap">
-          <div className="relative w-full overflow-auto">
-            <div className="table w-full caption-bottom text-sm" role="table">
-              <div className="table-header-group" role="thead">
-                <div
-                  className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                  role="tr"
-                >
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Ingredients
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Inventory count
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Unit
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Reason
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Person(s) in charge
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  />
-                </div>
-              </div>
+        <DivTable>
+          <DivTableHeader>
+            <DivTableRow>
+              <DivTableHead>Ingredients</DivTableHead>
+              <DivTableHead>Inventory count</DivTableHead>
+              <DivTableHead>Unit</DivTableHead>
+              <DivTableHead>Reason</DivTableHead>
+              <DivTableHead>Person(s) in charge</DivTableHead>
+              <DivTableHead />
+            </DivTableRow>
+          </DivTableHeader>
 
-              <div className="table-row-group **:[[role=td]]:px-3" role="tbody">
-                {fields.map((item, index) => {
-                  return (
-                    <div
-                      className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      role="tr"
-                      key={item.id}
+          <DivTableBody>
+            {fields.map((item, index) => {
+              return (
+                <DivTableRow key={item.id}>
+                  <DivTableCell>{item.item}</DivTableCell>
+
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.waste`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <NumberInput
+                              className="min-w-32"
+                              value={field.value}
+                              aria-label="Quantity"
+                              onChange={(event) => {
+                                field.onChange(event)
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.unit`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.reason`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <Input className="min-w-40" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.employee`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            {/* @ts-expect-error -- Types dot not match yet */}
+                            <MultipleSelector
+                              placeholder="Select employee(s)"
+                              options={employees}
+                              commandProps={{
+                                label: 'Select employee(s)',
+                              }}
+                              emptyIndicator={
+                                <p className="text-center text-sm">No employees found.</p>
+                              }
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+
+                  <DivTableCell>
+                    <Button
+                      className="text-destructive"
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        handleRemove(index)
+                      }}
                     >
-                      <div
-                        className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        {item.item}
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.waste`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <NumberInput
-                                  className="min-w-32"
-                                  value={field.value}
-                                  aria-label="Quantity"
-                                  onChange={(event) => {
-                                    field.onChange(event)
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.unit`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0">
-                              <FormControl>
-                                <Input
-                                  className="min-w-40 read-only:bg-muted"
-                                  readOnly
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.reason`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0">
-                              <FormControl>
-                                <Input className="min-w-40" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.employee`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0">
-                              <FormControl>
-                                <Input className="min-w-40" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <Button
-                          className="text-destructive"
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => {
-                            handleRemove(index)
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
+                      <Trash2 size={16} />
+                    </Button>
+                  </DivTableCell>
+                </DivTableRow>
+              )
+            })}
+          </DivTableBody>
+        </DivTable>
 
         <div className="mt-1 flex flex-col gap-3">
           <Button type="submit" disabled={isLoading}>
