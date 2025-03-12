@@ -101,6 +101,11 @@ const config: Config = tseslint.config(
     },
     settings: {
       react: { version: 'detect' },
+      jsdoc: {
+        tagNamePreference: {
+          reference: 'reference',
+        },
+      },
     },
   },
 )
