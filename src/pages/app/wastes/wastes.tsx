@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation, type RouteComponentProps } from "react-router";
+import type { RouteComponentProps } from "react-router";
 
 import { getSpecificWastesRecordById } from "@/lib/api";
 import { Loading } from "@/components/loading";
@@ -25,9 +25,8 @@ type WastesPageProps = RouteComponentProps<{ id: string }>;
  * @returns The rendered component.
  */
 export default function WastesRecord({ match }: WastesPageProps) {
-  const { pathname } = useLocation();
   const { isPending, data } = useQuery({
-    queryKey: ["waste-entry", match.params.id, pathname],
+    queryKey: ["waste-entry", match.params.id],
     queryFn: async () => await getSpecificWastesRecordById(Number(match.params.id)),
   });
 
