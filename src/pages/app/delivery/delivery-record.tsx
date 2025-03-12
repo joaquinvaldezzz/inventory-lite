@@ -88,8 +88,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     },
     resolver: zodResolver(editDeliveryFormSchema),
   });
-  const { toast } = useToast();
   const router = useIonRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     // TODO: Save these suppliers locally
