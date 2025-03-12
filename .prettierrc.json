@@ -10,6 +10,7 @@
   "importOrder": [
     "^(react/(.*)$)|^(react$)",
     "^(@ionic/react/(.*)$)|^(@ionic/react$)",
+    "^(@ionic/react-router/(.*)$)|^(@ionic/react-router$)",
     "<THIRD_PARTY_MODULES>",
     "",
     "^types$",
