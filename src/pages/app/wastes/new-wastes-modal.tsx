@@ -74,15 +74,6 @@ interface WastesModalActions {
  * @param actions.dismiss Function to dismiss the modal
  * @returns The rendered component.
  */
-
-/**
- * Component for creating a new waste entry.
- *
- * @param props The properties for the modal.
- * @param props.dismiss Function to dismiss the modal.
- * @returns The rendered NewWastesModal component.
- * @todo Save fetched suppliers and items locally.
- */
 export function NewWastesModal({ dismiss }: WastesModalActions) {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [ingredients, setIngredients] = useState<Ingredients[]>([]);
