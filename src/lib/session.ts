@@ -1,15 +1,15 @@
-import { CapacitorCookies } from '@capacitor/core'
-import { jwtVerify, SignJWT, type JWTPayload } from 'jose'
+import { CapacitorCookies } from "@capacitor/core";
+import { jwtVerify, SignJWT, type JWTPayload } from "jose";
 
-import { env } from './env'
+import { env } from "./env";
 
-const SECRET_KEY = env.VITE_JWT_SECRET
-const KEY = new TextEncoder().encode(SECRET_KEY)
+const SECRET_KEY = env.VITE_JWT_SECRET;
+const KEY = new TextEncoder().encode(SECRET_KEY);
 
 export interface SessionPayload extends JWTPayload {
-  userId: string | number
-  userRole: string
-  expiresAt: Date
+  userId: string | number;
+  userRole: string;
+  expiresAt: Date;
 }
 
 /**
@@ -20,10 +20,10 @@ export interface SessionPayload extends JWTPayload {
  */
 export async function encrypt(payload: SessionPayload) {
   return await new SignJWT(payload)
-    .setExpirationTime('1hour')
+    .setExpirationTime("1hour")
     .setIssuedAt()
-    .setProtectedHeader({ alg: 'HS256' })
-    .sign(KEY)
+    .setProtectedHeader({ alg: "HS256" })
+    .sign(KEY);
 }
 
 /**
@@ -32,15 +32,15 @@ export async function encrypt(payload: SessionPayload) {
  * @param session The session token to decrypt.
  * @returns The payload of the decrypted session token, or null if decryption fails.
  */
-export async function decrypt(session: string | undefined = '') {
+export async function decrypt(session: string | undefined = "") {
   try {
     const { payload } = await jwtVerify(session, KEY, {
-      algorithms: ['HS256'],
-    })
+      algorithms: ["HS256"],
+    });
 
-    return payload
+    return payload;
   } catch (error) {
-    return null
+    return null;
   }
 }
 
@@ -52,16 +52,16 @@ export async function decrypt(session: string | undefined = '') {
  * @returns A promise that resolves to void.
  */
 export async function createSession(userId: string, userRole: string) {
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-  const session = await encrypt({ userId, userRole, expiresAt })
+  const session = await encrypt({ userId, userRole, expiresAt });
 
   await CapacitorCookies.setCookie({
-    key: 'session',
+    key: "session",
     value: session,
-    path: '/',
+    path: "/",
     expires: expiresAt.toString(),
-  })
+  });
 }
 
 /**
@@ -70,15 +70,15 @@ export async function createSession(userId: string, userRole: string) {
  * @returns A promise that resolves to the userId if the session is valid, or null otherwise.
  */
 export async function verifySession(): Promise<{ userId: number } | null> {
-  const cookies = await CapacitorCookies.getCookies()
-  const sessionCookie = cookies.session
-  const decryptedSession = await decrypt(sessionCookie)
+  const cookies = await CapacitorCookies.getCookies();
+  const sessionCookie = cookies.session;
+  const decryptedSession = await decrypt(sessionCookie);
 
   if (decryptedSession?.userId != null) {
-    return { userId: Number(decryptedSession.userId) }
+    return { userId: Number(decryptedSession.userId) };
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -88,8 +88,8 @@ export async function verifySession(): Promise<{ userId: number } | null> {
  */
 export async function deleteSession() {
   await CapacitorCookies.deleteCookie({
-    key: 'session',
-  })
+    key: "session",
+  });
 
   // Redirect to the login page
 }

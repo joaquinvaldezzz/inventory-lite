@@ -13,48 +13,48 @@ import {
   IonToolbar,
   useIonModal,
   type RefresherEventDetail,
-} from '@ionic/react'
-import type { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
-import { useQuery } from '@tanstack/react-query'
-import { add } from 'ionicons/icons'
+} from "@ionic/react";
+import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
+import { useQuery } from "@tanstack/react-query";
+import { add } from "ionicons/icons";
 
-import { fetchDailyCountEntries } from '@/lib/api'
+import { fetchDailyCountEntries } from "@/lib/api";
 
-import { columns } from './columns'
-import { DataTable } from './data-table'
-import { NewDailyCountModal } from './new-daily-count-modal'
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import { NewDailyCountModal } from "./new-daily-count-modal";
 
 export default function DailyCount() {
   const { isPending, data, refetch } = useQuery({
-    queryKey: ['daily-count-entries'],
+    queryKey: ["daily-count-entries"],
     queryFn: async () => await fetchDailyCountEntries(),
-  })
+  });
 
-  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
+  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
 
   const [present, dismiss] = useIonModal(NewDailyCountModal, {
     dismiss: (data: string, role: string) => {
-      dismiss(data, role)
+      dismiss(data, role);
     },
-  })
+  });
 
   function handleAdd() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
-        if (event.detail.role === 'confirm') {
-          void refetch()
+        if (event.detail.role === "confirm") {
+          void refetch();
         }
       },
-    })
+    });
   }
 
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
     try {
-      void refetch()
+      void refetch();
     } catch (error) {
-      console.error('Error fetching delivery entries:', error)
+      console.error("Error fetching delivery entries:", error);
     } finally {
-      event.detail.complete()
+      event.detail.complete();
     }
   }
 
@@ -99,5 +99,5 @@ export default function DailyCount() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }

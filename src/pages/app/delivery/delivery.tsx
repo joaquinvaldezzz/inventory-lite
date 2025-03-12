@@ -7,15 +7,15 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
-} from '@ionic/react'
-import { useQuery } from '@tanstack/react-query'
-import type { RouteComponentProps } from 'react-router'
+} from "@ionic/react";
+import { useQuery } from "@tanstack/react-query";
+import type { RouteComponentProps } from "react-router";
 
-import { getSpecificDeliveryRecord } from '@/lib/api'
+import { getSpecificDeliveryRecord } from "@/lib/api";
 
-import DeliveryRecordForm from './delivery-record'
+import DeliveryRecordForm from "./delivery-record";
 
-type DeliveryPageProps = RouteComponentProps<{ id: string }>
+type DeliveryPageProps = RouteComponentProps<{ id: string }>;
 
 /**
  * Component for displaying and editing a specific delivery record.
@@ -26,9 +26,9 @@ type DeliveryPageProps = RouteComponentProps<{ id: string }>
  */
 export default function DeliveryRecord({ match }: DeliveryPageProps) {
   const { isPending, data } = useQuery({
-    queryKey: ['delivery-entry', match.params.id],
+    queryKey: ["delivery-entry", match.params.id],
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
-  })
+  });
 
   if (isPending) {
     return (
@@ -48,11 +48,11 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
           </div>
         </IonContent>
       </IonPage>
-    )
+    );
   }
 
   if (data == null) {
-    return null
+    return null;
   }
 
   return (
@@ -70,5 +70,5 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
         <DeliveryRecordForm data={data[0]} />
       </IonContent>
     </IonPage>
-  )
+  );
 }

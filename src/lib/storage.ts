@@ -1,10 +1,10 @@
-import { Storage } from '@ionic/storage'
+import { Storage } from "@ionic/storage";
 
 /** Singleton instance of the Storage class. */
-const storage = new Storage()
+const storage = new Storage();
 
 /** Tracks whether the storage has been initialized. */
-let isStorageInitialized = false
+let isStorageInitialized = false;
 
 /**
  * Ensures the storage is properly initialized before any operation.
@@ -16,8 +16,8 @@ let isStorageInitialized = false
  */
 async function ensureStorageInitialized(): Promise<void> {
   if (!isStorageInitialized) {
-    await storage.create()
-    isStorageInitialized = true
+    await storage.create();
+    isStorageInitialized = true;
   }
 }
 
@@ -29,8 +29,8 @@ async function ensureStorageInitialized(): Promise<void> {
  * @returns {Promise<void>} Resolves when the value is successfully saved.
  */
 export async function saveToStorage(key: string, value: string): Promise<void> {
-  await ensureStorageInitialized()
-  await storage.set(key, value)
+  await ensureStorageInitialized();
+  await storage.set(key, value);
 }
 
 /**
@@ -41,9 +41,9 @@ export async function saveToStorage(key: string, value: string): Promise<void> {
  *   `null`.
  */
 export async function getFromStorage(key: string): Promise<string | null> {
-  await ensureStorageInitialized()
+  await ensureStorageInitialized();
 
-  const value = (await storage.get(key)) as unknown
+  const value = (await storage.get(key)) as unknown;
 
-  return typeof value === 'string' ? value : null
+  return typeof value === "string" ? value : null;
 }

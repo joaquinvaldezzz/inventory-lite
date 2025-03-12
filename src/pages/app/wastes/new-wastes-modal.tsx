@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { startTransition, useEffect, useState, type FormEvent } from 'react'
+import { startTransition, useEffect, useState, type FormEvent } from "react";
 import {
   IonButton,
   IonButtons,
@@ -8,9 +8,9 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-} from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
+} from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import {
   CalendarIcon,
   CheckIcon,
@@ -19,22 +19,22 @@ import {
   PackageSearch,
   Plus,
   Trash2,
-} from 'lucide-react'
-import { useFieldArray, useForm } from 'react-hook-form'
+} from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import {
   createWasteEntry,
   fetchCategories,
   fetchEmployees,
   getIngredientsByCategory,
-} from '@/lib/api'
-import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
-import { getFromStorage } from '@/lib/storage'
-import type { Categories, Ingredients } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+} from "@/lib/api";
+import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
+import type { Categories, Ingredients } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -42,7 +42,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -50,21 +50,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import MultipleSelector, { type Option } from '@/components/ui/multiselect'
-import { NumberInput } from '@/components/ui/number-input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import MultipleSelector, { type Option } from "@/components/ui/multiselect";
+import { NumberInput } from "@/components/ui/number-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 
 interface WastesModalActions {
-  dismiss: (data?: string | number | null, role?: string) => void
+  dismiss: (data?: string | number | null, role?: string) => void;
 }
 
 /**
@@ -84,32 +84,32 @@ interface WastesModalActions {
  * @todo Save fetched suppliers and items locally.
  */
 export function NewWastesModal({ dismiss }: WastesModalActions) {
-  const [categories, setCategories] = useState<Categories[]>([])
-  const [ingredients, setIngredients] = useState<Ingredients[]>([])
-  const [employees, setEmployees] = useState<Option[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredients[]>([]);
+  const [employees, setEmployees] = useState<Option[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(),
-      raw_material_type: '',
-      waste_type: '',
+      raw_material_type: "",
+      waste_type: "",
       items: [
         {
-          item: '',
+          item: "",
           waste: 0,
-          unit: '',
-          reason: '',
+          unit: "",
+          reason: "",
           employee: [],
         },
       ],
     },
     resolver: zodResolver(newWasteFormSchema),
-  })
+  });
   const { fields, append, remove } = useFieldArray({
-    name: 'items',
+    name: "items",
     control: form.control,
-  })
-  const { toast } = useToast()
+  });
+  const { toast } = useToast();
 
   useEffect(() => {
     /**
@@ -118,23 +118,23 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
      * @returns A promise that resolves when the operation is complete.
      */
     async function getCategoryItems() {
-      await fetchCategories()
+      await fetchCategories();
 
-      const savedCategories = await getFromStorage('categories')
+      const savedCategories = await getFromStorage("categories");
 
       if (savedCategories != null) {
-        const parsedCategories = JSON.parse(savedCategories) as unknown
+        const parsedCategories = JSON.parse(savedCategories) as unknown;
 
         if (Array.isArray(parsedCategories)) {
-          setCategories(parsedCategories)
+          setCategories(parsedCategories);
         } else {
-          console.error('Categories data is invalid:', parsedCategories)
+          console.error("Categories data is invalid:", parsedCategories);
         }
       }
     }
 
-    void getCategoryItems()
-  }, [])
+    void getCategoryItems();
+  }, []);
 
   useEffect(() => {
     /**
@@ -144,27 +144,27 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
      * @returns A promise that resolves when the ingredients are fetched and state is updated.
      */
     async function getIngredientItems() {
-      if (form.getValues('raw_material_type').length === 0) {
-        return
+      if (form.getValues("raw_material_type").length === 0) {
+        return;
       }
 
-      const ingredients = await getIngredientsByCategory(form.getValues('raw_material_type'))
-      setIngredients(ingredients)
-      remove()
+      const ingredients = await getIngredientsByCategory(form.getValues("raw_material_type"));
+      setIngredients(ingredients);
+      remove();
     }
 
-    void getIngredientItems()
-  }, [form.watch('raw_material_type')])
+    void getIngredientItems();
+  }, [form.watch("raw_material_type")]);
 
   /** Adds a new row to the form */
   function handleAdd() {
     append({
-      item: '',
+      item: "",
       waste: 0,
-      unit: '',
-      reason: '',
+      unit: "",
+      reason: "",
       employee: [],
-    })
+    });
   }
 
   /**
@@ -173,7 +173,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
    * @param index The index of the row to be removed
    */
   function handleRemove(index: number) {
-    remove(index)
+    remove(index);
   }
 
   /**
@@ -182,40 +182,40 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
    * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedValues = newWasteFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedValues = newWasteFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error('Form data is invalid:', parsedValues.error)
-        return
+        console.error("Form data is invalid:", parsedValues.error);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
 
       /** Submits the form data */
       async function submitForm() {
         try {
-          if (parsedValues.data != null) await createWasteEntry(parsedValues.data)
+          if (parsedValues.data != null) await createWasteEntry(parsedValues.data);
 
-          console.log(parsedValues.data)
+          console.log(parsedValues.data);
         } catch (error) {
-          console.error('Form submission failed:', error)
+          console.error("Form submission failed:", error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
           toast({
-            description: 'Delivery entry created successfully',
-          })
-          dismiss(null, 'confirm')
+            description: "Delivery entry created successfully",
+          });
+          dismiss(null, "confirm");
         }
       }
 
       startTransition(() => {
-        void submitForm()
-      })
-    })(event)
+        void submitForm();
+      });
+    })(event);
   }
 
   useEffect(() => {
@@ -227,19 +227,19 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
      *   updated.
      */
     async function getEmployees() {
-      const employees = await fetchEmployees()
+      const employees = await fetchEmployees();
       const data = employees.map((employee) => {
         return {
           value: employee.EmployeeID,
-          label: employee.FirstName + ' ' + employee.LastName,
-        }
-      })
+          label: employee.FirstName + " " + employee.LastName,
+        };
+      });
 
-      setEmployees(data)
+      setEmployees(data);
     }
 
-    void getEmployees()
-  }, [])
+    void getEmployees();
+  }, []);
 
   return (
     <IonPage>
@@ -248,7 +248,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
           <IonButtons slot="start">
             <IonButton
               onClick={() => {
-                dismiss(null, 'cancel')
+                dismiss(null, "cancel");
               }}
             >
               Cancel
@@ -258,7 +258,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
           <IonButtons slot="end">
             <IonButton
               onClick={() => {
-                dismiss(null, 'confirm')
+                dismiss(null, "confirm");
               }}
             >
               Submit
@@ -284,11 +284,11 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            className={cn('w-full justify-start ps-9 text-left font-normal')}
+                            className={cn("w-full justify-start ps-9 text-left font-normal")}
                             variant="outline"
                           >
                             {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                              format(field.value, 'PP')
+                              format(field.value, "PP")
                             ) : (
                               <span>Select a date</span>
                             )}
@@ -297,7 +297,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
@@ -332,15 +332,15 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                             >
                               <span
                                 className={cn(
-                                  'truncate ps-6',
-                                  field.value.length === 0 && 'text-muted-foreground',
+                                  "truncate ps-6",
+                                  field.value.length === 0 && "text-muted-foreground",
                                 )}
                               >
                                 {categories.length > 0
                                   ? (categories.find(
                                       (category) => category.id.toString() === field.value,
-                                    )?.raw_material_type ?? 'Select a category')
-                                  : 'Select a category'}
+                                    )?.raw_material_type ?? "Select a category")
+                                  : "Select a category"}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
@@ -367,8 +367,8 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                     onSelect={(value) => {
                                       const selectedSupplier = categories.find(
                                         (supplier) => supplier.raw_material_type === value,
-                                      )
-                                      field.onChange(selectedSupplier?.id.toString())
+                                      );
+                                      field.onChange(selectedSupplier?.id.toString());
                                     }}
                                   >
                                     {category.raw_material_type}
@@ -479,15 +479,15 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                       >
                                         <span
                                           className={cn(
-                                            'truncate',
-                                            field.value.length === 0 && 'text-muted-foreground',
+                                            "truncate",
+                                            field.value.length === 0 && "text-muted-foreground",
                                           )}
                                         >
                                           {ingredients.length > 0
                                             ? (ingredients.find(
                                                 (item) => item.id.toString() === field.value,
-                                              )?.raw_material ?? 'Select an item')
-                                            : 'Select an item'}
+                                              )?.raw_material ?? "Select an item")
+                                            : "Select an item"}
                                         </span>
                                         <ChevronDownIcon
                                           className="shrink-0 text-muted-foreground/80"
@@ -514,12 +514,12 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                               onSelect={(value) => {
                                                 const selectedItem = ingredients.find(
                                                   (ingredient) => ingredient.raw_material === value,
-                                                )
-                                                field.onChange(selectedItem?.id.toString())
+                                                );
+                                                field.onChange(selectedItem?.id.toString());
                                                 form.setValue(
                                                   `items.${index}.unit`,
-                                                  selectedItem != null ? selectedItem.unit : '',
-                                                )
+                                                  selectedItem != null ? selectedItem.unit : "",
+                                                );
                                               }}
                                             >
                                               {ingredient.raw_material}
@@ -554,7 +554,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                     value={field.value}
                                     aria-label="Quantity"
                                     onChange={(event) => {
-                                      field.onChange(event)
+                                      field.onChange(event);
                                     }}
                                   />
                                 </FormControl>
@@ -620,7 +620,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                                     placeholder="Select employee(s)"
                                     options={employees}
                                     commandProps={{
-                                      label: 'Select employee(s)',
+                                      label: "Select employee(s)",
                                     }}
                                     emptyIndicator={
                                       <p className="text-center text-sm">No employees found.</p>
@@ -644,7 +644,7 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              handleRemove(index)
+                              handleRemove(index);
                             }}
                           >
                             <Trash2 size={16} />
@@ -664,14 +664,14 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
               </Button>
 
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Submitting...' : 'Submit'}
+                {isLoading ? "Submitting..." : "Submit"}
               </Button>
               <Button
                 type="button"
                 disabled={isLoading}
                 variant="ghost"
                 onClick={() => {
-                  dismiss(null, 'cancel')
+                  dismiss(null, "cancel");
                 }}
               >
                 Cancel
@@ -681,5 +681,5 @@ export function NewWastesModal({ dismiss }: WastesModalActions) {
         </Form>
       </IonContent>
     </IonPage>
-  )
+  );
 }

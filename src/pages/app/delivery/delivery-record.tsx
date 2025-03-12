@@ -1,18 +1,18 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
-import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from 'react'
-import { useIonRouter } from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from 'lucide-react'
-import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
-import { useForm } from 'react-hook-form'
+import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from "react";
+import { useIonRouter } from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
+import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
+import { useForm } from "react-hook-form";
 
-import { deleteDeliveryRecord, updateDeliveryRecord } from '@/lib/api'
-import { editDeliveryFormSchema, type EditDeliveryFormSchema } from '@/lib/form-schema'
-import { getFromStorage } from '@/lib/storage'
-import type { DeliveryRecord, Supplier } from '@/lib/types'
-import { cn, formatAsCurrency } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
+import { deleteDeliveryRecord, updateDeliveryRecord } from "@/lib/api";
+import { editDeliveryFormSchema, type EditDeliveryFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
+import type { DeliveryRecord, Supplier } from "@/lib/types";
+import { cn, formatAsCurrency } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,9 +23,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -33,7 +33,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -41,21 +41,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input, inputVariants } from '@/components/ui/input'
-import { NumberInput } from '@/components/ui/number-input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+} from "@/components/ui/form";
+import { Input, inputVariants } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 interface DeliveryRecordFormProps {
-  data: DeliveryRecord
+  data: DeliveryRecord;
 }
 
 /**
@@ -68,9 +68,9 @@ interface DeliveryRecordFormProps {
  * @returns The rendered DeliveryRecordForm component.
  */
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
-  const formRef = useRef<HTMLFormElement>(null)
-  const [suppliers, setSuppliers] = useState<Supplier>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const formRef = useRef<HTMLFormElement>(null);
+  const [suppliers, setSuppliers] = useState<Supplier>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<EditDeliveryFormSchema>({
     defaultValues: {
       supplier: data.supplier_id.toString(),
@@ -87,9 +87,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       })),
     },
     resolver: zodResolver(editDeliveryFormSchema),
-  })
-  const { toast } = useToast()
-  const router = useIonRouter()
+  });
+  const { toast } = useToast();
+  const router = useIonRouter();
 
   useEffect(() => {
     // TODO: Save these suppliers locally
@@ -103,28 +103,28 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
      */
     async function fetchSuppliers() {
       try {
-        const savedSuppliers = await getFromStorage('suppliers')
+        const savedSuppliers = await getFromStorage("suppliers");
 
         if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown
+          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown;
 
           if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers)
+            setSuppliers(parsedSuppliers);
           } else {
-            console.error('Suppliers data is invalid:', parsedSuppliers)
+            console.error("Suppliers data is invalid:", parsedSuppliers);
           }
         } else {
-          console.error('No suppliers found in storage')
+          console.error("No suppliers found in storage");
         }
       } catch (error) {
-        console.error('Error fetching suppliers:', error)
+        console.error("Error fetching suppliers:", error);
       }
     }
 
     startTransition(() => {
-      void fetchSuppliers()
-    })
-  }, [])
+      void fetchSuppliers();
+    });
+  }, []);
 
   /**
    * Handles the form submission event.
@@ -132,18 +132,18 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
    * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedValues = editDeliveryFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedValues = editDeliveryFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error('Form data is invalid:', parsedValues.error)
-        return
+        console.error("Form data is invalid:", parsedValues.error);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
 
       /**
        * Submits the form data to update the delivery record.
@@ -152,23 +152,23 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
        */
       async function submitForm() {
         try {
-          await updateDeliveryRecord(data.id, formValues)
+          await updateDeliveryRecord(data.id, formValues);
         } catch (error) {
           toast({
-            description: 'An error occurred while saving changes. Please try again.',
-            variant: 'destructive',
-          })
+            description: "An error occurred while saving changes. Please try again.",
+            variant: "destructive",
+          });
         } finally {
-          setIsLoading(false)
-          toast({ description: 'Successfully saved changes' })
-          router.goBack()
+          setIsLoading(false);
+          toast({ description: "Successfully saved changes" });
+          router.goBack();
         }
       }
 
       startTransition(() => {
-        void submitForm()
-      })
-    })(event)
+        void submitForm();
+      });
+    })(event);
   }
 
   /**
@@ -178,16 +178,16 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
    */
   async function handleDelete() {
     try {
-      await deleteDeliveryRecord(data.id)
+      await deleteDeliveryRecord(data.id);
     } catch (error) {
-      console.error('Error deleting delivery record:', error)
+      console.error("Error deleting delivery record:", error);
       toast({
-        description: 'An error occurred while deleting the delivery record. Please try again.',
-        variant: 'destructive',
-      })
+        description: "An error occurred while deleting the delivery record. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      toast({ description: 'Delivery record deleted' })
-      router.goBack()
+      toast({ description: "Delivery record deleted" });
+      router.goBack();
     }
   }
 
@@ -216,15 +216,15 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           >
                             <span
                               className={cn(
-                                'truncate ps-6',
-                                field.value.length === 0 && 'text-muted-foreground',
+                                "truncate ps-6",
+                                field.value.length === 0 && "text-muted-foreground",
                               )}
                             >
                               {suppliers.length > 0
                                 ? (suppliers.find(
                                     (supplier) => supplier.id.toString() === field.value,
-                                  )?.supplier_name ?? 'Select a supplier')
-                                : 'Select a supplier'}
+                                  )?.supplier_name ?? "Select a supplier")
+                                : "Select a supplier"}
                             </span>
                             <ChevronDownIcon
                               className="shrink-0 text-muted-foreground/80"
@@ -251,8 +251,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                   onSelect={(value) => {
                                     const selectedSupplier = suppliers.find(
                                       (supplier) => supplier.supplier_name === value,
-                                    )
-                                    field.onChange(selectedSupplier?.id.toString())
+                                    );
+                                    field.onChange(selectedSupplier?.id.toString());
                                   }}
                                 >
                                   <span className="truncate"> {supplier.supplier_name}</span>
@@ -308,11 +308,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          className={cn('w-full justify-start ps-9 text-left font-normal')}
+                          className={cn("w-full justify-start ps-9 text-left font-normal")}
                           variant="outline"
                         >
                           {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                            format(field.value, 'PP')
+                            format(field.value, "PP")
                           ) : (
                             <span>Select a date</span>
                           )}
@@ -321,7 +321,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
                       <Calendar
-                        disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
@@ -432,7 +432,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                     value={field.value}
                                     aria-label="Actual Quantity"
                                     onChange={(event) => {
-                                      field.onChange(event)
+                                      field.onChange(event);
                                     }}
                                   />
                                 </FormControl>
@@ -464,7 +464,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                     value={field.value}
                                     aria-label="DR Quantity"
                                     onChange={(event) => {
-                                      field.onChange(event)
+                                      field.onChange(event);
                                     }}
                                   />
                                 </FormControl>
@@ -515,9 +515,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                 <FormControl>
                                   <ReactNumberField
                                     formatOptions={{
-                                      style: 'currency',
-                                      currency: 'PHP',
-                                      currencySign: 'accounting',
+                                      style: "currency",
+                                      currency: "PHP",
+                                      currencySign: "accounting",
                                     }}
                                     aria-label="Unit Price"
                                     defaultValue={field.value}
@@ -525,7 +525,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                     <ReactInput
                                       className={cn(
                                         inputVariants(),
-                                        'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                        "min-w-40 text-right tabular-nums read-only:bg-muted",
                                       )}
                                     />
                                   </ReactNumberField>
@@ -548,9 +548,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                 <FormControl>
                                   <ReactNumberField
                                     formatOptions={{
-                                      style: 'currency',
-                                      currency: 'PHP',
-                                      currencySign: 'accounting',
+                                      style: "currency",
+                                      currency: "PHP",
+                                      currencySign: "accounting",
                                     }}
                                     aria-label="Total amount"
                                     defaultValue={field.value}
@@ -558,7 +558,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                                     <ReactInput
                                       className={cn(
                                         inputVariants(),
-                                        'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                        "min-w-40 text-right tabular-nums read-only:bg-muted",
                                       )}
                                       readOnly
                                     />
@@ -570,7 +570,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           />
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -580,7 +580,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
           {/* Make these buttons sticky at the bottom */}
           <div className="mt-1 flex flex-col gap-3">
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Saving...' : 'Save'}
+              {isLoading ? "Saving..." : "Save"}
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -599,7 +599,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => {
-                      void handleDelete()
+                      void handleDelete();
                     }}
                     asChild
                   >
@@ -620,5 +620,5 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>
       </div>
     </Fragment>
-  )
+  );
 }

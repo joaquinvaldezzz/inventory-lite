@@ -26,7 +26,7 @@ http://ionicframework.com/docs/theming/ */
 
 html {
   --ion-dynamic-font: var(--ion-default-dynamic-font);
-  --ion-font-family: 'Inter var';
+  --ion-font-family: "Inter var";
 }
 
 ion-title {

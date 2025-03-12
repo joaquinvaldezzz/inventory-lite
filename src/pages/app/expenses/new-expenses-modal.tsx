@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { startTransition, useEffect, useState, type FormEvent } from 'react'
+import { startTransition, useEffect, useState, type FormEvent } from "react";
 import {
   IonButton,
   IonButtons,
@@ -8,21 +8,21 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-} from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from 'lucide-react'
-import { Input as ReactInput, NumberField as ReactNumberField } from 'react-aria-components'
-import { useFieldArray, useForm } from 'react-hook-form'
+} from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
+import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
+import { useFieldArray, useForm } from "react-hook-form";
 
-import { createDeliveryEntry, getItems, getSuppliers } from '@/lib/api'
-import { newDeliveryFormSchema, type NewDeliveryFormSchema } from '@/lib/form-schema'
-import { getFromStorage } from '@/lib/storage'
-import type { Items, Supplier } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
+import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
+import type { Items, Supplier } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -30,7 +30,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -38,14 +38,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input, inputVariants } from '@/components/ui/input'
-import { NumberInput } from '@/components/ui/number-input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Textarea } from '@/components/ui/textarea'
+} from "@/components/ui/form";
+import { Input, inputVariants } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ExpensesModalActions {
-  dismiss: (data?: string | number | null, role?: string) => void
+  dismiss: (data?: string | number | null, role?: string) => void;
 }
 
 /**
@@ -58,37 +58,37 @@ interface ExpensesModalActions {
  */
 export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   /** Initializes the state variables for suppliers, items, and loading status. */
-  const [suppliers, setSuppliers] = useState<Supplier>([])
-  const [items, setItems] = useState<Items>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [suppliers, setSuppliers] = useState<Supplier>([]);
+  const [items, setItems] = useState<Items>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   /** Initializes the default form state using the `useForm` hook with the Zod resolver. */
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
-      supplier: '',
+      supplier: "",
       date_request: new Date(),
-      remarks: '',
+      remarks: "",
       items: [
         {
-          item: '',
+          item: "",
           quantity_dr: 0,
-          unit_dr: '',
+          unit_dr: "",
           unit_price: 0,
           total_amount: 0,
         },
       ],
     },
     resolver: zodResolver(newDeliveryFormSchema),
-  })
+  });
 
   /** Initializes the `useFieldArray` hook to manage the list of delivery items. */
   const { fields, append, remove } = useFieldArray({
-    name: 'items',
+    name: "items",
     control: form.control,
-  })
+  });
 
   /** Initializes the `useToast` hook for displaying toast messages. */
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   useEffect(() => {
     // TODO: Save these suppliers locally
@@ -109,30 +109,30 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
      */
     async function fetchSuppliers() {
       try {
-        await getSuppliers()
+        await getSuppliers();
 
-        const savedSuppliers = await getFromStorage('suppliers')
+        const savedSuppliers = await getFromStorage("suppliers");
 
         if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown
+          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown;
 
           if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers)
+            setSuppliers(parsedSuppliers);
           } else {
-            console.error('Suppliers data is invalid:', parsedSuppliers)
+            console.error("Suppliers data is invalid:", parsedSuppliers);
           }
         } else {
-          console.error('No suppliers found in storage')
+          console.error("No suppliers found in storage");
         }
       } catch (error) {
-        console.error('Error fetching suppliers:', error)
+        console.error("Error fetching suppliers:", error);
       }
     }
 
     startTransition(() => {
-      void fetchSuppliers()
-    })
-  }, [])
+      void fetchSuppliers();
+    });
+  }, []);
 
   useEffect(() => {
     // TODO: Save these items locally
@@ -145,27 +145,27 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
      */
     async function fetchItems() {
       try {
-        const request = await getItems()
-        setItems(request)
+        const request = await getItems();
+        setItems(request);
       } catch (error) {
-        console.error('Error fetching items:', error)
+        console.error("Error fetching items:", error);
       }
     }
 
     startTransition(() => {
-      void fetchItems()
-    })
-  }, [])
+      void fetchItems();
+    });
+  }, []);
 
   /** Adds a new row to the list of delivery items. */
   function handleAdd() {
     append({
-      item: '',
+      item: "",
       quantity_dr: 0,
-      unit_dr: '',
+      unit_dr: "",
       unit_price: 0,
       total_amount: 0,
-    })
+    });
   }
 
   /**
@@ -175,7 +175,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
    * @param {number} index - The index of the item to be removed.
    */
   function handleRemove(index: number) {
-    remove(index)
+    remove(index);
   }
 
   /**
@@ -185,24 +185,24 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     /** Prevents the default form submission behavior. */
-    event.preventDefault()
+    event.preventDefault();
 
     /** Submits the form data to create a new delivery entry. */
     void form.handleSubmit(() => {
       /** Retrieves the form values. */
-      const formValues = form.getValues()
+      const formValues = form.getValues();
 
       /** Validates the form data using the Zod schema. */
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues)
+      const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
       /** Logs an error if the form data is invalid. */
       if (!parsedValues.success) {
-        console.error('Form data is invalid:', parsedValues.error)
-        return
+        console.error("Form data is invalid:", parsedValues.error);
+        return;
       }
 
       /** Sets the loading state to `true`. */
-      setIsLoading(true)
+      setIsLoading(true);
 
       /**
        * Submits the delivery form by creating a new delivery entry.
@@ -214,22 +214,22 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
        */
       async function submitForm() {
         try {
-          await createDeliveryEntry(formValues)
+          await createDeliveryEntry(formValues);
         } catch (error) {
-          console.error('Form submission failed:', error)
+          console.error("Form submission failed:", error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
           toast({
-            description: 'Delivery entry created successfully',
-          })
-          dismiss(null, 'confirm')
+            description: "Delivery entry created successfully",
+          });
+          dismiss(null, "confirm");
         }
       }
 
       startTransition(() => {
-        void submitForm()
-      })
-    })(event)
+        void submitForm();
+      });
+    })(event);
   }
 
   return (
@@ -239,7 +239,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
           <IonButtons slot="start">
             <IonButton
               onClick={() => {
-                dismiss(null, 'cancel')
+                dismiss(null, "cancel");
               }}
             >
               Cancel
@@ -249,7 +249,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
           <IonButtons slot="end">
             <IonButton
               onClick={() => {
-                dismiss(null, 'confirm')
+                dismiss(null, "confirm");
               }}
             >
               Confirm
@@ -282,15 +282,15 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                             >
                               <span
                                 className={cn(
-                                  'truncate ps-6',
-                                  suppliers.length === 0 && 'text-muted-foreground',
+                                  "truncate ps-6",
+                                  suppliers.length === 0 && "text-muted-foreground",
                                 )}
                               >
                                 {suppliers.length > 0
                                   ? suppliers.find(
                                       (supplier) => supplier.id.toString() === field.value,
                                     )?.supplier_name
-                                  : 'Select an item'}
+                                  : "Select an item"}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
@@ -317,8 +317,8 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                     onSelect={(value) => {
                                       const selectedSupplier = suppliers.find(
                                         (supplier) => supplier.supplier_name === value,
-                                      )
-                                      field.onChange(selectedSupplier?.id.toString())
+                                      );
+                                      field.onChange(selectedSupplier?.id.toString());
                                     }}
                                   >
                                     {supplier.supplier_name}
@@ -353,11 +353,11 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            className={cn('w-full justify-start ps-9 text-left font-normal')}
+                            className={cn("w-full justify-start ps-9 text-left font-normal")}
                             variant="outline"
                           >
                             {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                              format(field.value, 'PP')
+                              format(field.value, "PP")
                             ) : (
                               <span>Select a date</span>
                             )}
@@ -366,7 +366,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
@@ -453,15 +453,15 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                       >
                                         <span
                                           className={cn(
-                                            'truncate',
-                                            items.length === 0 && 'text-muted-foreground',
+                                            "truncate",
+                                            items.length === 0 && "text-muted-foreground",
                                           )}
                                         >
                                           {items.length > 0
                                             ? items.find(
                                                 (item) => item.id.toString() === field.value,
                                               )?.raw_material
-                                            : 'Select an item'}
+                                            : "Select an item"}
                                         </span>
                                         <ChevronDownIcon
                                           className="shrink-0 text-muted-foreground/80"
@@ -488,12 +488,12 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                               onSelect={(value) => {
                                                 const selectedItem = items.find(
                                                   (item) => item.raw_material === value,
-                                                )
-                                                field.onChange(selectedItem?.id.toString())
+                                                );
+                                                field.onChange(selectedItem?.id.toString());
                                                 form.setValue(
                                                   `items.${index}.unit_dr`,
-                                                  selectedItem != null ? selectedItem.unit : '',
-                                                )
+                                                  selectedItem != null ? selectedItem.unit : "",
+                                                );
                                               }}
                                             >
                                               {item.raw_material}
@@ -528,12 +528,12 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                     value={field.value}
                                     aria-label="Quantity"
                                     onChange={(event) => {
-                                      field.onChange(event)
-                                      const { items } = form.getValues()
+                                      field.onChange(event);
+                                      const { items } = form.getValues();
                                       form.setValue(
                                         `items.${index}.total_amount`,
                                         items[index].quantity_dr * items[index].unit_price,
-                                      )
+                                      );
                                     }}
                                   />
                                 </FormControl>
@@ -578,25 +578,25 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                 <FormControl>
                                   <ReactNumberField
                                     formatOptions={{
-                                      style: 'currency',
-                                      currency: 'PHP',
-                                      currencySign: 'accounting',
+                                      style: "currency",
+                                      currency: "PHP",
+                                      currencySign: "accounting",
                                     }}
                                     aria-label="Unit Price"
                                     defaultValue={field.value}
                                     onChange={(event) => {
-                                      field.onChange(event)
-                                      const { items } = form.getValues()
+                                      field.onChange(event);
+                                      const { items } = form.getValues();
                                       form.setValue(
                                         `items.${index}.total_amount`,
                                         items[index].quantity_dr * items[index].unit_price,
-                                      )
+                                      );
                                     }}
                                   >
                                     <ReactInput
                                       className={cn(
                                         inputVariants(),
-                                        'min-w-32 text-right tabular-nums read-only:bg-muted',
+                                        "min-w-32 text-right tabular-nums read-only:bg-muted",
                                       )}
                                     />
                                   </ReactNumberField>
@@ -619,9 +619,9 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                 <FormControl>
                                   <ReactNumberField
                                     formatOptions={{
-                                      style: 'currency',
-                                      currency: 'PHP',
-                                      currencySign: 'accounting',
+                                      style: "currency",
+                                      currency: "PHP",
+                                      currencySign: "accounting",
                                     }}
                                     value={field.value}
                                     aria-label="Total"
@@ -630,7 +630,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                     <ReactInput
                                       className={cn(
                                         inputVariants(),
-                                        'min-w-40 text-right tabular-nums read-only:bg-muted',
+                                        "min-w-40 text-right tabular-nums read-only:bg-muted",
                                       )}
                                       readOnly
                                     />
@@ -652,7 +652,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              handleRemove(index)
+                              handleRemove(index);
                             }}
                           >
                             <Trash2 size={16} />
@@ -673,14 +673,14 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
               </Button>
 
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Submitting...' : 'Submit'}
+                {isLoading ? "Submitting..." : "Submit"}
               </Button>
               <Button
                 type="button"
                 disabled={isLoading}
                 variant="ghost"
                 onClick={() => {
-                  dismiss(null, 'cancel')
+                  dismiss(null, "cancel");
                 }}
               >
                 Cancel
@@ -690,5 +690,5 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
         </Form>
       </IonContent>
     </IonPage>
-  )
+  );
 }

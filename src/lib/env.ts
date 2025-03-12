@@ -1,10 +1,10 @@
-import { createEnv } from '@t3-oss/env-core'
-import { z } from 'zod'
+import { createEnv } from "@t3-oss/env-core";
+import { z } from "zod";
 
 export const env = createEnv({
   server: {},
 
-  clientPrefix: 'VITE_',
+  clientPrefix: "VITE_",
   client: {
     VITE_JWT_SECRET: z.string(),
     VITE_LOGIN_API_URL: z.string().url(),
@@ -18,4 +18,4 @@ export const env = createEnv({
   },
 
   runtimeEnv: import.meta.env,
-})
+});

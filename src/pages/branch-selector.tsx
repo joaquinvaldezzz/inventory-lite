@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { IonContent, IonPage, useIonRouter } from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Store } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { IonContent, IonPage, useIonRouter } from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Store } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-import { fetchUserBranches, getCurrentUser } from '@/lib/dal'
-import { branchSelectorFormSchema, type BranchSelectorFormSchema } from '@/lib/form-schema'
-import { saveToStorage } from '@/lib/storage'
-import type { Branch } from '@/lib/types'
-import { useToast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
+import { fetchUserBranches, getCurrentUser } from "@/lib/dal";
+import { branchSelectorFormSchema, type BranchSelectorFormSchema } from "@/lib/form-schema";
+import { saveToStorage } from "@/lib/storage";
+import type { Branch } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,81 +17,81 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 
 export default function BranchSelector() {
-  const formRef = useRef<HTMLFormElement>(null)
-  const [username, setUsername] = useState<string>('')
-  const [branches, setBranches] = useState<Branch[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const formRef = useRef<HTMLFormElement>(null);
+  const [username, setUsername] = useState<string>("");
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<BranchSelectorFormSchema>({
     defaultValues: {
-      branch: '',
+      branch: "",
     },
     resolver: zodResolver(branchSelectorFormSchema),
-  })
-  const router = useIonRouter()
-  const { toast } = useToast()
+  });
+  const router = useIonRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     void (async () => {
-      const username = await getCurrentUser()
-      const userBranches = await fetchUserBranches()
+      const username = await getCurrentUser();
+      const userBranches = await fetchUserBranches();
 
       if (username != null) {
-        setUsername(username.data.user.name)
+        setUsername(username.data.user.name);
       }
 
-      setBranches(userBranches)
-    })()
-  }, [])
+      setBranches(userBranches);
+    })();
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     try {
       void form.handleSubmit(async () => {
         if (formRef.current == null) {
-          console.error('Form reference is not available')
-          return
+          console.error("Form reference is not available");
+          return;
         }
 
-        const formData = Object.fromEntries(new FormData(formRef.current))
-        const parsedData = branchSelectorFormSchema.safeParse(formData)
+        const formData = Object.fromEntries(new FormData(formRef.current));
+        const parsedData = branchSelectorFormSchema.safeParse(formData);
 
         if (!parsedData.success) {
-          console.error('Form data is invalid:', parsedData.error)
+          console.error("Form data is invalid:", parsedData.error);
           // Optionally, provide user feedback here
-          return
+          return;
         }
 
-        setIsLoading(true)
+        setIsLoading(true);
 
         try {
-          await saveToStorage('currentBranch', JSON.stringify(formData))
+          await saveToStorage("currentBranch", JSON.stringify(formData));
           toast({
-            description: 'Branch selected successfully!',
-          })
-          router.push('/app/delivery')
+            description: "Branch selected successfully!",
+          });
+          router.push("/app/delivery");
         } catch (error) {
           toast({
-            description: 'Failed to select branch. Please try again.',
-            variant: 'destructive',
-          })
-          console.error('Form submission failed:', error)
+            description: "Failed to select branch. Please try again.",
+            variant: "destructive",
+          });
+          console.error("Form submission failed:", error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
-      })(event)
+      })(event);
     } catch (error) {
-      console.error('Form submission failed:', error)
+      console.error("Form submission failed:", error);
     }
   }
 
@@ -160,7 +160,7 @@ export default function BranchSelector() {
                 />
 
                 <div className="flex flex-col pt-1">
-                  <Button type="submit">{isLoading ? 'Proceeding...' : 'Proceed'}</Button>
+                  <Button type="submit">{isLoading ? "Proceeding..." : "Proceed"}</Button>
                 </div>
               </form>
             </Form>
@@ -168,5 +168,5 @@ export default function BranchSelector() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }

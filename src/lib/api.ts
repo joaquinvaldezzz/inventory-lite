@@ -1,15 +1,15 @@
-import axios from 'axios'
-import { format } from 'date-fns'
+import axios from "axios";
+import { format } from "date-fns";
 
-import { getCurrentUser, getUserSelectedBranch } from './dal'
-import { env } from './env'
+import { getCurrentUser, getUserSelectedBranch } from "./dal";
+import { env } from "./env";
 import type {
   EditDeliveryFormSchema,
   NewDailyCountFormSchema,
   NewDeliveryFormSchema,
   NewWasteFormSchema,
-} from './form-schema'
-import { saveToStorage } from './storage'
+} from "./form-schema";
+import { saveToStorage } from "./storage";
 import type {
   Categories,
   CategoriesResponse,
@@ -33,24 +33,24 @@ import type {
   WasteRecordData,
   WasteRecordResponse,
   WasteResponse,
-} from './types'
+} from "./types";
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
-  throw new Error('API URL is not defined')
+  throw new Error("API URL is not defined");
 }
 
 /** Represents a user session containing authentication details. */
 interface UserSession {
-  userId: string
-  token: string
-  branch: number
+  userId: string;
+  token: string;
+  branch: number;
 }
 
 /** Configuration object for API requests. */
 interface ApiRequestConfig {
-  url: string
-  action?: string
-  additionalData?: Record<string, unknown>
+  url: string;
+  action?: string;
+  additionalData?: Record<string, unknown>;
 }
 
 /**
@@ -60,21 +60,21 @@ interface ApiRequestConfig {
  * @throws {Error} If the user or branch is not found.
  */
 async function getUserSession(): Promise<UserSession> {
-  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()])
+  const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()]);
 
-  if (user.status !== 'fulfilled' || branch.status !== 'fulfilled') {
-    throw new Error('User not found or branch not selected')
+  if (user.status !== "fulfilled" || branch.status !== "fulfilled") {
+    throw new Error("User not found or branch not selected");
   }
 
   if (user.value === null || branch.value === null) {
-    throw new Error('User or branch not found')
+    throw new Error("User or branch not found");
   }
 
   return {
     userId: user.value.data.user.id,
     token: user.value.data.token,
     branch: branch.value,
-  }
+  };
 }
 
 /**
@@ -89,7 +89,7 @@ async function getUserSession(): Promise<UserSession> {
  * @throws {Error} If the API request fails.
  */
 async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestConfig): Promise<T> {
-  const { userId, token, branch } = await getUserSession()
+  const { userId, token, branch } = await getUserSession();
 
   const requestData = {
     user_id: userId,
@@ -97,14 +97,14 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
     branch,
     action,
     ...additionalData,
-  }
+  };
 
   try {
-    const response = await axios.post<T>(url, requestData)
-    return response.data
+    const response = await axios.post<T>(url, requestData);
+    return response.data;
   } catch (error) {
-    console.error(`API request failed (${action}):`, error)
-    throw new Error(`Failed to ${action} data`)
+    console.error(`API request failed (${action}):`, error);
+    throw new Error(`Failed to ${action} data`);
   }
 }
 
@@ -121,11 +121,11 @@ export async function authenticateUser(username: string, password: string): Prom
     const authenticatedUser = await axios.post<LoginResponse>(env.VITE_LOGIN_API_URL, {
       username,
       password,
-    })
-    return authenticatedUser.data
+    });
+    return authenticatedUser.data;
   } catch (error) {
-    console.error('Failed to authenticate user:', error)
-    throw new Error('Failed to authenticate user')
+    console.error("Failed to authenticate user:", error);
+    throw new Error("Failed to authenticate user");
   }
 }
 
@@ -138,19 +138,19 @@ export async function authenticateUser(username: string, password: string): Prom
 export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Promise<void> {
   await apiRequest({
     url: env.VITE_DELIVERY_API_URL,
-    action: 'add',
+    action: "add",
     additionalData: {
       supplier: Number(delivery.supplier),
-      date_request: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_order: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_delivered: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_received: format(delivery.date_request, 'yyyy-MM-dd'),
+      date_request: format(delivery.date_request, "yyyy-MM-dd"),
+      date_order: format(delivery.date_request, "yyyy-MM-dd"),
+      date_delivered: format(delivery.date_request, "yyyy-MM-dd"),
+      date_received: format(delivery.date_request, "yyyy-MM-dd"),
       grand_total: 0,
       remarks: delivery.remarks,
       status: 2,
       items: delivery.items,
     },
-  })
+  });
 }
 
 /**
@@ -162,13 +162,13 @@ export async function createDeliveryEntry(delivery: NewDeliveryFormSchema): Prom
 export async function createDailyCountEntry(dailyCount: NewDailyCountFormSchema): Promise<void> {
   await apiRequest({
     url: env.VITE_DAILY_COUNT_API_URL,
-    action: 'add',
+    action: "add",
     additionalData: {
       raw_material_type: dailyCount.raw_material_type,
-      date: format(dailyCount.date, 'yyyy-MM-dd'),
+      date: format(dailyCount.date, "yyyy-MM-dd"),
       items: dailyCount.items,
     },
-  })
+  });
 }
 
 /**
@@ -181,14 +181,14 @@ export async function createDailyCountEntry(dailyCount: NewDailyCountFormSchema)
 export async function createWasteEntry(waste: NewWasteFormSchema): Promise<void> {
   await apiRequest({
     url: env.VITE_WASTE_API_URL,
-    action: 'add',
+    action: "add",
     additionalData: {
       raw_material_type: waste.raw_material_type,
       waste_type: waste.waste_type,
-      date: format(waste.date, 'yyyy-MM-dd'),
+      date: format(waste.date, "yyyy-MM-dd"),
       items: waste.items,
     },
-  })
+  });
 }
 
 /**
@@ -199,9 +199,9 @@ export async function createWasteEntry(waste: NewWasteFormSchema): Promise<void>
 export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
   const data = await apiRequest<DeliveryResponse>({
     url: env.VITE_DELIVERY_API_URL,
-    action: 'fetch',
-  })
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -212,10 +212,10 @@ export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
 export async function getSuppliers(): Promise<Supplier> {
   const data = await apiRequest<SupplierResponse>({
     url: env.VITE_SUPPLIERS_API_URL,
-    action: 'fetch',
-  })
-  await saveToStorage('suppliers', JSON.stringify(data.data))
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  await saveToStorage("suppliers", JSON.stringify(data.data));
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -226,9 +226,9 @@ export async function getSuppliers(): Promise<Supplier> {
 export async function getItems(): Promise<Items> {
   const data = await apiRequest<ItemsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
-    action: 'fetch',
-  })
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -240,10 +240,10 @@ export async function getItems(): Promise<Items> {
 export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[]> {
   const data = await apiRequest<DeliveryResponse>({
     url: env.VITE_DELIVERY_API_URL,
-    action: 'fetch',
+    action: "fetch",
     additionalData: { id },
-  })
-  return Array.isArray(data.data) ? data.data : []
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -255,9 +255,9 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
 export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
   const data = await apiRequest<DailyCountResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
-    action: 'fetch',
-  })
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -269,9 +269,9 @@ export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
 export async function fetchWasteEntries(): Promise<WasteData[]> {
   const data = await apiRequest<WasteResponse>({
     url: env.VITE_WASTE_API_URL,
-    action: 'fetch',
-  })
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -283,9 +283,9 @@ export async function fetchWasteEntries(): Promise<WasteData[]> {
 export async function fetchEmployees(): Promise<EmployeeData[]> {
   const data = await apiRequest<EmployeesResponse>({
     url: env.VITE_EMPLOYEES_API_URL,
-    action: 'fetch',
-  })
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -297,10 +297,10 @@ export async function fetchEmployees(): Promise<EmployeeData[]> {
 export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
   const data = await apiRequest<DailyCountRecordResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
-    action: 'fetch',
+    action: "fetch",
     additionalData: { id },
-  })
-  return Array.isArray(data.data) ? data.data : []
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -312,10 +312,10 @@ export async function getSpecificDailyCountRecordById(id: number): Promise<Daily
 export async function getSpecificWastesRecordById(id: number): Promise<WasteRecordData[]> {
   const data = await apiRequest<WasteRecordResponse>({
     url: env.VITE_WASTE_API_URL,
-    action: 'fetch',
+    action: "fetch",
     additionalData: { id },
-  })
-  return Array.isArray(data.data) ? data.data : []
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -329,10 +329,10 @@ export async function getSpecificWastesRecordById(id: number): Promise<WasteReco
 export async function fetchCategories(): Promise<Categories[]> {
   const data = await apiRequest<CategoriesResponse>({
     url: env.VITE_CATEGORIES_API_URL,
-    action: 'fetch',
-  })
-  await saveToStorage('categories', JSON.stringify(data.data))
-  return Array.isArray(data.data) ? data.data : []
+    action: "fetch",
+  });
+  await saveToStorage("categories", JSON.stringify(data.data));
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -345,12 +345,12 @@ export async function fetchCategories(): Promise<Categories[]> {
 export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
-    action: 'fetch',
+    action: "fetch",
     additionalData: {
       category,
     },
-  })
-  return Array.isArray(data.data) ? data.data : []
+  });
+  return Array.isArray(data.data) ? data.data : [];
 }
 
 /**
@@ -366,20 +366,20 @@ export async function updateDeliveryRecord(
 ): Promise<void> {
   await apiRequest({
     url: env.VITE_DELIVERY_API_URL,
-    action: 'edit',
+    action: "edit",
     additionalData: {
       id,
       supplier: Number(delivery.supplier),
-      date_request: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_order: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_delivered: format(delivery.date_request, 'yyyy-MM-dd'),
-      date_received: format(delivery.date_request, 'yyyy-MM-dd'),
+      date_request: format(delivery.date_request, "yyyy-MM-dd"),
+      date_order: format(delivery.date_request, "yyyy-MM-dd"),
+      date_delivered: format(delivery.date_request, "yyyy-MM-dd"),
+      date_received: format(delivery.date_request, "yyyy-MM-dd"),
       grand_total: 0,
       remarks: delivery.remarks,
       status: 2,
       items: delivery.items,
     },
-  })
+  });
 }
 
 /**
@@ -396,14 +396,14 @@ export async function updateDailyCountRecord(
 ): Promise<void> {
   await apiRequest({
     url: env.VITE_DAILY_COUNT_API_URL,
-    action: 'edit',
+    action: "edit",
     additionalData: {
       id,
       raw_material_type: dailyCount.raw_material_type,
-      date: format(dailyCount.date, 'yyyy-MM-dd'),
+      date: format(dailyCount.date, "yyyy-MM-dd"),
       items: dailyCount.items,
     },
-  })
+  });
 }
 
 /**
@@ -417,15 +417,15 @@ export async function updateDailyCountRecord(
 export async function updateWasteRecord(id: number, data: NewWasteFormSchema): Promise<void> {
   await apiRequest({
     url: env.VITE_WASTE_API_URL,
-    action: 'edit',
+    action: "edit",
     additionalData: {
       id,
       raw_material_type: data.raw_material_type,
       waste_type: data.waste_type,
-      date: format(data.date, 'yyyy-MM-dd'),
+      date: format(data.date, "yyyy-MM-dd"),
       items: data.items,
     },
-  })
+  });
 }
 
 /**
@@ -435,7 +435,7 @@ export async function updateWasteRecord(id: number, data: NewWasteFormSchema): P
  * @returns Resolves when the record is deleted.
  */
 export async function deleteDeliveryRecord(id: number): Promise<void> {
-  await apiRequest({ url: env.VITE_DELIVERY_API_URL, action: 'delete', additionalData: { id } })
+  await apiRequest({ url: env.VITE_DELIVERY_API_URL, action: "delete", additionalData: { id } });
 }
 
 /**
@@ -445,7 +445,7 @@ export async function deleteDeliveryRecord(id: number): Promise<void> {
  * @returns Resolves when the record is deleted.
  */
 export async function deleteDailyCountRecordById(id: number): Promise<void> {
-  await apiRequest({ url: env.VITE_DAILY_COUNT_API_URL, action: 'delete', additionalData: { id } })
+  await apiRequest({ url: env.VITE_DAILY_COUNT_API_URL, action: "delete", additionalData: { id } });
 }
 
 /**
@@ -455,5 +455,5 @@ export async function deleteDailyCountRecordById(id: number): Promise<void> {
  * @returns Resolves when the record is deleted.
  */
 export async function deleteWasteRecordById(id: number): Promise<void> {
-  await apiRequest({ url: env.VITE_WASTE_API_URL, action: 'delete', additionalData: { id } })
+  await apiRequest({ url: env.VITE_WASTE_API_URL, action: "delete", additionalData: { id } });
 }

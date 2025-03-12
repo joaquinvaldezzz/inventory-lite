@@ -1,17 +1,17 @@
 /* eslint-disable max-lines -- This is a large file */
-import { startTransition, useEffect, useState, type FormEvent } from 'react'
-import { useIonRouter } from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from 'lucide-react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useIonRouter } from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
 
-import { deleteWasteRecordById, fetchEmployees, updateWasteRecord } from '@/lib/api'
-import { newWasteFormSchema, type NewWasteFormSchema } from '@/lib/form-schema'
-import { getFromStorage } from '@/lib/storage'
-import type { Categories, WasteRecordData } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
+import { deleteWasteRecordById, fetchEmployees, updateWasteRecord } from "@/lib/api";
+import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
+import type { Categories, WasteRecordData } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,9 +22,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -32,7 +32,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from "@/components/ui/command";
 import {
   DivTable,
   DivTableBody,
@@ -40,7 +40,7 @@ import {
   DivTableHead,
   DivTableHeader,
   DivTableRow,
-} from '@/components/ui/div-table'
+} from "@/components/ui/div-table";
 import {
   Form,
   FormControl,
@@ -48,21 +48,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import MultipleSelector, { type Option } from '@/components/ui/multiselect'
-import { NumberInput } from '@/components/ui/number-input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import MultipleSelector, { type Option } from "@/components/ui/multiselect";
+import { NumberInput } from "@/components/ui/number-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 
 interface WastesRecordFormProps {
-  data: WasteRecordData
+  data: WasteRecordData;
 }
 
 /**
@@ -73,9 +73,9 @@ interface WastesRecordFormProps {
  * @returns The rendered form component.
  */
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
-  const [categories, setCategories] = useState<Categories[]>([])
-  const [employees, setEmployees] = useState<Option[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [employees, setEmployees] = useState<Option[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(data.date),
@@ -90,13 +90,13 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
       })),
     },
     resolver: zodResolver(newWasteFormSchema),
-  })
+  });
   const { fields, remove } = useFieldArray({
-    name: 'items',
+    name: "items",
     control: form.control,
-  })
-  const router = useIonRouter()
-  const { toast } = useToast()
+  });
+  const router = useIonRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     /**
@@ -107,19 +107,19 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
      *   updated.
      */
     async function getEmployees() {
-      const employees = await fetchEmployees()
+      const employees = await fetchEmployees();
       const data = employees.map((employee) => {
         return {
           value: employee.EmployeeID,
-          label: employee.FirstName + ' ' + employee.LastName,
-        }
-      })
+          label: employee.FirstName + " " + employee.LastName,
+        };
+      });
 
-      setEmployees(data)
+      setEmployees(data);
     }
 
-    void getEmployees()
-  }, [])
+    void getEmployees();
+  }, []);
 
   /**
    * Handles the removal of a row at the specified index.
@@ -127,7 +127,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
    * @param index The index of the item to be removed.
    */
   function handleRemove(index: number) {
-    remove(index)
+    remove(index);
   }
 
   useEffect(() => {
@@ -141,28 +141,28 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
      */
     async function fetchCategories() {
       try {
-        const savedCategories = await getFromStorage('categories')
+        const savedCategories = await getFromStorage("categories");
 
         if (savedCategories != null) {
-          const parsedCategories = JSON.parse(savedCategories) as unknown
+          const parsedCategories = JSON.parse(savedCategories) as unknown;
 
           if (Array.isArray(parsedCategories)) {
-            setCategories(parsedCategories)
+            setCategories(parsedCategories);
           } else {
-            console.error('Categories data is invalid:', parsedCategories)
+            console.error("Categories data is invalid:", parsedCategories);
           }
         } else {
-          console.error('No categories found in storage')
+          console.error("No categories found in storage");
         }
       } catch (error) {
-        console.error('Error fetching categories:', error)
+        console.error("Error fetching categories:", error);
       }
     }
 
     startTransition(() => {
-      void fetchCategories()
-    })
-  }, [])
+      void fetchCategories();
+    });
+  }, []);
 
   /**
    * Handles the form submission event.
@@ -170,18 +170,18 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
    * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedValues = newWasteFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedValues = newWasteFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error('Form data is invalid:', parsedValues.error)
-        return
+        console.error("Form data is invalid:", parsedValues.error);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
 
       /**
        * Submits the form data to update the waste record.
@@ -191,18 +191,18 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
        */
       async function submitForm() {
         try {
-          if (parsedValues.data != null) await updateWasteRecord(data.id, parsedValues.data)
+          if (parsedValues.data != null) await updateWasteRecord(data.id, parsedValues.data);
         } catch (error) {
-          console.error('Form submission failed:', error)
+          console.error("Form submission failed:", error);
         } finally {
-          setIsLoading(false)
-          router.goBack()
-          toast({ description: 'Successfully updated waste record' })
+          setIsLoading(false);
+          router.goBack();
+          toast({ description: "Successfully updated waste record" });
         }
       }
 
-      void submitForm()
-    })(event)
+      void submitForm();
+    })(event);
   }
 
   /**
@@ -212,16 +212,16 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
    */
   async function handleDelete() {
     try {
-      await deleteWasteRecordById(data.id)
+      await deleteWasteRecordById(data.id);
     } catch (error) {
-      console.error('Error deleting waste record:', error)
+      console.error("Error deleting waste record:", error);
       toast({
-        description: 'An error occurred while deleting the waste record. Please try again.',
-        variant: 'destructive',
-      })
+        description: "An error occurred while deleting the waste record. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      router.goBack()
-      toast({ description: 'Waste record deleted' })
+      router.goBack();
+      toast({ description: "Waste record deleted" });
     }
   }
 
@@ -242,11 +242,11 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
-                        className={cn('w-full justify-start ps-9 text-left font-normal')}
+                        className={cn("w-full justify-start ps-9 text-left font-normal")}
                         variant="outline"
                       >
                         {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                          format(field.value, 'PP')
+                          format(field.value, "PP")
                         ) : (
                           <span>Select a date</span>
                         )}
@@ -255,7 +255,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <Calendar
-                      disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
@@ -290,15 +290,15 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                         >
                           <span
                             className={cn(
-                              'truncate ps-6',
-                              field.value.length === 0 && 'text-muted-foreground',
+                              "truncate ps-6",
+                              field.value.length === 0 && "text-muted-foreground",
                             )}
                           >
                             {categories.length > 0
                               ? (categories.find(
                                   (category) => category.id.toString() === field.value,
-                                )?.raw_material_type ?? 'Select a category')
-                              : 'Select a category'}
+                                )?.raw_material_type ?? "Select a category")
+                              : "Select a category"}
                           </span>
                           <ChevronDownIcon
                             className="shrink-0 text-muted-foreground/80"
@@ -325,8 +325,8 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                                 onSelect={(value) => {
                                   const selectedSupplier = categories.find(
                                     (supplier) => supplier.raw_material_type === value,
-                                  )
-                                  field.onChange(selectedSupplier?.id.toString())
+                                  );
+                                  field.onChange(selectedSupplier?.id.toString());
                                 }}
                               >
                                 {category.raw_material_type}
@@ -404,7 +404,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                               value={field.value}
                               aria-label="Quantity"
                               onChange={(event) => {
-                                field.onChange(event)
+                                field.onChange(event);
                               }}
                             />
                           </FormControl>
@@ -456,7 +456,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                               placeholder="Select employee(s)"
                               options={employees}
                               commandProps={{
-                                label: 'Select employee(s)',
+                                label: "Select employee(s)",
                               }}
                               emptyIndicator={
                                 <p className="text-center text-sm">No employees found.</p>
@@ -477,21 +477,21 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                       size="icon"
                       variant="ghost"
                       onClick={() => {
-                        handleRemove(index)
+                        handleRemove(index);
                       }}
                     >
                       <Trash2 size={16} />
                     </Button>
                   </DivTableCell>
                 </DivTableRow>
-              )
+              );
             })}
           </DivTableBody>
         </DivTable>
 
         <div className="mt-1 flex flex-col gap-3">
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Save'}
+            {isLoading ? "Saving..." : "Save"}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -510,7 +510,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    void handleDelete()
+                    void handleDelete();
                   }}
                   asChild
                 >
@@ -524,5 +524,5 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         </div>
       </form>
     </Form>
-  )
+  );
 }

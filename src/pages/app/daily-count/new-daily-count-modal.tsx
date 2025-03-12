@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- It's okay for this file to be long */
-import { startTransition, useEffect, useState, type FormEvent } from 'react'
+import { startTransition, useEffect, useState, type FormEvent } from "react";
 import {
   IonButton,
   IonButtons,
@@ -8,9 +8,9 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-} from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
+} from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import {
   CalendarIcon,
   CheckIcon,
@@ -20,23 +20,23 @@ import {
   Plus,
   PlusIcon,
   Trash2,
-} from 'lucide-react'
+} from "lucide-react";
 import {
   Group,
   NumberField,
   Button as ReactAriaButton,
   Input as ReactInput,
-} from 'react-aria-components'
-import { useFieldArray, useForm } from 'react-hook-form'
+} from "react-aria-components";
+import { useFieldArray, useForm } from "react-hook-form";
 
-import { createDailyCountEntry, fetchCategories, getIngredientsByCategory } from '@/lib/api'
-import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
-import { getFromStorage } from '@/lib/storage'
-import type { Categories, Ingredients } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { createDailyCountEntry, fetchCategories, getIngredientsByCategory } from "@/lib/api";
+import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
+import type { Categories, Ingredients } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -44,7 +44,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -52,12 +52,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DailyCountModalActions {
-  dismiss: (data?: string | number | null, role?: string) => void
+  dismiss: (data?: string | number | null, role?: string) => void;
 }
 
 /**
@@ -71,30 +71,30 @@ interface DailyCountModalActions {
  * @returns The rendered component.
  */
 export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
-  const [categories, setCategories] = useState<Categories[]>([])
-  const [ingredients, setIngredients] = useState<Ingredients[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredients[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(),
-      raw_material_type: '',
+      raw_material_type: "",
       items: [],
     },
     resolver: zodResolver(newDailyCountFormSchema),
-  })
+  });
   const { fields, replace, append, remove } = useFieldArray({
-    name: 'items',
+    name: "items",
     control: form.control,
-  })
-  const { toast } = useToast()
+  });
+  const { toast } = useToast();
 
   /** Adds a new row to the items field array. */
   function handleAdd() {
     append({
-      item: '',
+      item: "",
       count: 0,
-      unit: '',
-    })
+      unit: "",
+    });
   }
 
   /** Generates a new list of ingredients with their counts set to 0 and replaces the current list. */
@@ -105,7 +105,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
         count: 0,
         unit: ingredient.unit,
       })),
-    )
+    );
   }
 
   /**
@@ -114,7 +114,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
    * @param index The index of the item to be removed.
    */
   function handleRemove(index: number) {
-    remove(index)
+    remove(index);
   }
 
   useEffect(() => {
@@ -124,23 +124,23 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
      * @returns A promise that resolves when the categories are fetched and set.
      */
     async function getCategoryItems() {
-      await fetchCategories()
+      await fetchCategories();
 
-      const savedCategories = await getFromStorage('categories')
+      const savedCategories = await getFromStorage("categories");
 
       if (savedCategories != null) {
-        const parsedCategories = JSON.parse(savedCategories) as unknown
+        const parsedCategories = JSON.parse(savedCategories) as unknown;
 
         if (Array.isArray(parsedCategories)) {
-          setCategories(parsedCategories)
+          setCategories(parsedCategories);
         } else {
-          console.error('Categories data is invalid:', parsedCategories)
+          console.error("Categories data is invalid:", parsedCategories);
         }
       }
     }
 
-    void getCategoryItems()
-  }, [])
+    void getCategoryItems();
+  }, []);
 
   useEffect(() => {
     /**
@@ -150,17 +150,17 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
      * @returns A promise that resolves when the ingredients are fetched and state is updated.
      */
     async function getIngredientItems() {
-      if (form.getValues('raw_material_type').length === 0) {
-        return
+      if (form.getValues("raw_material_type").length === 0) {
+        return;
       }
 
-      const ingredients = await getIngredientsByCategory(form.getValues('raw_material_type'))
-      setIngredients(ingredients)
-      remove()
+      const ingredients = await getIngredientsByCategory(form.getValues("raw_material_type"));
+      setIngredients(ingredients);
+      remove();
     }
 
-    void getIngredientItems()
-  }, [form.watch('raw_material_type')])
+    void getIngredientItems();
+  }, [form.watch("raw_material_type")]);
 
   /**
    * Handles the form submission event.
@@ -168,18 +168,18 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
    * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedValues = newDailyCountFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error('Form data is invalid:', parsedValues.error)
-        return
+        console.error("Form data is invalid:", parsedValues.error);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
 
       /**
        * Submits the form to create a new daily count entry.
@@ -188,22 +188,22 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
        */
       async function submitForm() {
         try {
-          await createDailyCountEntry(formValues)
+          await createDailyCountEntry(formValues);
         } catch (error) {
-          console.error('Form submission failed:', error)
+          console.error("Form submission failed:", error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
           toast({
-            description: 'Daily count entry created successfully',
-          })
-          dismiss(null, 'confirm')
+            description: "Daily count entry created successfully",
+          });
+          dismiss(null, "confirm");
         }
       }
 
       startTransition(() => {
-        void submitForm()
-      })
-    })(event)
+        void submitForm();
+      });
+    })(event);
   }
 
   return (
@@ -213,7 +213,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
           <IonButtons slot="start">
             <IonButton
               onClick={() => {
-                dismiss(null, 'cancel')
+                dismiss(null, "cancel");
               }}
             >
               Cancel
@@ -223,7 +223,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
           <IonButtons slot="end">
             <IonButton
               onClick={() => {
-                dismiss(null, 'confirm')
+                dismiss(null, "confirm");
               }}
             >
               Confirm
@@ -249,11 +249,11 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            className={cn('w-full justify-start ps-9 text-left font-normal')}
+                            className={cn("w-full justify-start ps-9 text-left font-normal")}
                             variant="outline"
                           >
                             {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                              format(field.value, 'PP')
+                              format(field.value, "PP")
                             ) : (
                               <span>Select a date</span>
                             )}
@@ -262,7 +262,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
-                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                          disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
@@ -297,15 +297,15 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                             >
                               <span
                                 className={cn(
-                                  'truncate ps-6',
-                                  field.value.length === 0 && 'text-muted-foreground',
+                                  "truncate ps-6",
+                                  field.value.length === 0 && "text-muted-foreground",
                                 )}
                               >
                                 {categories.length > 0
                                   ? (categories.find(
                                       (category) => category.id.toString() === field.value,
-                                    )?.raw_material_type ?? 'Select a category')
-                                  : 'Select a category'}
+                                    )?.raw_material_type ?? "Select a category")
+                                  : "Select a category"}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
@@ -332,8 +332,8 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                                     onSelect={(value) => {
                                       const selectedCategory = categories.find(
                                         (category) => category.raw_material_type === value,
-                                      )
-                                      field.onChange(selectedCategory?.id.toString())
+                                      );
+                                      field.onChange(selectedCategory?.id.toString());
                                     }}
                                   >
                                     {category.raw_material_type}
@@ -419,16 +419,16 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                                         >
                                           <span
                                             className={cn(
-                                              'truncate',
-                                              field.value.length === 0 && 'text-muted-foreground',
+                                              "truncate",
+                                              field.value.length === 0 && "text-muted-foreground",
                                             )}
                                           >
                                             {ingredients.length > 0
                                               ? (ingredients.find(
                                                   (ingredient) =>
                                                     ingredient.id.toString() === field.value,
-                                                )?.raw_material ?? 'Select an ingredient')
-                                              : 'Select an ingredient'}
+                                                )?.raw_material ?? "Select an ingredient")
+                                              : "Select an ingredient"}
                                           </span>
                                           <ChevronDownIcon
                                             className="shrink-0 text-muted-foreground/80"
@@ -456,8 +456,8 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                                                   const selectedIngredient = ingredients.find(
                                                     (ingredient) =>
                                                       ingredient.raw_material === value,
-                                                  )
-                                                  field.onChange(selectedIngredient?.id.toString())
+                                                  );
+                                                  field.onChange(selectedIngredient?.id.toString());
                                                 }}
                                               >
                                                 {ingredient.raw_material}
@@ -551,7 +551,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                             size="icon"
                             variant="ghost"
                             onClick={() => {
-                              handleRemove(index)
+                              handleRemove(index);
                             }}
                           >
                             <Trash2 size={16} />
@@ -576,7 +576,7 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  dismiss(null, 'cancel')
+                  dismiss(null, "cancel");
                 }}
               >
                 Cancel
@@ -586,5 +586,5 @@ export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
         </Form>
       </IonContent>
     </IonPage>
-  )
+  );
 }

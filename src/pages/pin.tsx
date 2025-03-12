@@ -1,9 +1,9 @@
-import { useRef, type FormEvent } from 'react'
-import { IonContent, IonImg, IonPage } from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useRef, type FormEvent } from "react";
+import { IonContent, IonImg, IonPage } from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-import { pinFormSchema, type PinFormSchema } from '@/lib/form-schema'
+import { pinFormSchema, type PinFormSchema } from "@/lib/form-schema";
 import {
   Form,
   FormControl,
@@ -11,32 +11,32 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { InputPIN, InputPINGroup, InputPINSlot } from '@/components/ui/input-pin'
+} from "@/components/ui/form";
+import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin";
 
 export default function PIN() {
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const form = useForm<PinFormSchema>({
     defaultValues: {
-      pin: '',
+      pin: "",
     },
     resolver: zodResolver(pinFormSchema),
-  })
+  });
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedData = pinFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedData = pinFormSchema.safeParse(formValues);
 
       if (!parsedData.success) {
-        console.error('Form data is invalid:', parsedData.error)
-        return
+        console.error("Form data is invalid:", parsedData.error);
+        return;
       }
 
-      console.log(formValues)
-    })(event)
+      console.log(formValues);
+    })(event);
   }
 
   return (
@@ -100,5 +100,5 @@ export default function PIN() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }

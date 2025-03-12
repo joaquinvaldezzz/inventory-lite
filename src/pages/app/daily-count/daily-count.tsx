@@ -7,22 +7,22 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
-} from '@ionic/react'
-import { useQuery } from '@tanstack/react-query'
-import { useLocation, type RouteComponentProps } from 'react-router'
+} from "@ionic/react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation, type RouteComponentProps } from "react-router";
 
-import { getSpecificDailyCountRecordById } from '@/lib/api'
+import { getSpecificDailyCountRecordById } from "@/lib/api";
 
-import { DailyCountRecordForm } from './daily-count-record'
+import { DailyCountRecordForm } from "./daily-count-record";
 
-type DailyCountPageProps = RouteComponentProps<{ id: string }>
+type DailyCountPageProps = RouteComponentProps<{ id: string }>;
 
 export default function DailyCountRecord({ match }: DailyCountPageProps) {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
   const { isPending, data } = useQuery({
-    queryKey: ['delivery-entry', match.params.id, pathname],
+    queryKey: ["delivery-entry", match.params.id, pathname],
     queryFn: async () => await getSpecificDailyCountRecordById(Number(match.params.id)),
-  })
+  });
 
   // if (isPending) {
   //   return (
@@ -67,11 +67,11 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
           </div>
         </IonContent>
       </IonPage>
-    )
+    );
   }
 
   if (data == null) {
-    return null
+    return null;
   }
 
   return (
@@ -89,5 +89,5 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
         <DailyCountRecordForm data={data[0]} />
       </IonContent>
     </IonPage>
-  )
+  );
 }

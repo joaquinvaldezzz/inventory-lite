@@ -1,26 +1,26 @@
-import { lazy, Suspense } from 'react'
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react'
-import { IonReactRouter } from '@ionic/react-router'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Redirect, Route } from 'react-router-dom'
+import { lazy, Suspense } from "react";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Redirect, Route } from "react-router-dom";
 
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from "@/components/ui/toaster";
 
-import { Loading } from './components/loading'
+import { Loading } from "./components/loading";
 // import BranchSelector from './pages/branch-selector'
 // import Login from './pages/login'
 // import PIN from './pages/pin'
 
-import './styles/main.css'
+import "./styles/main.css";
 
-const Login = lazy(async () => await import('./pages/login'))
-const PIN = lazy(async () => await import('./pages/pin'))
-const BranchSelector = lazy(async () => await import('./pages/branch-selector'))
-const Tabs = lazy(async () => await import('./pages/app/tabs'))
+const Login = lazy(async () => await import("./pages/login"));
+const PIN = lazy(async () => await import("./pages/pin"));
+const BranchSelector = lazy(async () => await import("./pages/branch-selector"));
+const Tabs = lazy(async () => await import("./pages/app/tabs"));
 
-setupIonicReact()
+setupIonicReact();
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 /**
  * The main application component that sets up the routing and context providers.
@@ -59,5 +59,5 @@ export default function App() {
         </IonApp>
       </Suspense>
     </QueryClientProvider>
-  )
+  );
 }

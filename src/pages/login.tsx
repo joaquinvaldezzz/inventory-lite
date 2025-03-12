@@ -1,16 +1,16 @@
-import { startTransition, useRef, useState, type FormEvent } from 'react'
-import { IonContent, IonImg, IonPage, useIonRouter } from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertCircle, Eye, EyeOff, KeyRound, User } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { startTransition, useRef, useState, type FormEvent } from "react";
+import { IonContent, IonImg, IonPage, useIonRouter } from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Eye, EyeOff, KeyRound, User } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-import { authenticateUser } from '@/lib/api'
-import { loginFormSchema, type LoginFormSchema } from '@/lib/form-schema'
-import { createSession } from '@/lib/session'
-import { saveToStorage } from '@/lib/storage'
-import { useToast } from '@/hooks/use-toast'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
+import { authenticateUser } from "@/lib/api";
+import { loginFormSchema, type LoginFormSchema } from "@/lib/form-schema";
+import { createSession } from "@/lib/session";
+import { saveToStorage } from "@/lib/storage";
+import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,8 +18,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 /**
  * The `Login` component renders a login form for user authentication. It includes fields for
@@ -28,18 +28,18 @@ import { Input } from '@/components/ui/input'
  * @returns The rendered login form component.
  */
 export default function Login() {
-  const formRef = useRef<HTMLFormElement>(null)
-  const [isVisible, setIsVisible] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<LoginFormSchema>({
     defaultValues: {
-      username: '',
-      password: '',
+      username: "",
+      password: "",
     },
     resolver: zodResolver(loginFormSchema),
-  })
-  const router = useIonRouter()
-  const { toast } = useToast()
+  });
+  const router = useIonRouter();
+  const { toast } = useToast();
 
   /**
    * Handles the form submission event for the login form.
@@ -47,18 +47,18 @@ export default function Login() {
    * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedData = loginFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedData = loginFormSchema.safeParse(formValues);
 
       if (!parsedData.success) {
-        console.error('Form data is invalid:', parsedData.error)
-        return
+        console.error("Form data is invalid:", parsedData.error);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
 
       /**
        * Logs in a user using the provided form values.
@@ -66,44 +66,44 @@ export default function Login() {
        * @returns A promise that resolves when the login process is complete.
        */
       async function loginUser() {
-        const { username, password } = formValues
+        const { username, password } = formValues;
 
         try {
-          const authenticatedUser = await authenticateUser(username, password)
+          const authenticatedUser = await authenticateUser(username, password);
 
           if (authenticatedUser.success) {
-            await saveToStorage('currentUser', JSON.stringify(authenticatedUser))
+            await saveToStorage("currentUser", JSON.stringify(authenticatedUser));
             toast({
-              description: 'Logged in successfully!',
-            })
+              description: "Logged in successfully!",
+            });
 
-            const { user } = authenticatedUser.data
-            const userId = user.id
-            const userRole = user.level
+            const { user } = authenticatedUser.data;
+            const userId = user.id;
+            const userRole = user.level;
 
-            await createSession(userId, userRole)
+            await createSession(userId, userRole);
 
-            router.push('/branch-selector')
+            router.push("/branch-selector");
           } else {
-            form.setError('root', {
+            form.setError("root", {
               message:
                 "Hmm, something went wrong. Please double-check your username and password. If you're still having trouble, you can reset your password.",
-            })
+            });
           }
         } catch (error) {
-          console.error('Form submission failed:', error)
-          form.setError('root', {
-            message: 'Failed to log in. Please try again.',
-          })
+          console.error("Form submission failed:", error);
+          form.setError("root", {
+            message: "Failed to log in. Please try again.",
+          });
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
 
       startTransition(() => {
-        void loginUser()
-      })
-    })(event)
+        void loginUser();
+      });
+    })(event);
   }
 
   return (
@@ -173,7 +173,7 @@ export default function Login() {
                         <FormControl>
                           <Input
                             className="ps-9 pe-9"
-                            type={isVisible ? 'text' : 'password'}
+                            type={isVisible ? "text" : "password"}
                             placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                             disabled={isLoading}
                             {...field}
@@ -183,10 +183,10 @@ export default function Login() {
                           className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                           type="button"
                           aria-controls="password"
-                          aria-label={isVisible ? 'Hide password' : 'Show password'}
+                          aria-label={isVisible ? "Hide password" : "Show password"}
                           aria-pressed={isVisible}
                           onClick={() => {
-                            setIsVisible(!isVisible)
+                            setIsVisible(!isVisible);
                           }}
                         >
                           {isVisible ? (
@@ -203,7 +203,7 @@ export default function Login() {
 
                 <div className="flex flex-col pt-1">
                   <Button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Logging in...' : 'Log in'}
+                    {isLoading ? "Logging in..." : "Log in"}
                   </Button>
                 </div>
               </form>
@@ -211,7 +211,7 @@ export default function Login() {
 
             <div className="space-y-3 text-center text-sm">
               <p className="text-muted-foreground">
-                First time?{' '}
+                First time?{" "}
                 <Button className="h-auto p-0" variant="link">
                   Sign up now
                 </Button>
@@ -226,5 +226,5 @@ export default function Login() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }

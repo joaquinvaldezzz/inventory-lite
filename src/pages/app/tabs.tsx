@@ -1,15 +1,15 @@
-import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react'
-import { IonReactRouter } from '@ionic/react-router'
-import { calendar, cash, cube, trash } from 'ionicons/icons'
-import { Redirect, Route } from 'react-router'
+import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import { calendar, cash, cube, trash } from "ionicons/icons";
+import { Redirect, Route } from "react-router";
 
-import DailyCount from './daily-count'
-import DailyCountRecord from './daily-count/daily-count'
-import Delivery from './delivery'
-import DeliveryRecord from './delivery/delivery'
-import Expenses from './expenses'
-import Wastes from './wastes'
-import WastesRecord from './wastes/wastes'
+import DailyCount from "./daily-count";
+import DailyCountRecord from "./daily-count/daily-count";
+import Delivery from "./delivery";
+import DeliveryRecord from "./delivery/delivery";
+import Expenses from "./expenses";
+import Wastes from "./wastes";
+import WastesRecord from "./wastes/wastes";
 
 /**
  * The `Tabs` component sets up the main tab navigation for the application using Ionic components.
@@ -61,5 +61,5 @@ export default function Tabs() {
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
-  )
+  );
 }

@@ -8,29 +8,29 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
-} from '@ionic/react'
-import type { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
-import { add } from 'ionicons/icons'
+} from "@ionic/react";
+import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
+import { add } from "ionicons/icons";
 
-import { columns } from './columns'
-import { DataTable } from './data-table'
-import { NewExpensesModal } from './new-expenses-modal'
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import { NewExpensesModal } from "./new-expenses-modal";
 
 export default function Expenses() {
   const [present, dismiss] = useIonModal(NewExpensesModal, {
     dismiss: (data: string, role: string) => {
-      dismiss(data, role)
+      dismiss(data, role);
     },
-  })
+  });
 
   function presentModal() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
-        if (event.detail.role === 'confirm') {
+        if (event.detail.role === "confirm") {
           // void refetch()
         }
       },
-    })
+    });
   }
 
   return (
@@ -63,5 +63,5 @@ export default function Expenses() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }

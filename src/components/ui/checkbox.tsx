@@ -1,7 +1,7 @@
-import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from 'react'
-import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
+import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from "react";
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 const Checkbox = forwardRef<
   ElementRef<typeof CheckboxPrimitive.Root>,
@@ -9,14 +9,14 @@ const Checkbox = forwardRef<
 >(({ className, ...props }, ref) => (
   <CheckboxPrimitive.Root
     className={cn(
-      'peer size-4 shrink-0 rounded border border-input shadow-sm shadow-black/5 outline-offset-2 focus-visible:outline focus-visible:outline-ring/70 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground',
+      "peer size-4 shrink-0 rounded border border-input shadow-sm shadow-black/5 outline-offset-2 focus-visible:outline focus-visible:outline-ring/70 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",
       className,
     )}
     ref={ref}
     {...props}
   >
     <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
-      {props.checked === 'indeterminate' ? (
+      {props.checked === "indeterminate" ? (
         <svg
           width="9"
           fill="currentcolor"
@@ -47,7 +47,7 @@ const Checkbox = forwardRef<
       )}
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
-))
-Checkbox.displayName = CheckboxPrimitive.Root.displayName
+));
+Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
-export { Checkbox }
+export { Checkbox };

@@ -1,16 +1,16 @@
-import { startTransition, useEffect, useState, type FormEvent } from 'react'
-import { useIonRouter } from '@ionic/react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useIonRouter } from "@ionic/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
+import { useForm } from "react-hook-form";
 
-import { deleteDailyCountRecordById, updateDailyCountRecord } from '@/lib/api'
-import { newDailyCountFormSchema, type NewDailyCountFormSchema } from '@/lib/form-schema'
-import { getFromStorage } from '@/lib/storage'
-import type { Categories, DailyCountRecord } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
+import { deleteDailyCountRecordById, updateDailyCountRecord } from "@/lib/api";
+import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
+import type { Categories, DailyCountRecord } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +21,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -31,7 +31,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -39,24 +39,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { NumberInput } from '@/components/ui/number-input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+} from "@/components/ui/form";
+import { NumberInput } from "@/components/ui/number-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 
 interface DailyCountRecordFormProps {
-  data: DailyCountRecord
+  data: DailyCountRecord;
 }
 
 export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
-  const [categories, setCategories] = useState<Categories[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(data.date),
@@ -68,80 +68,80 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
       })),
     },
     resolver: zodResolver(newDailyCountFormSchema),
-  })
-  const router = useIonRouter()
-  const { toast } = useToast()
+  });
+  const router = useIonRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const savedCategories = await getFromStorage('categories')
+        const savedCategories = await getFromStorage("categories");
 
         if (savedCategories != null) {
-          const parsedCategories = JSON.parse(savedCategories) as unknown
+          const parsedCategories = JSON.parse(savedCategories) as unknown;
 
           if (Array.isArray(parsedCategories)) {
-            setCategories(parsedCategories)
+            setCategories(parsedCategories);
           } else {
-            console.error('Categories data is invalid:', parsedCategories)
+            console.error("Categories data is invalid:", parsedCategories);
           }
         } else {
-          console.error('No categories found in storage')
+          console.error("No categories found in storage");
         }
       } catch (error) {
-        console.error('Error fetching categories:', error)
+        console.error("Error fetching categories:", error);
       }
     }
 
     startTransition(() => {
-      void fetchCategories()
-    })
-  }, [])
+      void fetchCategories();
+    });
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     void form.handleSubmit(() => {
-      const formValues = form.getValues()
-      const parsedValues = newDailyCountFormSchema.safeParse(formValues)
+      const formValues = form.getValues();
+      const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error('Form data is invalid:', parsedValues.error)
-        return
+        console.error("Form data is invalid:", parsedValues.error);
+        return;
       }
 
-      setIsLoading(true)
+      setIsLoading(true);
 
       async function submitForm() {
         try {
-          await updateDailyCountRecord(data.id, formValues)
+          await updateDailyCountRecord(data.id, formValues);
         } catch (error) {
-          console.error('Form submission failed:', error)
+          console.error("Form submission failed:", error);
         } finally {
-          setIsLoading(false)
-          router.goBack()
-          toast({ description: 'Successfully updated daily count record' })
+          setIsLoading(false);
+          router.goBack();
+          toast({ description: "Successfully updated daily count record" });
         }
       }
 
       startTransition(() => {
-        void submitForm()
-      })
-    })(event)
+        void submitForm();
+      });
+    })(event);
   }
 
   async function handleDelete() {
     try {
-      await deleteDailyCountRecordById(data.id)
+      await deleteDailyCountRecordById(data.id);
     } catch (error) {
-      console.error('Error deleting daily count record:', error)
+      console.error("Error deleting daily count record:", error);
       toast({
-        description: 'An error occurred while deleting the daily count record. Please try again.',
-        variant: 'destructive',
-      })
+        description: "An error occurred while deleting the daily count record. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      router.goBack()
-      toast({ description: 'Daily count record deleted' })
+      router.goBack();
+      toast({ description: "Daily count record deleted" });
     }
   }
 
@@ -162,11 +162,11 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
-                        className={cn('w-full justify-start ps-9 text-left font-normal')}
+                        className={cn("w-full justify-start ps-9 text-left font-normal")}
                         variant="outline"
                       >
                         {field.value instanceof Date && !isNaN(field.value.getTime()) ? (
-                          format(field.value, 'PP')
+                          format(field.value, "PP")
                         ) : (
                           <span>Select a date</span>
                         )}
@@ -175,7 +175,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <Calendar
-                      disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
@@ -233,15 +233,15 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                         >
                           <span
                             className={cn(
-                              'truncate ps-6',
-                              field.value.length === 0 && 'text-muted-foreground',
+                              "truncate ps-6",
+                              field.value.length === 0 && "text-muted-foreground",
                             )}
                           >
                             {categories.length > 0
                               ? (categories.find(
                                   (category) => category.id.toString() === field.value,
-                                )?.raw_material_type ?? 'Select a category')
-                              : 'Select a category'}
+                                )?.raw_material_type ?? "Select a category")
+                              : "Select a category"}
                           </span>
                           <ChevronDownIcon
                             className="shrink-0 text-muted-foreground/80"
@@ -268,8 +268,8 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                                 onSelect={(value) => {
                                   const selectedSupplier = categories.find(
                                     (supplier) => supplier.raw_material_type === value,
-                                  )
-                                  field.onChange(selectedSupplier?.id.toString())
+                                  );
+                                  field.onChange(selectedSupplier?.id.toString());
                                 }}
                               >
                                 {category.raw_material_type}
@@ -353,7 +353,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                                   value={field.value}
                                   aria-label="Inventory count"
                                   onChange={(event) => {
-                                    field.onChange(event)
+                                    field.onChange(event);
                                   }}
                                 />
                               </FormControl>
@@ -392,7 +392,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                         />
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -401,7 +401,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
 
         <div className="mt-1 flex flex-col gap-3">
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Saving...' : 'Save'}
+            {isLoading ? "Saving..." : "Save"}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -420,7 +420,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    void handleDelete()
+                    void handleDelete();
                   }}
                   asChild
                 >
@@ -434,5 +434,5 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         </div>
       </form>
     </Form>
-  )
+  );
 }

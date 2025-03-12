@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { ChevronDown } from 'lucide-react'
+import * as React from "react";
+import { ChevronDown } from "lucide-react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 export interface SelectPropsNative extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const SelectNative = React.forwardRef<HTMLSelectElement, SelectPropsNative>(
@@ -13,8 +13,8 @@ const SelectNative = React.forwardRef<HTMLSelectElement, SelectPropsNative>(
       <div className="relative">
         <select
           className={cn(
-            'peer inline-flex w-full cursor-pointer appearance-none items-center rounded-lg border border-input bg-background text-sm text-foreground shadow-xs shadow-black/5 transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20 focus-visible:outline-hidden disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 has-[option[disabled]:checked]:text-muted-foreground',
-            props.multiple ? 'py-1 *:px-3 *:py-1 [&_option:checked]:bg-accent' : 'h-9 ps-3 pe-8',
+            "peer inline-flex w-full cursor-pointer appearance-none items-center rounded-lg border border-input bg-background text-sm text-foreground shadow-xs shadow-black/5 transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20 focus-visible:outline-hidden disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 has-[option[disabled]:checked]:text-muted-foreground",
+            props.multiple ? "py-1 *:px-3 *:py-1 [&_option:checked]:bg-accent" : "h-9 ps-3 pe-8",
             className,
           )}
           ref={ref}
@@ -28,9 +28,9 @@ const SelectNative = React.forwardRef<HTMLSelectElement, SelectPropsNative>(
           </span>
         )}
       </div>
-    )
+    );
   },
-)
-SelectNative.displayName = 'SelectNative'
+);
+SelectNative.displayName = "SelectNative";
 
-export { SelectNative }
+export { SelectNative };

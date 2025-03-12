@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -9,21 +9,21 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
-} from '@tanstack/react-table'
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from 'lucide-react'
-import { Link } from 'react-router-dom'
+} from "@tanstack/react-table";
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -31,11 +31,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 
 interface DataTableProps<TData extends { id: string | number }, TValue> {
-  columns: Array<ColumnDef<TData, TValue>>
-  data: TData[]
+  columns: Array<ColumnDef<TData, TValue>>;
+  data: TData[];
 }
 
 /**
@@ -53,8 +53,8 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
     columns,
     data,
@@ -68,7 +68,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
       columnFilters,
       sorting,
     },
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -84,8 +84,8 @@ export function DataTable<TData extends { id: string | number }, TValue>({
           id="search-delivery"
           type="search"
           placeholder="Search by DR no. or PO no."
-          value={table.getColumn('dr_no')?.getFilterValue()?.toString() ?? ''}
-          onChange={(event) => table.getColumn('dr_no')?.setFilterValue(event.target.value)}
+          value={table.getColumn("dr_no")?.getFilterValue()?.toString() ?? ""}
+          onChange={(event) => table.getColumn("dr_no")?.setFilterValue(event.target.value)}
         />
       </div>
 
@@ -101,7 +101,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -110,7 +110,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
+                <TableRow data-state={row.getIsSelected() && "selected"} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell className="first:pl-4 last:pr-4" key={cell.id}>
                       <Link
@@ -140,7 +140,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
             <Select
               value={table.getState().pagination.pageSize.toString()}
               onValueChange={(value) => {
-                table.setPageSize(Number(value))
+                table.setPageSize(Number(value));
               }}
             >
               <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
@@ -159,8 +159,8 @@ export function DataTable<TData extends { id: string | number }, TValue>({
           <div className="flex grow justify-end text-sm whitespace-nowrap text-muted-foreground">
             <p className="text-sm whitespace-nowrap text-muted-foreground" aria-live="polite">
               <span className="text-foreground">
-                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
-                to{' '}
+                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{" "}
+                to{" "}
                 {Math.min(
                   Math.max(
                     table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
@@ -169,7 +169,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                   ),
                   table.getRowCount(),
                 )}
-              </span>{' '}
+              </span>{" "}
               of <span className="text-foreground">{table.getRowCount().toString()}</span>
             </p>
           </div>
@@ -185,7 +185,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.firstPage()
+                  table.firstPage();
                 }}
               >
                 <ChevronFirst aria-hidden="true" strokeWidth={2} size={16} />
@@ -200,7 +200,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.previousPage()
+                  table.previousPage();
                 }}
               >
                 <ChevronLeft aria-hidden="true" strokeWidth={2} size={16} />
@@ -215,7 +215,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.nextPage()
+                  table.nextPage();
                 }}
               >
                 <ChevronRight aria-hidden="true" strokeWidth={2} size={16} />
@@ -230,7 +230,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.lastPage()
+                  table.lastPage();
                 }}
               >
                 <ChevronLast aria-hidden="true" strokeWidth={2} size={16} />
@@ -240,5 +240,5 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         </Pagination>
       </div>
     </div>
-  )
+  );
 }

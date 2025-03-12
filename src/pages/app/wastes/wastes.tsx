@@ -6,16 +6,16 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-} from '@ionic/react'
-import { useQuery } from '@tanstack/react-query'
-import { useLocation, type RouteComponentProps } from 'react-router'
+} from "@ionic/react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation, type RouteComponentProps } from "react-router";
 
-import { getSpecificWastesRecordById } from '@/lib/api'
-import { Loading } from '@/components/loading'
+import { getSpecificWastesRecordById } from "@/lib/api";
+import { Loading } from "@/components/loading";
 
-import { WastesRecordForm } from './wastes-record'
+import { WastesRecordForm } from "./wastes-record";
 
-type WastesPageProps = RouteComponentProps<{ id: string }>
+type WastesPageProps = RouteComponentProps<{ id: string }>;
 
 /**
  * This component fetches and displays a specific waste record for editing and deletion.
@@ -25,11 +25,11 @@ type WastesPageProps = RouteComponentProps<{ id: string }>
  * @returns The rendered component.
  */
 export default function WastesRecord({ match }: WastesPageProps) {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
   const { isPending, data } = useQuery({
-    queryKey: ['waste-entry', match.params.id, pathname],
+    queryKey: ["waste-entry", match.params.id, pathname],
     queryFn: async () => await getSpecificWastesRecordById(Number(match.params.id)),
-  })
+  });
 
   return (
     <IonPage>
@@ -39,7 +39,7 @@ export default function WastesRecord({ match }: WastesPageProps) {
             <IonBackButton defaultHref="/app/wastes" />
           </IonButtons>
           <IonTitle>
-            {isPending ? 'Loading wastes record...' : `Edit Wastes Record #${data?.[0].id}`}
+            {isPending ? "Loading wastes record..." : `Edit Wastes Record #${data?.[0].id}`}
           </IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -48,5 +48,5 @@ export default function WastesRecord({ match }: WastesPageProps) {
         {data == null ? <Loading /> : <WastesRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
-  )
+  );
 }

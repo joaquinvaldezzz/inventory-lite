@@ -12,16 +12,16 @@ import {
   IonToolbar,
   useIonModal,
   type RefresherEventDetail,
-} from '@ionic/react'
-import type { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
-import { useQuery } from '@tanstack/react-query'
-import { add } from 'ionicons/icons'
+} from "@ionic/react";
+import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
+import { useQuery } from "@tanstack/react-query";
+import { add } from "ionicons/icons";
 
-import { fetchWasteEntries } from '@/lib/api'
+import { fetchWasteEntries } from "@/lib/api";
 
-import { columns } from './columns'
-import { DataTable } from './data-table'
-import { NewWastesModal } from './new-wastes-modal'
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+import { NewWastesModal } from "./new-wastes-modal";
 
 /**
  * The `Wastes` component is responsible for displaying and managing waste entries. It fetches waste
@@ -32,17 +32,17 @@ import { NewWastesModal } from './new-wastes-modal'
  */
 export default function Wastes() {
   const { isPending, data, refetch } = useQuery({
-    queryKey: ['wastes'],
+    queryKey: ["wastes"],
     queryFn: async () => await fetchWasteEntries(),
-  })
+  });
 
-  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? []
+  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
 
   const [present, dismiss] = useIonModal(NewWastesModal, {
     dismiss: (data: string, role: string) => {
-      dismiss(data, role)
+      dismiss(data, role);
     },
-  })
+  });
 
   /**
    * Presents a modal and handles its dismissal event.
@@ -54,11 +54,11 @@ export default function Wastes() {
   function presentModal() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
-        if (event.detail.role === 'confirm') {
-          void refetch()
+        if (event.detail.role === "confirm") {
+          void refetch();
         }
       },
-    })
+    });
   }
 
   /**
@@ -72,11 +72,11 @@ export default function Wastes() {
    */
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
     try {
-      void refetch()
+      void refetch();
     } catch (error) {
-      console.error('Error fetching delivery entries:', error)
+      console.error("Error fetching delivery entries:", error);
     } finally {
-      event.detail.complete()
+      event.detail.complete();
     }
   }
 
@@ -120,5 +120,5 @@ export default function Wastes() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }

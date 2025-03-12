@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -9,22 +9,22 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
-} from '@tanstack/react-table'
-import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from 'lucide-react'
-import { Link } from 'react-router-dom'
+} from "@tanstack/react-table";
+import { ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 
-import type { WasteData } from '@/lib/types'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
+import type { WasteData } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -32,16 +32,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 
 interface DataTableProps {
-  columns: Array<ColumnDef<WasteData>>
-  data: WasteData[]
+  columns: Array<ColumnDef<WasteData>>;
+  data: WasteData[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
     columns,
     data,
@@ -55,7 +55,7 @@ export function DataTable({ columns, data }: DataTableProps) {
       columnFilters,
       sorting,
     },
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -71,9 +71,9 @@ export function DataTable({ columns, data }: DataTableProps) {
           id="search-expenses"
           type="search"
           placeholder="Search"
-          value={table.getColumn('raw_material_type')?.getFilterValue()?.toString() ?? ''}
+          value={table.getColumn("raw_material_type")?.getFilterValue()?.toString() ?? ""}
           onChange={(event) =>
-            table.getColumn('raw_material_type')?.setFilterValue(event.target.value)
+            table.getColumn("raw_material_type")?.setFilterValue(event.target.value)
           }
         />
       </div>
@@ -89,7 +89,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -97,7 +97,7 @@ export function DataTable({ columns, data }: DataTableProps) {
           <TableBody>
             {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow data-state={row.getIsSelected() && 'selected'} key={row.id}>
+                <TableRow data-state={row.getIsSelected() && "selected"} key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell className="first:pl-4 last:pr-4" key={cell.id}>
                       <Link
@@ -127,7 +127,7 @@ export function DataTable({ columns, data }: DataTableProps) {
             <Select
               value={table.getState().pagination.pageSize.toString()}
               onValueChange={(value) => {
-                table.setPageSize(Number(value))
+                table.setPageSize(Number(value));
               }}
             >
               <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
@@ -149,8 +149,8 @@ export function DataTable({ columns, data }: DataTableProps) {
                 {(
                   table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
                   1
-                ).toLocaleString()}{' '}
-                to{' '}
+                ).toLocaleString()}{" "}
+                to{" "}
                 {Math.min(
                   Math.max(
                     table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
@@ -159,7 +159,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                   ),
                   table.getRowCount(),
                 ).toLocaleString()}
-              </span>{' '}
+              </span>{" "}
               of <span className="text-foreground">{table.getRowCount().toLocaleString()}</span>
             </p>
           </div>
@@ -175,7 +175,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.firstPage()
+                  table.firstPage();
                 }}
               >
                 <ChevronFirst aria-hidden="true" strokeWidth={2} size={16} />
@@ -190,7 +190,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.previousPage()
+                  table.previousPage();
                 }}
               >
                 <ChevronLeft aria-hidden="true" strokeWidth={2} size={16} />
@@ -205,7 +205,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.nextPage()
+                  table.nextPage();
                 }}
               >
                 <ChevronRight aria-hidden="true" strokeWidth={2} size={16} />
@@ -220,7 +220,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                 size="icon"
                 variant="outline"
                 onClick={() => {
-                  table.lastPage()
+                  table.lastPage();
                 }}
               >
                 <ChevronLast aria-hidden="true" strokeWidth={2} size={16} />
@@ -230,5 +230,5 @@ export function DataTable({ columns, data }: DataTableProps) {
         </Pagination>
       </div>
     </div>
-  )
+  );
 }

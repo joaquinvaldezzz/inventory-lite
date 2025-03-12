@@ -1,5 +1,5 @@
-import { getFromStorage } from './storage'
-import type { Branch, LoginResponse } from './types'
+import { getFromStorage } from "./storage";
+import type { Branch, LoginResponse } from "./types";
 
 /**
  * Retrieves the current user from storage.
@@ -9,22 +9,22 @@ import type { Branch, LoginResponse } from './types'
  */
 export async function getCurrentUser(): Promise<LoginResponse | null> {
   try {
-    const currentUser = await getFromStorage('currentUser')
+    const currentUser = await getFromStorage("currentUser");
 
-    if (currentUser == null) return null
+    if (currentUser == null) return null;
 
-    const parsedCurrentUser = JSON.parse(currentUser) as unknown
+    const parsedCurrentUser = JSON.parse(currentUser) as unknown;
 
-    if (parsedCurrentUser != null && typeof parsedCurrentUser === 'object') {
+    if (parsedCurrentUser != null && typeof parsedCurrentUser === "object") {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know the type is correct
-      return parsedCurrentUser as LoginResponse
+      return parsedCurrentUser as LoginResponse;
     }
   } catch (error) {
-    console.error('Error parsing `currentUser` from storage:', error)
-    return null
+    console.error("Error parsing `currentUser` from storage:", error);
+    return null;
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -33,8 +33,8 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
  * @returns {Promise<Branch[]>} Resolves to an array of branches, or an empty array if not found.
  */
 export async function fetchUserBranches(): Promise<Branch[]> {
-  const currentUser = await getCurrentUser()
-  return currentUser?.data.user.branches ?? []
+  const currentUser = await getCurrentUser();
+  return currentUser?.data.user.branches ?? [];
 }
 
 /**
@@ -44,19 +44,19 @@ export async function fetchUserBranches(): Promise<Branch[]> {
  */
 export async function getUserSelectedBranch(): Promise<number | null> {
   try {
-    const selectedBranch = await getFromStorage('currentBranch')
+    const selectedBranch = await getFromStorage("currentBranch");
 
-    if (selectedBranch == null) return null
+    if (selectedBranch == null) return null;
 
-    const branch = JSON.parse(selectedBranch) as unknown
+    const branch = JSON.parse(selectedBranch) as unknown;
 
-    if (branch != null && typeof branch === 'object') {
-      return Number(Object.values(branch)[0])
+    if (branch != null && typeof branch === "object") {
+      return Number(Object.values(branch)[0]);
     }
   } catch (error) {
-    console.error('Error parsing `currentBranch` from storage:', error)
-    return null
+    console.error("Error parsing `currentBranch` from storage:", error);
+    return null;
   }
 
-  return null
+  return null;
 }

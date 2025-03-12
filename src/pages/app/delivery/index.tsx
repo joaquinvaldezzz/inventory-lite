@@ -12,18 +12,18 @@ import {
   IonToolbar,
   useIonModal,
   type RefresherEventDetail,
-} from '@ionic/react'
-import type { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces'
-import { useQuery } from '@tanstack/react-query'
-import { add } from 'ionicons/icons'
+} from "@ionic/react";
+import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
+import { useQuery } from "@tanstack/react-query";
+import { add } from "ionicons/icons";
 
-import { fetchDeliveryEntries } from '@/lib/api'
-import type { DeliveryItem } from '@/lib/types'
-import { DataTable } from '@/components/ui/data-table'
-import { Loading } from '@/components/loading'
+import { fetchDeliveryEntries } from "@/lib/api";
+import type { DeliveryItem } from "@/lib/types";
+import { DataTable } from "@/components/ui/data-table";
+import { Loading } from "@/components/loading";
 
-import { columns } from './columns'
-import { NewDeliveryModal } from './new-delivery-modal'
+import { columns } from "./columns";
+import { NewDeliveryModal } from "./new-delivery-modal";
 
 /**
  * The `Delivery` component handles displaying and managing delivery entries. It fetches delivery
@@ -37,12 +37,12 @@ export default function Delivery() {
    * a refetch function. The entries are then sorted by date and DR number.
    */
   const { isFetching, isPending, data, refetch } = useQuery({
-    queryKey: ['delivery-entries'],
+    queryKey: ["delivery-entries"],
     queryFn: async () => await fetchDeliveryEntries(),
-  })
+  });
 
   /** Initializes an empty array to store sorted delivery data of type `DeliveryItem`. */
-  let sortedData: DeliveryItem[] = []
+  let sortedData: DeliveryItem[] = [];
 
   /**
    * Sorts delivery data by delivery date (newest first) and DR number (descending), then stores the
@@ -52,23 +52,23 @@ export default function Delivery() {
     sortedData = data.slice().sort((a, b) => {
       /** Sort by date delivered (newest first) */
       const dateComparison =
-        new Date(b.date_delivered).getTime() - new Date(a.date_delivered).getTime()
+        new Date(b.date_delivered).getTime() - new Date(a.date_delivered).getTime();
 
       if (dateComparison !== 0) {
-        return dateComparison
+        return dateComparison;
       }
 
       /** If dates are equal, sort by DR number (descending) */
-      return b.dr_no.localeCompare(a.dr_no)
-    })
+      return b.dr_no.localeCompare(a.dr_no);
+    });
   }
 
   /** Initializes the `useIonModal` hook with the `NewDeliveryModal` component. */
   const [present, dismiss] = useIonModal(NewDeliveryModal, {
     dismiss: (data: string, role: string) => {
-      dismiss(data, role)
+      dismiss(data, role);
     },
-  })
+  });
 
   /**
    * Displays a modal and handles its dismissal event.
@@ -79,11 +79,11 @@ export default function Delivery() {
   function presentModal() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
-        if (event.detail.role === 'confirm') {
-          void refetch()
+        if (event.detail.role === "confirm") {
+          void refetch();
         }
       },
-    })
+    });
   }
 
   /**
@@ -93,11 +93,11 @@ export default function Delivery() {
    */
   function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
     try {
-      void refetch()
+      void refetch();
     } catch (error) {
-      console.error('Error fetching delivery entries:', error)
+      console.error("Error fetching delivery entries:", error);
     } finally {
-      event.detail.complete()
+      event.detail.complete();
     }
   }
 
@@ -136,5 +136,5 @@ export default function Delivery() {
         </div>
       </IonContent>
     </IonPage>
-  )
+  );
 }
