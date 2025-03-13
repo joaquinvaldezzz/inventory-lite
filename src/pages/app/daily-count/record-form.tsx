@@ -221,31 +221,8 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                   <Container aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>
-                  {/* <Select
-                    name={field.name}
-                    defaultValue={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger className="ps-9" id={field.name}>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.length > 0 ? (
-                        categories.map((category) => (
-                          <SelectItem value={category.id.toString()} key={category.id}>
-                            {category.raw_material_type}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="0" aria-disabled="true" disabled>
-                          No suppliers available
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select> */}
-
                   <Popover>
-                    <PopoverTrigger asChild>
+                    <PopoverTrigger id={field.name} asChild>
                       <FormControl>
                         <Button
                           className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
