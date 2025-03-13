@@ -237,7 +237,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor={field.name}>Supplier</FormLabel>
+                  <FormLabel>Supplier</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
