@@ -14,7 +14,7 @@ import { add } from "ionicons/icons";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { NewExpensesModal } from "./new-expenses-modal";
+import { NewExpensesModal } from "./modal-form";
 
 /**
  * The `Expenses` component renders a page that displays a list of expenses. It includes a header
