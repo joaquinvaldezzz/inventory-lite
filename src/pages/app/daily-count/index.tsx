@@ -91,7 +91,7 @@ export default function DailyCount() {
           </IonToolbar>
         </IonHeader>
 
-        <div className="ion-padding">
+        <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
           {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
         </div>
 

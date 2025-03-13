@@ -61,7 +61,7 @@ export default function Expenses() {
           </IonToolbar>
         </IonHeader>
 
-        <div className="ion-padding">
+        <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
           <DataTable columns={columns} data={[]} />
         </div>
 
