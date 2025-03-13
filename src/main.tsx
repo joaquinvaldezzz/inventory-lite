@@ -1,9 +1,8 @@
-import { StrictMode, Suspense } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import App from "./app";
-import { Loading } from "./components/loading";
 
 const container = document.getElementById("root");
 
@@ -15,10 +14,8 @@ const root = createRoot(container);
 
 root.render(
   <StrictMode>
-    <Suspense fallback={<Loading />}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Suspense>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 );
