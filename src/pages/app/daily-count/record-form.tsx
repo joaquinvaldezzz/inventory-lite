@@ -54,6 +54,13 @@ interface DailyCountRecordFormProps {
   data: DailyCountRecord;
 }
 
+/**
+ * Component for rendering and managing the daily count record form.
+ *
+ * @param props The props for the component.
+ * @param props.data The data for the daily count record.
+ * @returns The rendered component.
+ */
 export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -73,6 +80,13 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
   const { toast } = useToast();
 
   useEffect(() => {
+    /**
+     * Fetches the list of suppliers from storage and updates the state.
+     *
+     * @returns A promise that resolves when the suppliers have been fetched and the state has been
+     *   updated.
+     * @throws Will log an error message to the console if there is an issue fetching the suppliers.
+     */
     async function fetchCategories() {
       try {
         const savedCategories = await getFromStorage("categories");
@@ -98,6 +112,11 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
     });
   }, []);
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -112,6 +131,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
 
       setIsLoading(true);
 
+      /** Submits the form data to update the delivery record. */
       async function submitForm() {
         try {
           await updateDailyCountRecord(data.id, formValues);
@@ -130,6 +150,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
     })(event);
   }
 
+  /** Handles the deletion of a delivery record. */
   async function handleDelete() {
     try {
       await deleteDailyCountRecordById(data.id);

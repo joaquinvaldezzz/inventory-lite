@@ -11,14 +11,26 @@ import {
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
-import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
+import {
+  CalendarIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  Container,
+  PackageSearch,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
-import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
+import {
+  createWasteEntry,
+  fetchCategories,
+  fetchEmployees,
+  getIngredientsByCategory,
+} from "@/lib/api";
+import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Items, Supplier } from "@/lib/types";
+import type { Categories, Ingredients } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -39,128 +51,117 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input, inputVariants } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import MultipleSelector, { type Option } from "@/components/ui/multiselect";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface DeliveryModalActions {
+interface WastesModalActions {
   dismiss: (data?: string | number | null, role?: string) => void;
 }
 
 /**
- * The `NewDeliveryModal` renders a modal for creating a new delivery entry. It includes a form with
- * fields for supplier, date, remarks, and a list of items. The form data is validated with a Zod
- * schema and submitted to create a new entry.
+ * A modal for creating new waste entries.
  *
- * @param props The props for the component.
- * @param props.dismiss Function to dismiss the modal.
+ * @param actions Actions to be performed when the modal is dismissed
+ * @param actions.dismiss Function to dismiss the modal
  * @returns The rendered component.
  */
-export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
-  /** Initializes the state variables for suppliers, items, and loading status. */
-  const [suppliers, setSuppliers] = useState<Supplier>([]);
-  const [items, setItems] = useState<Items>([]);
+export function WastesFormModal({ dismiss }: WastesModalActions) {
+  const [categories, setCategories] = useState<Categories[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredients[]>([]);
+  const [employees, setEmployees] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  /** Initializes the default form state using the `useForm` hook with the Zod resolver. */
-  const form = useForm<NewDeliveryFormSchema>({
+  const form = useForm<NewWasteFormSchema>({
     defaultValues: {
-      supplier: "",
-      date_request: new Date(),
-      remarks: "",
+      date: new Date(),
+      raw_material_type: "",
+      waste_type: "",
       items: [
         {
           item: "",
-          quantity_dr: 0,
-          unit_dr: "",
-          unit_price: 0,
-          total_amount: 0,
+          waste: 0,
+          unit: "",
+          reason: "",
+          employee: [],
         },
       ],
     },
-    resolver: zodResolver(newDeliveryFormSchema),
+    resolver: zodResolver(newWasteFormSchema),
   });
-
-  /** Initializes the `useFieldArray` hook to manage the list of delivery items. */
   const { fields, append, remove } = useFieldArray({
     name: "items",
     control: form.control,
   });
-
-  /** Initializes the `useToast` hook for displaying toast messages. */
   const { toast } = useToast();
 
   useEffect(() => {
-    // TODO: Save these suppliers locally
-
     /**
-     * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
+     * Fetches categories and retrieves saved categories from storage.
      *
-     * @throws Will log an error message if there is an issue fetching suppliers or parsing the
-     *   data.
+     * @returns A promise that resolves when the operation is complete.
      */
-    async function fetchSuppliers() {
-      try {
-        await getSuppliers();
+    async function getCategoryItems() {
+      await fetchCategories();
 
-        const savedSuppliers = await getFromStorage("suppliers");
+      const savedCategories = await getFromStorage("categories");
 
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown;
+      if (savedCategories != null) {
+        const parsedCategories = JSON.parse(savedCategories) as unknown;
 
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers);
-          } else {
-            console.error("Suppliers data is invalid:", parsedSuppliers);
-          }
+        if (Array.isArray(parsedCategories)) {
+          setCategories(parsedCategories);
         } else {
-          console.error("No suppliers found in storage");
+          console.error("Categories data is invalid:", parsedCategories);
         }
-      } catch (error) {
-        console.error("Error fetching suppliers:", error);
       }
     }
 
-    startTransition(() => {
-      void fetchSuppliers();
-    });
+    void getCategoryItems();
   }, []);
 
   useEffect(() => {
-    // TODO: Save these items locally
-
-    /** Fetches items from the API endpoint and updates the state with the retrieved items. */
-    async function fetchItems() {
-      try {
-        const request = await getItems();
-        setItems(request);
-      } catch (error) {
-        console.error("Error fetching items:", error);
+    /**
+     * Fetches ingredient items based on the selected raw material type from the form. If no raw
+     * material type is selected, the function returns early.
+     *
+     * @returns A promise that resolves when the ingredients are fetched and state is updated.
+     */
+    async function getIngredientItems() {
+      if (form.getValues("raw_material_type").length === 0) {
+        return;
       }
+
+      const ingredients = await getIngredientsByCategory(form.getValues("raw_material_type"));
+      setIngredients(ingredients);
+      remove();
     }
 
-    startTransition(() => {
-      void fetchItems();
-    });
-  }, []);
+    void getIngredientItems();
+  }, [form.watch("raw_material_type")]);
 
-  /** Adds a new row to the list of delivery items. */
+  /** Adds a new row to the form */
   function handleAdd() {
     append({
       item: "",
-      quantity_dr: 0,
-      unit_dr: "",
-      unit_price: 0,
-      total_amount: 0,
+      waste: 0,
+      unit: "",
+      reason: "",
+      employee: [],
     });
   }
 
   /**
-   * Handles the removal of a row from the list of delivery items by removing the item at the
-   * specified index.
+   * Removes a row from the form
    *
-   * @param index The index of the item to be removed.
+   * @param index The index of the row to be removed
    */
   function handleRemove(index: number) {
     remove(index);
@@ -172,30 +173,25 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
    * @param event The form submission event.
    */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    /** Prevents the default form submission behavior. */
     event.preventDefault();
 
-    /** Submits the form data to create a new delivery entry. */
     void form.handleSubmit(() => {
-      /** Retrieves the form values. */
       const formValues = form.getValues();
+      const parsedValues = newWasteFormSchema.safeParse(formValues);
 
-      /** Validates the form data using the Zod schema. */
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues);
-
-      /** Logs an error if the form data is invalid. */
       if (!parsedValues.success) {
         console.error("Form data is invalid:", parsedValues.error);
         return;
       }
 
-      /** Sets the loading state to `true`. */
       setIsLoading(true);
 
-      /** Submits the delivery form by creating a new delivery entry. */
+      /** Submits the form data */
       async function submitForm() {
         try {
-          await createDeliveryEntry(formValues);
+          if (parsedValues.data != null) await createWasteEntry(parsedValues.data);
+
+          console.log(parsedValues.data);
         } catch (error) {
           console.error("Form submission failed:", error);
         } finally {
@@ -213,6 +209,29 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
     })(event);
   }
 
+  useEffect(() => {
+    /**
+     * Fetches the list of employees, maps the data to a specific format, and updates the state with
+     * the formatted data.
+     *
+     * @returns A promise that resolves when the employees have been fetched and the state has been
+     *   updated.
+     */
+    async function getEmployees() {
+      const employees = await fetchEmployees();
+      const data = employees.map((employee) => {
+        return {
+          value: employee.EmployeeID,
+          label: employee.FirstName + " " + employee.LastName,
+        };
+      });
+
+      setEmployees(data);
+    }
+
+    void getEmployees();
+  }, []);
+
   return (
     <IonPage>
       <IonHeader>
@@ -226,14 +245,14 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
               Cancel
             </IonButton>
           </IonButtons>
-          <IonTitle className="text-center">New delivery</IonTitle>
+          <IonTitle className="text-center">New wastes</IonTitle>
           <IonButtons slot="end">
             <IonButton
               onClick={() => {
                 dismiss(null, "confirm");
               }}
             >
-              Confirm
+              Submit
             </IonButton>
           </IonButtons>
         </IonToolbar>
@@ -243,85 +262,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
         <Form {...form}>
           <form className="space-y-5" onSubmit={handleSubmit}>
             <FormField
-              name="supplier"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor={field.name}>Supplier</FormLabel>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <Container aria-hidden="true" strokeWidth={2} size={16} />
-                    </div>
-                    <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
-                              role="combobox"
-                              variant="outline"
-                            >
-                              <span
-                                className={cn(
-                                  "truncate ps-6",
-                                  field.value.length === 0 && "text-muted-foreground",
-                                )}
-                              >
-                                {suppliers.length > 0
-                                  ? (suppliers.find(
-                                      (supplier) => supplier.id.toString() === field.value,
-                                    )?.supplier_name ?? "Select a supplier")
-                                  : "Select a supplier"}
-                              </span>
-                              <ChevronDownIcon
-                                className="shrink-0 text-muted-foreground/80"
-                                aria-hidden="true"
-                                size={16}
-                              />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-
-                        <PopoverContent
-                          className="w-full max-w-(--radix-popper-anchor-width) min-w-(--radix-popper-anchor-width) border-input p-0"
-                          align="start"
-                        >
-                          <Command>
-                            <CommandInput placeholder="Search supplier..." />
-                            <CommandList>
-                              <CommandEmpty>No supplier found.</CommandEmpty>
-                              <CommandGroup>
-                                {suppliers.map((supplier) => (
-                                  <CommandItem
-                                    value={supplier.supplier_name}
-                                    key={supplier.id}
-                                    onSelect={(value) => {
-                                      const selectedSupplier = suppliers.find(
-                                        (supplier) => supplier.supplier_name === value,
-                                      );
-                                      field.onChange(selectedSupplier?.id.toString());
-                                    }}
-                                  >
-                                    <span className="truncate">{supplier.supplier_name}</span>
-                                    {supplier.id.toString() === field.value && (
-                                      <CheckIcon className="ml-auto" size={16} />
-                                    )}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="date_request"
+              name="date"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -362,14 +303,109 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
             />
 
             <FormField
-              name="remarks"
+              name="raw_material_type"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Remarks</FormLabel>
-                  <FormControl>
-                    <Textarea className="min-h-24" placeholder="Enter your remarks" {...field} />
-                  </FormControl>
+                  <FormLabel>Category</FormLabel>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                      <Container aria-hidden="true" strokeWidth={2} size={16} />
+                    </div>
+                    <FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                              role="combobox"
+                              variant="outline"
+                            >
+                              <span
+                                className={cn(
+                                  "truncate ps-6",
+                                  field.value.length === 0 && "text-muted-foreground",
+                                )}
+                              >
+                                {categories.length > 0
+                                  ? (categories.find(
+                                      (category) => category.id.toString() === field.value,
+                                    )?.raw_material_type ?? "Select a category")
+                                  : "Select a category"}
+                              </span>
+                              <ChevronDownIcon
+                                className="shrink-0 text-muted-foreground/80"
+                                aria-hidden="true"
+                                size={16}
+                              />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+
+                        <PopoverContent
+                          className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                          align="start"
+                        >
+                          <Command>
+                            <CommandInput placeholder="Search category..." />
+                            <CommandList>
+                              <CommandEmpty>No category found.</CommandEmpty>
+                              <CommandGroup>
+                                {categories.map((category) => (
+                                  <CommandItem
+                                    value={category.raw_material_type}
+                                    key={category.id}
+                                    onSelect={(value) => {
+                                      const selectedSupplier = categories.find(
+                                        (supplier) => supplier.raw_material_type === value,
+                                      );
+                                      field.onChange(selectedSupplier?.id.toString());
+                                    }}
+                                  >
+                                    {category.raw_material_type}
+                                    {category.id.toString() === field.value && (
+                                      <CheckIcon className="ml-auto" size={16} />
+                                    )}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="waste_type"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                      <PackageSearch aria-hidden="true" strokeWidth={2} size={16} />
+                    </div>
+                    <Select
+                      name={field.name}
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="ps-9">
+                          <SelectValue placeholder="Select a type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="waste">Waste</SelectItem>
+                        <SelectItem value="return">Return</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -387,7 +423,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                         className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
                         role="th"
                       >
-                        Ingredients
+                        Items
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
                         Quantity
@@ -396,10 +432,10 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                         Unit
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Unit Price
+                        Reason
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Total
+                        Person(s) in charge
                       </div>
                       <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5" />
                     </div>
@@ -438,8 +474,8 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                                             field.value.length === 0 && "text-muted-foreground",
                                           )}
                                         >
-                                          {items.length > 0
-                                            ? (items.find(
+                                          {ingredients.length > 0
+                                            ? (ingredients.find(
                                                 (item) => item.id.toString() === field.value,
                                               )?.raw_material ?? "Select an item")
                                             : "Select an item"}
@@ -462,23 +498,23 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                                       <CommandList>
                                         <CommandEmpty>No item found.</CommandEmpty>
                                         <CommandGroup>
-                                          {items.map((item) => (
+                                          {ingredients.map((ingredient) => (
                                             <CommandItem
-                                              value={item.raw_material}
-                                              key={item.id}
+                                              value={ingredient.raw_material}
+                                              key={ingredient.id}
                                               onSelect={(value) => {
-                                                const selectedItem = items.find(
-                                                  (item) => item.raw_material === value,
+                                                const selectedItem = ingredients.find(
+                                                  (ingredient) => ingredient.raw_material === value,
                                                 );
                                                 field.onChange(selectedItem?.id.toString());
                                                 form.setValue(
-                                                  `items.${index}.unit_dr`,
+                                                  `items.${index}.unit`,
                                                   selectedItem != null ? selectedItem.unit : "",
                                                 );
                                               }}
                                             >
-                                              {item.raw_material}
-                                              {item.id.toString() === field.value && (
+                                              {ingredient.raw_material}
+                                              {ingredient.id.toString() === field.value && (
                                                 <CheckIcon className="ml-auto" size={16} />
                                               )}
                                             </CommandItem>
@@ -499,7 +535,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.quantity_dr`}
+                            name={`items.${index}.waste`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem>
@@ -510,11 +546,6 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                                     aria-label="Quantity"
                                     onChange={(event) => {
                                       field.onChange(event);
-                                      const { items } = form.getValues();
-                                      form.setValue(
-                                        `items.${index}.total_amount`,
-                                        items[index].quantity_dr * items[index].unit_price,
-                                      );
                                     }}
                                   />
                                 </FormControl>
@@ -529,7 +560,7 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.unit_dr`}
+                            name={`items.${index}.unit`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
@@ -552,35 +583,12 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.unit_price`}
+                            name={`items.${index}.reason`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <ReactNumberField
-                                    formatOptions={{
-                                      style: "currency",
-                                      currency: "PHP",
-                                      currencySign: "accounting",
-                                    }}
-                                    aria-label="Unit Price"
-                                    defaultValue={field.value}
-                                    onChange={(event) => {
-                                      field.onChange(event);
-                                      const { items } = form.getValues();
-                                      form.setValue(
-                                        `items.${index}.total_amount`,
-                                        items[index].quantity_dr * items[index].unit_price,
-                                      );
-                                    }}
-                                  >
-                                    <ReactInput
-                                      className={cn(
-                                        inputVariants(),
-                                        "min-w-32 text-right tabular-nums read-only:bg-muted",
-                                      )}
-                                    />
-                                  </ReactNumberField>
+                                  <Input className="min-w-40" type="text" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -593,29 +601,23 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
                           role="td"
                         >
                           <FormField
-                            name={`items.${index}.total_amount`}
+                            name={`items.${index}.employee`}
                             control={form.control}
                             render={({ field }) => (
                               <FormItem className="flex flex-col gap-2 space-y-0">
                                 <FormControl>
-                                  <ReactNumberField
-                                    formatOptions={{
-                                      style: "currency",
-                                      currency: "PHP",
-                                      currencySign: "accounting",
+                                  {/* @ts-expect-error -- Types dot not match yet */}
+                                  <MultipleSelector
+                                    placeholder="Select employee(s)"
+                                    options={employees}
+                                    commandProps={{
+                                      label: "Select employee(s)",
                                     }}
-                                    value={field.value}
-                                    aria-label="Total"
-                                    onChange={field.onChange}
-                                  >
-                                    <ReactInput
-                                      className={cn(
-                                        inputVariants(),
-                                        "min-w-40 text-right tabular-nums read-only:bg-muted",
-                                      )}
-                                      readOnly
-                                    />
-                                  </ReactNumberField>
+                                    emptyIndicator={
+                                      <p className="text-center text-sm">No employees found.</p>
+                                    }
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -646,10 +648,9 @@ export function NewDeliveryModal({ dismiss }: DeliveryModalActions) {
               </div>
             </div>
 
-            {/* Make these buttons sticky at the bottom */}
-            <div className="mt-1 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 pt-1">
               <Button type="button" variant="ghost" onClick={handleAdd}>
-                <span>Add more ingredients</span>
+                <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 

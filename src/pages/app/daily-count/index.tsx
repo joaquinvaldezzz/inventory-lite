@@ -22,7 +22,7 @@ import { Loading } from "@/components/loading";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { NewDailyCountModal } from "./new-daily-count-modal";
+import { DailyCountModal } from "./modal-form";
 
 /**
  * The `DisplayCount` component displays a daily count page with a list of daily count entries. It
@@ -39,18 +39,13 @@ export default function DailyCount() {
 
   const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
 
-  const [present, dismiss] = useIonModal(NewDailyCountModal, {
+  const [present, dismiss] = useIonModal(DailyCountModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role);
     },
   });
 
-  /**
-   * Displays a modal and handles its dismissal event.
-   *
-   * This function presents a modal using the `present` function and sets up an event listener for
-   * its dismissal. If dismissed with the role of 'confirm', it triggers a refetch operation.
-   */
+  /** Displays a modal and handles its dismissal event. */
   function presentModal() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
@@ -81,7 +76,6 @@ export default function DailyCount() {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle>Daily Count</IonTitle>
-
           {isPending && <IonProgressBar type="indeterminate" />}
         </IonToolbar>
       </IonHeader>

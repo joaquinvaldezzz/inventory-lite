@@ -10,24 +10,24 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import type { RouteComponentProps } from "react-router";
 
-import { getSpecificDailyCountRecordById } from "@/lib/api";
+import { getSpecificDeliveryRecord } from "@/lib/api";
 import { Loading } from "@/components/loading";
 
-import { DailyCountRecordForm } from "./daily-count-record";
+import DeliveryRecordForm from "./record-form";
 
-type DailyCountPageProps = RouteComponentProps<{ id: string }>;
+type DeliveryPageProps = RouteComponentProps<{ id: string }>;
 
 /**
- * Component for displaying and editing a specific daily count record.
+ * Component for displaying and editing a specific delivery record.
  *
  * @param props The properties passed to the component.
  * @param props.match The match object containing route parameters.
  * @returns The rendered component.
  */
-export default function DailyCountRecord({ match }: DailyCountPageProps) {
+export default function DeliveryRecord({ match }: DeliveryPageProps) {
   const { isPending, data } = useQuery({
-    queryKey: ["daily-count-entry", match.params.id],
-    queryFn: async () => await getSpecificDailyCountRecordById(Number(match.params.id)),
+    queryKey: ["delivery-entry", match.params.id],
+    queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   });
 
   return (
@@ -35,16 +35,16 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonBackButton defaultHref="/app/daily-count" />
+            <IonBackButton defaultHref="/app/delivery" />
           </IonButtons>
           <IonTitle>
-            {isPending ? "Loading daily count record..." : `Daily Count #${data?.[0].id}`}
+            {isPending ? "Loading delivery record..." : `Delivery #${data?.[0].id}`}
           </IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {data == null ? <Loading /> : <DailyCountRecordForm data={data[0]} />}
+        {data == null ? <Loading /> : <DeliveryRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

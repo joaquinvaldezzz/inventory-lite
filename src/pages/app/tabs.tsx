@@ -4,12 +4,12 @@ import { calendar, cash, cube, trash } from "ionicons/icons";
 import { Redirect, Route } from "react-router";
 
 import DailyCount from "./daily-count";
-import DailyCountRecord from "./daily-count/daily-count";
+import DailyCountRecord from "./daily-count/record";
 import Delivery from "./delivery";
-import DeliveryRecord from "./delivery/delivery";
+import DeliveryRecord from "./delivery/record";
 import Expenses from "./expenses";
 import Wastes from "./wastes";
-import WastesRecord from "./wastes/wastes";
+import WastesRecord from "./wastes/record";
 
 /**
  * The `Tabs` component sets up the main tab navigation for the application using Ionic components.

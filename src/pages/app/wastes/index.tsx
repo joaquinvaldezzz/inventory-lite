@@ -21,7 +21,7 @@ import { Loading } from "@/components/loading";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { NewWastesModal } from "./new-wastes-modal";
+import { WastesFormModal } from "./modal-form";
 
 /**
  * The `Wastes` component is responsible for displaying and managing waste entries. It fetches waste
@@ -38,7 +38,7 @@ export default function Wastes() {
 
   const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
 
-  const [present, dismiss] = useIonModal(NewWastesModal, {
+  const [present, dismiss] = useIonModal(WastesFormModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role);
     },

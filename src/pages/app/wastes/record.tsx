@@ -13,7 +13,7 @@ import type { RouteComponentProps } from "react-router";
 import { getSpecificWastesRecordById } from "@/lib/api";
 import { Loading } from "@/components/loading";
 
-import { WastesRecordForm } from "./wastes-record";
+import { WastesRecordForm } from "./record-form";
 
 type WastesPageProps = RouteComponentProps<{ id: string }>;
 

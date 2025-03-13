@@ -145,11 +145,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
       setIsLoading(true);
 
-      /**
-       * Submits the form data to update the delivery record.
-       *
-       * @returns A promise that resolves when the form submission process is complete.
-       */
+      /** Submits the form data to update the delivery record. */
       async function submitForm() {
         try {
           await updateDeliveryRecord(data.id, formValues);
@@ -171,11 +167,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     })(event);
   }
 
-  /**
-   * Handles the deletion of a delivery record.
-   *
-   * @returns A promise that resolves when the deletion process is complete.
-   */
+  /** Handles the deletion of a delivery record. */
   async function handleDelete() {
     try {
       await deleteDeliveryRecord(data.id);
@@ -200,7 +192,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor={field.name}>Supplier</FormLabel>
+                <FormLabel>Supplier</FormLabel>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                     <Container aria-hidden="true" strokeWidth={2} size={16} />

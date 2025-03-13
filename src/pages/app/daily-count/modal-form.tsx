@@ -70,7 +70,7 @@ interface DailyCountModalActions {
  * @param props.dismiss The function to dismiss the modal.
  * @returns The rendered component.
  */
-export function NewDailyCountModal({ dismiss }: DailyCountModalActions) {
+export function DailyCountModal({ dismiss }: DailyCountModalActions) {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [ingredients, setIngredients] = useState<Ingredients[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -205,11 +205,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
     })(event);
   }
 
-  /**
-   * Handles the deletion of a waste record.
-   *
-   * @returns A promise that resolves when the deletion process is complete.
-   */
+  /** Handles the deletion of a waste record. */
   async function handleDelete() {
     try {
       await deleteWasteRecordById(data.id);

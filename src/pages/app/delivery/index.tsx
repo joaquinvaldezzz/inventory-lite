@@ -23,7 +23,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
 
 import { columns } from "./columns";
-import { NewDeliveryModal } from "./new-delivery-modal";
+import { DeliveryFormModal } from "./modal-form";
 
 /**
  * The `Delivery` component handles displaying and managing delivery entries. It fetches delivery
@@ -64,7 +64,7 @@ export default function Delivery() {
   }
 
   /** Initializes the `useIonModal` hook with the `NewDeliveryModal` component. */
-  const [present, dismiss] = useIonModal(NewDeliveryModal, {
+  const [present, dismiss] = useIonModal(DeliveryFormModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role);
     },
