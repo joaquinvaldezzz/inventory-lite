@@ -14,6 +14,12 @@ import {
 } from "@/components/ui/form";
 import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin";
 
+/**
+ * The `PIN` component renders a page where users can enter their PIN to continue. It uses the
+ * `useForm` hook to manage form state and validation with Zod.
+ *
+ * @returns The rendered PIN entry page.
+ */
 export default function PIN() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const form = useForm<PinFormSchema>({
@@ -23,6 +29,11 @@ export default function PIN() {
     resolver: zodResolver(pinFormSchema),
   });
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -35,7 +46,7 @@ export default function PIN() {
         return;
       }
 
-      console.log(formValues);
+      console.log(parsedData.data);
     })(event);
   }
 
@@ -87,7 +98,7 @@ export default function PIN() {
                   )}
                 />
 
-                <button className="sr-only" type="submit" ref={buttonRef}>
+                <button className="hidden" type="submit" ref={buttonRef}>
                   Continue
                 </button>
               </form>
