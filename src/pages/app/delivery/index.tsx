@@ -1,9 +1,12 @@
+import { Fragment } from "react";
 import {
+  IonButtons,
   IonContent,
   IonFab,
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonMenuButton,
   IonPage,
   IonProgressBar,
   IonRefresher,
@@ -102,35 +105,40 @@ export default function Delivery() {
   }
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Delivery</IonTitle>
-          {isFetching && !isPending && <IonProgressBar type="indeterminate" />}
-        </IonToolbar>
-      </IonHeader>
-
-      <IonContent>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Delivery</IonTitle>
+    <Fragment>
+      <IonPage>
+        <IonHeader>
+          <IonToolbar color="primary">
+            <IonButtons slot="start">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>Delivery</IonTitle>
+            {isFetching && !isPending && <IonProgressBar type="indeterminate" />}
           </IonToolbar>
         </IonHeader>
 
-        <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-          {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
-        </div>
+        <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
 
-        <IonFab horizontal="end" slot="fixed" vertical="bottom">
-          <IonFabButton onClick={presentModal}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
-      </IonContent>
-    </IonPage>
+          <IonHeader collapse="condense">
+            <IonToolbar>
+              <IonTitle size="large">Delivery</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+
+          <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
+            {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
+          </div>
+
+          <IonFab horizontal="end" slot="fixed" vertical="bottom">
+            <IonFabButton onClick={presentModal}>
+              <IonIcon icon={add} />
+            </IonFabButton>
+          </IonFab>
+        </IonContent>
+      </IonPage>
+    </Fragment>
   );
 }
