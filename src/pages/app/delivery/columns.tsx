@@ -36,6 +36,7 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
   {
     accessorKey: "supplier_name",
     header: ({ column }) => <DataTableColumnHeader title="Supplier" column={column} />,
+    cell: (cell) => <div className="max-w-40 truncate">{cell.row.original.supplier_name}</div>,
   },
   {
     accessorKey: "total_amount",
@@ -46,7 +47,11 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
         currency: "PHP",
       });
 
-      return <div className="text-right">{PHP.format(Number(cell.row.original.total_amount))}</div>;
+      return (
+        <div className="text-right tabular-nums">
+          {PHP.format(Number(cell.row.original.total_amount))}
+        </div>
+      );
     },
   },
   {
@@ -54,7 +59,7 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
     header: ({ column }) => <DataTableColumnHeader title="Status" column={column} />,
     cell: (cell) => {
       const status = cell.row.original.status;
-      return <Badge variant="outline">{status}</Badge>;
+      return <Badge variant="success">{status}</Badge>;
     },
   },
 ];
