@@ -10,6 +10,17 @@ interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLD
   title: string;
 }
 
+/**
+ * A component that renders a column header for a data table.
+ *
+ * @template TData The type of data in the table.
+ * @template TValue The type of value in the column.
+ * @param props The properties for the column header.
+ * @param props.column The column object which contains sorting information and methods.
+ * @param props.title The title of the column header.
+ * @param props.className Optional additional class names for styling.
+ * @returns The rendered column header component.
+ */
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
