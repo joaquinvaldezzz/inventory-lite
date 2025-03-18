@@ -2,22 +2,21 @@
   "name": "inventory-lite",
   "version": "1.0.0",
   "private": true,
-  "description": "An Ionic project",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "build:android": "ionic capacitor build android --no-open",
-    "build:ios": "ionic capacitor build ios --no-open",
     "dev": "vite",
     "dev:android": "ionic capacitor run android --livereload",
     "dev:ios": "ionic capacitor run ios --livereload",
-    "format": "prettier --write .",
-    "format:src": "prettier --write src",
-    "generate:icons": "capacitor-assets generate",
-    "lint": "eslint --cache",
-    "lint:fix": "eslint --fix",
+    "build": "vite build",
+    "build:android": "ionic capacitor build android --no-open",
+    "build:ios": "ionic capacitor build ios --no-open",
     "preview": "vite preview",
     "serve": "vite build && vite preview",
+    "format": "prettier --write .",
+    "format:src": "prettier --write src",
+    "lint": "eslint --cache",
+    "lint:fix": "eslint --fix",
+    "generate:icons": "capacitor-assets generate",
     "test.e2e": "cypress run",
     "test.unit": "vitest"
   },
@@ -135,5 +134,42 @@
     "typescript-eslint": "^8.22.0",
     "vite": "^6.0.11",
     "vitest": "^3.0.7"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "plugins": [
+      "@ianvs/prettier-plugin-sort-imports",
+      "prettier-plugin-jsdoc",
+      "prettier-plugin-sh",
+      "prettier-plugin-tailwindcss"
+    ],
+    "importOrder": [
+      "^(react/(.*)$)|^(react$)",
+      "^(@ionic/react/(.*)$)|^(@ionic/react$)",
+      "^(@ionic/react-router/(.*)$)|^(@ionic/react-router$)",
+      "<THIRD_PARTY_MODULES>",
+      "",
+      "^types$",
+      "^@/types/(.*)$",
+      "^@/config/(.*)$",
+      "^@/lib/(.*)$",
+      "^@/hooks/(.*)$",
+      "^@/components/ui/(.*)$",
+      "^@/components/(.*)$",
+      "^@/registry/(.*)$",
+      "^@/styles/(.*)$",
+      "^@/app/(.*)$",
+      "^@/pages/(.*)$",
+      "",
+      "^[./]"
+    ],
+    "tailwindStylesheet": "src/styles/main.css",
+    "tailwindAttributes": [
+      "classNames"
+    ],
+    "tailwindFunctions": [
+      "cva",
+      "cn"
+    ]
   }
 }
