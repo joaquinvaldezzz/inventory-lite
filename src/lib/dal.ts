@@ -4,8 +4,7 @@ import type { Branch, LoginResponse } from "./types";
 /**
  * Retrieves the current user from storage.
  *
- * @returns {Promise<LoginResponse | null>} Resolves to the current user's login data if found,
- *   otherwise null.
+ * @returns Resolves to the current user's login data if found, otherwise null.
  */
 export async function getCurrentUser(): Promise<LoginResponse | null> {
   try {
@@ -30,7 +29,7 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
 /**
  * Retrieves the branches associated with the current user.
  *
- * @returns {Promise<Branch[]>} Resolves to an array of branches, or an empty array if not found.
+ * @returns Resolves to an array of branches, or an empty array if not found.
  */
 export async function fetchUserBranches(): Promise<Branch[]> {
   const currentUser = await getCurrentUser();
@@ -40,7 +39,7 @@ export async function fetchUserBranches(): Promise<Branch[]> {
 /**
  * Retrieves the branch selected by the current user.
  *
- * @returns {Promise<number | null>} Resolves to the selected branch ID, or null if not found.
+ * @returns Resolves to the selected branch ID, or null if not found.
  */
 export async function getUserSelectedBranch(): Promise<number | null> {
   try {
