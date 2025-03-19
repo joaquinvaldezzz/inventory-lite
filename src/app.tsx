@@ -12,6 +12,8 @@ import "./styles/main.css";
 
 const Login = lazy(async () => await import("./pages/login"));
 const PIN = lazy(async () => await import("./pages/pin"));
+const CreatePIN = lazy(async () => await import("./pages/pin/create-pin"));
+const ConfirmPIN = lazy(async () => await import("./pages/pin/confirm-pin"));
 const BranchSelector = lazy(async () => await import("./pages/branch-selector"));
 const Tabs = lazy(async () => await import("./pages/app/tabs"));
 
@@ -33,6 +35,14 @@ export default function App() {
             <IonRouterOutlet>
               <Route path="/login" exact>
                 <Login />
+              </Route>
+
+              <Route path="/create-pin" exact>
+                <CreatePIN />
+              </Route>
+
+              <Route path="/confirm-pin" exact>
+                <ConfirmPIN />
               </Route>
 
               <Route path="/pin" exact>
