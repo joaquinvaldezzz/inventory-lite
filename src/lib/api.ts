@@ -130,6 +130,29 @@ export async function authenticateUser(username: string, password: string): Prom
 }
 
 /**
+ * Checks if the user token is valid by making an API request to the delivery API.
+ *
+ * @returns A promise that resolves to `true` if the token is valid, otherwise `false`.
+ * @throws An error if the API request fails.
+ */
+export async function checkIfUserTokenIsValid(): Promise<boolean> {
+  try {
+    const request = await apiRequest<DeliveryResponse>({
+      url: env.VITE_DELIVERY_API_URL,
+      action: "fetch",
+    });
+
+    if (request.success) {
+      return true;
+    }
+  } catch (error) {
+    throw new Error("Failed to check if user token is valid");
+  }
+
+  return false;
+}
+
+/**
  * Creates a new delivery entry.
  *
  * @param delivery The delivery details.
