@@ -7,9 +7,6 @@ import { Redirect, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 
 import { Loading } from "./components/loading";
-// import BranchSelector from './pages/branch-selector'
-// import Login from './pages/login'
-// import PIN from './pages/pin'
 
 import "./styles/main.css";
 
