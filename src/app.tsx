@@ -1,4 +1,3 @@
-import { lazy, Suspense } from "react";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -6,16 +5,14 @@ import { Redirect, Route } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/toaster";
 
-import { Loading } from "./components/loading";
+import Tabs from "./pages/app/tabs";
+import BranchSelector from "./pages/branch-selector";
+import Login from "./pages/login";
+import PIN from "./pages/pin";
+import ConfirmPIN from "./pages/pin/confirm-pin";
+import CreatePIN from "./pages/pin/create-pin";
 
 import "./styles/main.css";
-
-const Login = lazy(async () => await import("./pages/login"));
-const PIN = lazy(async () => await import("./pages/pin"));
-const CreatePIN = lazy(async () => await import("./pages/pin/create-pin"));
-const ConfirmPIN = lazy(async () => await import("./pages/pin/confirm-pin"));
-const BranchSelector = lazy(async () => await import("./pages/branch-selector"));
-const Tabs = lazy(async () => await import("./pages/app/tabs"));
 
 setupIonicReact();
 
@@ -29,42 +26,40 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<Loading />}>
-        <IonApp>
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route path="/login" exact>
-                <Login />
-              </Route>
+      <IonApp>
+        <IonReactRouter>
+          <IonRouterOutlet>
+            <Route path="/login" exact>
+              <Login />
+            </Route>
 
-              <Route path="/create-pin" exact>
-                <CreatePIN />
-              </Route>
+            <Route path="/create-pin" exact>
+              <CreatePIN />
+            </Route>
 
-              <Route path="/confirm-pin" exact>
-                <ConfirmPIN />
-              </Route>
+            <Route path="/confirm-pin" exact>
+              <ConfirmPIN />
+            </Route>
 
-              <Route path="/pin" exact>
-                <PIN />
-              </Route>
+            <Route path="/pin" exact>
+              <PIN />
+            </Route>
 
-              <Route path="/branch-selector" exact>
-                <BranchSelector />
-              </Route>
+            <Route path="/branch-selector" exact>
+              <BranchSelector />
+            </Route>
 
-              <Route path="/app/*">
-                <Tabs />
-              </Route>
+            <Route path="/app/*">
+              <Tabs />
+            </Route>
 
-              <Route path="/" exact>
-                <Redirect to="/login" />
-              </Route>
-            </IonRouterOutlet>
-          </IonReactRouter>
-          <Toaster />
-        </IonApp>
-      </Suspense>
+            <Route path="/" exact>
+              <Redirect to="/login" />
+            </Route>
+          </IonRouterOutlet>
+        </IonReactRouter>
+        <Toaster />
+      </IonApp>
     </QueryClientProvider>
   );
 }
