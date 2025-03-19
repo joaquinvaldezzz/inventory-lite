@@ -27,5 +27,6 @@ export default defineConfig({
         },
       },
     },
+    chunkSizeWarningLimit: 1024,
   },
 });
