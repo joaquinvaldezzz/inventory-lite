@@ -26,6 +26,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+/**
+ * The `BranchSelector` component allows the user to select a branch from a list of branches. It
+ * fetches the current user's name and branches associated with the user on component mount. The
+ * user can select a branch from a dropdown and submit the form to proceed.
+ *
+ * @returns The rendered branch selector component.
+ */
 export default function BranchSelector() {
   const formRef = useRef<HTMLFormElement>(null);
   const [username, setUsername] = useState<string>("");
@@ -53,6 +60,11 @@ export default function BranchSelector() {
     })();
   }, []);
 
+  /**
+   * Handles the form submission event.
+   *
+   * @param event The form submission event.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -68,7 +80,6 @@ export default function BranchSelector() {
 
         if (!parsedData.success) {
           console.error("Form data is invalid:", parsedData.error);
-          // Optionally, provide user feedback here
           return;
         }
 
