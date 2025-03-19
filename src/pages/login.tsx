@@ -83,7 +83,7 @@ export default function Login() {
 
             await createSession(userId, userRole);
 
-            router.push("/branch-selector");
+            router.push("/create-pin");
           } else {
             form.setError("root", {
               message:
