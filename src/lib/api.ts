@@ -9,6 +9,7 @@ import type {
   NewDeliveryFormSchema,
   NewWasteFormSchema,
 } from "./form-schema";
+import { getSessionToken } from "./session";
 import { saveToStorage } from "./storage";
 import type {
   Categories,
@@ -57,10 +58,12 @@ interface ApiRequestConfig {
  * Retrieves the current user session (user ID, token, branch).
  *
  * @returns A promise that resolves to user session details.
- * @throws {Error} If the user or branch is not found.
+ * @throws An error if the user or branch is not found.
  */
+// eslint-disable-next-line complexity -- Idk how to fix this, yet
 async function getUserSession(): Promise<UserSession> {
   const [user, branch] = await Promise.allSettled([getCurrentUser(), getUserSelectedBranch()]);
+  const token = await getSessionToken();
 
   if (user.status !== "fulfilled" || branch.status !== "fulfilled") {
     throw new Error("User not found or branch not selected");
@@ -68,6 +71,10 @@ async function getUserSession(): Promise<UserSession> {
 
   if (user.value === null || branch.value === null) {
     throw new Error("User or branch not found");
+  }
+
+  if (token == null) {
+    throw new Error("Session token not found");
   }
 
   return {
