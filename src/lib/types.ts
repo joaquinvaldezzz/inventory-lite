@@ -87,8 +87,8 @@ export interface DeliveryResponse {
   message: string;
   data: {
     id: number;
-    po_no: string;
-    dr_no: string;
+    po_no: string | null;
+    dr_no: string | null;
     branch_id: number;
     branch: string;
     supplier_id: number;

@@ -62,7 +62,11 @@ export default function Delivery() {
       }
 
       /** If dates are equal, sort by DR number (descending) */
-      return b.dr_no.localeCompare(a.dr_no);
+      if (b.dr_no != null && a.dr_no != null) {
+        return b.dr_no.localeCompare(a.dr_no);
+      }
+
+      return 0;
     });
   }
 
