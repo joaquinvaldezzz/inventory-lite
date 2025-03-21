@@ -28,3 +28,25 @@ export function formatAsCurrency(int: number): string {
 
   return PHP.format(int);
 }
+
+/**
+ * Updates the theme of the application by adding the corresponding class to the document's root
+ * element.
+ *
+ * @param theme The theme to be applied. Can be "light", "dark", or "system".
+ * @todo Implement system theme detection, and save the selected theme to local storage.
+ */
+export function updateTheme(theme: "light" | "dark" | "system") {
+  const classList = document.documentElement.classList;
+
+  classList.remove("light", "dark", "system");
+
+  if (theme === "light") {
+    classList.remove("ion-palette-dark");
+    classList.add("light");
+  } else if (theme === "dark") {
+    classList.add("ion-palette-dark", "dark");
+  } else {
+    classList.add("system");
+  }
+}
