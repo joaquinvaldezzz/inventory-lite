@@ -112,7 +112,12 @@ export default function Delivery() {
 
   return (
     <Fragment>
-      <IonMenu contentId="delivery-content">
+      <IonMenu
+        onIonDidClose={() => {
+          void refetch();
+        }}
+        contentId="delivery-content"
+      >
         <Settings />
       </IonMenu>
 

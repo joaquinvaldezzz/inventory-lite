@@ -13,6 +13,7 @@ import {
 } from "@ionic/react";
 
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
+import { saveToStorage } from "@/lib/storage";
 import type { Branch } from "@/lib/types";
 import { updateTheme } from "@/lib/utils";
 
@@ -57,6 +58,26 @@ export default function Settings() {
     void getSelectedBranch();
   }, []);
 
+  /**
+   * Updates the current branch information by saving it to storage.
+   *
+   * This function attempts to save the `currentBranch` to storage using the `saveToStorage`
+   * function.
+   *
+   * @param value The value to update the branch with.
+   * @returns A promise that resolves when the branch information has been saved.
+   */
+  async function updateBranch(value: number) {
+    try {
+      await saveToStorage(
+        "currentBranch",
+        JSON.stringify({
+          currentBranch: value.toString(),
+        }),
+      );
+    } catch (error) {}
+  }
+
   return (
     <Fragment>
       <IonHeader>
@@ -73,7 +94,9 @@ export default function Settings() {
               value={currentBranch}
               label="Branch"
               onIonChange={(event) => {
-                console.log(event.detail.value);
+                if (typeof event.detail.value === "number") {
+                  void updateBranch(event.detail.value);
+                }
               }}
             >
               {branches.map((branch) => (

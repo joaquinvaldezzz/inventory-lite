@@ -78,7 +78,12 @@ export default function DailyCount() {
 
   return (
     <Fragment>
-      <IonMenu contentId="daily-count-content">
+      <IonMenu
+        onIonDidClose={() => {
+          void refetch();
+        }}
+        contentId="daily-count-content"
+      >
         <Settings />
       </IonMenu>
 

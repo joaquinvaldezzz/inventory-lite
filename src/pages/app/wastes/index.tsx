@@ -87,7 +87,12 @@ export default function Wastes() {
 
   return (
     <Fragment>
-      <IonMenu contentId="wastes-content">
+      <IonMenu
+        onIonDidClose={() => {
+          void refetch();
+        }}
+        contentId="wastes-content"
+      >
         <Settings />
       </IonMenu>
 
