@@ -12,7 +12,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 
-import { fetchUserBranches } from "@/lib/dal";
+import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
 import type { Branch } from "@/lib/types";
 import { updateTheme } from "@/lib/utils";
 
@@ -22,6 +22,7 @@ import { updateTheme } from "@/lib/utils";
  * @returns The rendered component.
  */
 export default function Settings() {
+  const [currentBranch, setCurrentBranch] = useState<number | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
 
   useEffect(() => {
@@ -41,6 +42,21 @@ export default function Settings() {
     void getBranches();
   }, []);
 
+  useEffect(() => {
+    /**
+     * Retrieves the branch selected by the user and updates the state with the selected branch.
+     *
+     * @returns A promise that resolves when the selected branch has been fetched and the state has
+     *   been updated.
+     */
+    async function getSelectedBranch() {
+      const selectedBranch = await getUserSelectedBranch();
+      setCurrentBranch(selectedBranch);
+    }
+
+    void getSelectedBranch();
+  }, []);
+
   return (
     <Fragment>
       <IonHeader>
@@ -52,7 +68,14 @@ export default function Settings() {
       <IonContent>
         <IonList>
           <IonItem>
-            <IonSelect placeholder="Select a branch" label="Branch">
+            <IonSelect
+              placeholder="Select a branch"
+              value={currentBranch}
+              label="Branch"
+              onIonChange={(event) => {
+                console.log(event.detail.value);
+              }}
+            >
               {branches.map((branch) => (
                 <IonSelectOption value={branch.id} key={branch.id}>
                   {branch.branch}
@@ -64,7 +87,6 @@ export default function Settings() {
           <IonItem>
             <IonToggle
               onIonChange={(event) => {
-                console.log(event.detail.checked);
                 updateTheme(event.detail.checked ? "dark" : "light");
               }}
             >

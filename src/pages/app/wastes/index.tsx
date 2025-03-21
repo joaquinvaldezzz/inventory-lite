@@ -1,9 +1,13 @@
+import { Fragment } from "react";
 import {
+  IonButtons,
   IonContent,
   IonFab,
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonMenu,
+  IonMenuButton,
   IonPage,
   IonRefresher,
   IonRefresherContent,
@@ -19,6 +23,7 @@ import { add } from "ionicons/icons";
 import { fetchWasteEntries } from "@/lib/api";
 import { Loading } from "@/components/loading";
 
+import Settings from "../settings";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { WastesFormModal } from "./modal-form";
@@ -81,34 +86,43 @@ export default function Wastes() {
   }
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Wastes</IonTitle>
-        </IonToolbar>
-      </IonHeader>
+    <Fragment>
+      <IonMenu contentId="wastes-content">
+        <Settings />
+      </IonMenu>
 
-      <IonContent>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Wastes</IonTitle>
+      <IonPage id="wastes-content">
+        <IonHeader>
+          <IonToolbar color="primary">
+            <IonButtons slot="start">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>Wastes</IonTitle>
           </IonToolbar>
         </IonHeader>
 
-        <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-          {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
-        </div>
+        <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
 
-        <IonFab horizontal="end" slot="fixed" vertical="bottom">
-          <IonFabButton onClick={presentModal}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
-      </IonContent>
-    </IonPage>
+          <IonHeader collapse="condense">
+            <IonToolbar>
+              <IonTitle size="large">Wastes</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+
+          <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
+            {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
+          </div>
+
+          <IonFab horizontal="end" slot="fixed" vertical="bottom">
+            <IonFabButton onClick={presentModal}>
+              <IonIcon icon={add} />
+            </IonFabButton>
+          </IonFab>
+        </IonContent>
+      </IonPage>
+    </Fragment>
   );
 }

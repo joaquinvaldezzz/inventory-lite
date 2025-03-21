@@ -1,9 +1,13 @@
+import { Fragment } from "react";
 import {
+  IonButtons,
   IonContent,
   IonFab,
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonMenu,
+  IonMenuButton,
   IonPage,
   IonProgressBar,
   IonRefresher,
@@ -20,6 +24,7 @@ import { add } from "ionicons/icons";
 import { fetchDailyCountEntries } from "@/lib/api";
 import { Loading } from "@/components/loading";
 
+import Settings from "../settings";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { DailyCountModal } from "./modal-form";
@@ -72,35 +77,44 @@ export default function DailyCount() {
   }
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Daily Count</IonTitle>
-          {isPending && <IonProgressBar type="indeterminate" />}
-        </IonToolbar>
-      </IonHeader>
+    <Fragment>
+      <IonMenu contentId="daily-count-content">
+        <Settings />
+      </IonMenu>
 
-      <IonContent>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent />
-        </IonRefresher>
-
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Daily Count</IonTitle>
+      <IonPage id="daily-count-content">
+        <IonHeader>
+          <IonToolbar color="primary">
+            <IonButtons slot="start">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>Daily Count</IonTitle>
+            {isPending && <IonProgressBar type="indeterminate" />}
           </IonToolbar>
         </IonHeader>
 
-        <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-          {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
-        </div>
+        <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
 
-        <IonFab horizontal="end" slot="fixed" vertical="bottom">
-          <IonFabButton onClick={presentModal}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
-      </IonContent>
-    </IonPage>
+          <IonHeader collapse="condense">
+            <IonToolbar>
+              <IonTitle size="large">Daily Count</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+
+          <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
+            {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
+          </div>
+
+          <IonFab horizontal="end" slot="fixed" vertical="bottom">
+            <IonFabButton onClick={presentModal}>
+              <IonIcon icon={add} />
+            </IonFabButton>
+          </IonFab>
+        </IonContent>
+      </IonPage>
+    </Fragment>
   );
 }

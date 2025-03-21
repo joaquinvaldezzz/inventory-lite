@@ -1,9 +1,13 @@
+import { Fragment } from "react";
 import {
+  IonButtons,
   IonContent,
   IonFab,
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonMenu,
+  IonMenuButton,
   IonPage,
   IonTitle,
   IonToolbar,
@@ -12,6 +16,7 @@ import {
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { add } from "ionicons/icons";
 
+import Settings from "../settings";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { NewExpensesModal } from "./modal-form";
@@ -46,31 +51,40 @@ export default function Expenses() {
   }
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Expenses</IonTitle>
-          {/* {isFetching && !isPending && <IonProgressBar type="indeterminate" />} */}
-        </IonToolbar>
-      </IonHeader>
+    <Fragment>
+      <IonMenu contentId="expenses-content">
+        <Settings />
+      </IonMenu>
 
-      <IonContent>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Expenses</IonTitle>
+      <IonPage id="expenses-content">
+        <IonHeader>
+          <IonToolbar color="primary">
+            <IonButtons slot="start">
+              <IonMenuButton />
+            </IonButtons>
+            <IonTitle>Expenses</IonTitle>
+            {/* {isFetching && !isPending && <IonProgressBar type="indeterminate" />} */}
           </IonToolbar>
         </IonHeader>
 
-        <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-          <DataTable columns={columns} data={[]} />
-        </div>
+        <IonContent>
+          <IonHeader collapse="condense">
+            <IonToolbar>
+              <IonTitle size="large">Expenses</IonTitle>
+            </IonToolbar>
+          </IonHeader>
 
-        <IonFab horizontal="end" slot="fixed" vertical="bottom">
-          <IonFabButton onClick={presentModal}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
-      </IonContent>
-    </IonPage>
+          <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
+            <DataTable columns={columns} data={[]} />
+          </div>
+
+          <IonFab horizontal="end" slot="fixed" vertical="bottom">
+            <IonFabButton onClick={presentModal}>
+              <IonIcon icon={add} />
+            </IonFabButton>
+          </IonFab>
+        </IonContent>
+      </IonPage>
+    </Fragment>
   );
 }
