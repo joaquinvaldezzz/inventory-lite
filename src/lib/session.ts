@@ -65,16 +65,6 @@ export async function createSession(userId: string, userRole: string) {
 }
 
 /**
- * Retrieves the session token from cookies.
- *
- * @returns A promise that resolves to the session token if found, or null otherwise.
- */
-export async function getSessionToken(): Promise<string | null> {
-  const cookies = await CapacitorCookies.getCookies();
-  return cookies.session;
-}
-
-/**
  * Verifies the session by decrypting the 'session' cookie and checking if the userId is present.
  *
  * @returns A promise that resolves to the userId if the session is valid, or null otherwise.

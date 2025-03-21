@@ -1,10 +1,8 @@
-import { useEffect } from "react";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Redirect, Route, useHistory } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 
-import { getSessionToken } from "@/lib/session";
 import { Toaster } from "@/components/ui/toaster";
 
 import Tabs from "./pages/app/tabs";
@@ -26,28 +24,6 @@ const queryClient = new QueryClient();
  * @returns The rendered component.
  */
 export default function App() {
-  const history = useHistory();
-
-  useEffect(() => {
-    /**
-     * Asynchronously checks if the user's session token is valid. If the token is valid, sets the
-     * authentication state to true. Logs any errors encountered during the process.
-     *
-     * @returns A promise that resolves when the session check is complete.
-     */
-    async function checkAuthentication() {
-      const token = await getSessionToken();
-      if (token == null) {
-        // await clearSessionToken();
-        history.push("/login");
-      } else {
-        console.log("Token is not null");
-      }
-    }
-
-    void checkAuthentication();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <IonApp>
