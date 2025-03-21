@@ -1,6 +1,6 @@
 import { IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { calendar, cash, cube, trash } from "ionicons/icons";
+import { calendar, cash, cube, settings, trash } from "ionicons/icons";
 import { Redirect, Route } from "react-router";
 
 import DailyCount from "./daily-count";
@@ -8,6 +8,7 @@ import DailyCountRecord from "./daily-count/record";
 import Delivery from "./delivery";
 import DeliveryRecord from "./delivery/record";
 import Expenses from "./expenses";
+import Settings from "./settings";
 import Wastes from "./wastes";
 import WastesRecord from "./wastes/record";
 
@@ -28,6 +29,7 @@ export default function Tabs() {
           <Route path="/app/daily-count" render={() => <DailyCount />} exact />
           <Route path="/app/wastes" render={() => <Wastes />} exact />
           <Route path="/app/expenses" render={() => <Expenses />} exact />
+          <Route path="/app/settings" render={() => <Settings />} exact />
 
           <Route path="/app/delivery/:id" render={(props) => <DeliveryRecord {...props} />} exact />
           <Route
@@ -57,6 +59,11 @@ export default function Tabs() {
           <IonTabButton href="/app/expenses" tab="expenses">
             <IonIcon icon={cash} />
             <IonLabel>Expenses</IonLabel>
+          </IonTabButton>
+
+          <IonTabButton href="/app/settings" tab="settings">
+            <IonIcon icon={settings} />
+            <IonLabel>Settings</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
