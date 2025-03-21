@@ -45,13 +45,6 @@ import {
 import { Input, inputVariants } from "@/components/ui/input";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 interface DeliveryRecordFormProps {
@@ -99,7 +92,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
      *
      * @returns A promise that resolves when the suppliers have been fetched and the state has been
      *   updated.
-     * @throws Will log an error message to the console if there is an issue fetching the suppliers.
+     * @throws An error message to the console if there is an issue fetching the suppliers.
      */
     async function fetchSuppliers() {
       try {
@@ -476,18 +469,11 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                             render={({ field }) => (
                               <FormItem className="space-y-0">
                                 <FormControl>
-                                  <Select
-                                    name={field.name}
-                                    defaultValue={field.value}
-                                    onValueChange={field.onChange}
-                                  >
-                                    <SelectTrigger className="min-w-40">
-                                      <SelectValue placeholder="Select a unit" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value={field.value}>{field.value}</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                  <Input
+                                    className="min-w-40 read-only:bg-muted"
+                                    readOnly
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
