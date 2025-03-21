@@ -6,6 +6,7 @@ import {
   IonFabButton,
   IonHeader,
   IonIcon,
+  IonMenu,
   IonMenuButton,
   IonPage,
   IonProgressBar,
@@ -25,6 +26,7 @@ import type { DeliveryItem } from "@/lib/types";
 import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
 
+import Settings from "../settings";
 import { columns } from "./columns";
 import { DeliveryFormModal } from "./modal-form";
 
@@ -110,7 +112,11 @@ export default function Delivery() {
 
   return (
     <Fragment>
-      <IonPage>
+      <IonMenu contentId="delivery-content">
+        <Settings />
+      </IonMenu>
+
+      <IonPage id="delivery-content">
         <IonHeader>
           <IonToolbar color="primary">
             <IonButtons slot="start">

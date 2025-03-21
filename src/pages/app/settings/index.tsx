@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
-  IonButtons,
   IonContent,
   IonHeader,
   IonItem,
   IonLabel,
   IonList,
-  IonMenuButton,
-  IonPage,
   IonSelect,
   IonSelectOption,
   IonTitle,
@@ -17,6 +14,7 @@ import {
 
 import { fetchUserBranches } from "@/lib/dal";
 import type { Branch } from "@/lib/types";
+import { updateTheme } from "@/lib/utils";
 
 /**
  * The `Settings` component handles the settings page. It contains the ...
@@ -44,23 +42,14 @@ export default function Settings() {
   }, []);
 
   return (
-    <IonPage>
+    <Fragment>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            <IonMenuButton />
-          </IonButtons>
+        <IonToolbar>
           <IonTitle>Settings</IonTitle>
         </IonToolbar>
       </IonHeader>
 
       <IonContent>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Settings</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
         <IonList>
           <IonItem>
             <IonSelect placeholder="Select a branch" label="Branch">
@@ -74,8 +63,9 @@ export default function Settings() {
 
           <IonItem>
             <IonToggle
-              onChange={() => {
-                console.log("Dark mode toggled");
+              onIonChange={(event) => {
+                console.log(event.detail.checked);
+                updateTheme(event.detail.checked ? "dark" : "light");
               }}
             >
               Dark mode
@@ -87,6 +77,6 @@ export default function Settings() {
           </IonItem>
         </IonList>
       </IonContent>
-    </IonPage>
+    </Fragment>
   );
 }
