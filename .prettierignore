@@ -6,8 +6,8 @@ public/
 pnpm-lock.yaml
 
 # Generated Config files
-app/src/main/assets/capacitor.config.json
-app/src/main/assets/capacitor.plugins.json
-app/src/main/res/xml/config.xml
-App/App/capacitor.config.json
-App/App/config.xml
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
