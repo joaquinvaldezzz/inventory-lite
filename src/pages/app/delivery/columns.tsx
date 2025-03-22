@@ -2,6 +2,7 @@ import type { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { formatDate } from "date-fns";
 
 import type { DeliveryItem } from "@/lib/types";
+import { formatAsCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 
@@ -41,18 +42,11 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
   {
     accessorKey: "total_amount",
     header: ({ column }) => <DataTableColumnHeader title="Total amount" column={column} />,
-    cell: (cell) => {
-      const PHP = new Intl.NumberFormat("en-PH", {
-        style: "currency",
-        currency: "PHP",
-      });
-
-      return (
-        <div className="text-right tabular-nums">
-          {PHP.format(Number(cell.row.original.total_amount))}
-        </div>
-      );
-    },
+    cell: (cell) => (
+      <div className="text-right tabular-nums">
+        {formatAsCurrency(cell.row.original.total_amount)}
+      </div>
+    ),
   },
   {
     accessorKey: "status",
