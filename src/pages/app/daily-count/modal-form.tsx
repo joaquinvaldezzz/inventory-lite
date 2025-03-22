@@ -1,4 +1,3 @@
-/* eslint-disable max-lines -- It's okay for this file to be long */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
 import {
   IonButton,
@@ -11,22 +10,7 @@ import {
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import {
-  CalendarIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  Container,
-  MinusIcon,
-  Plus,
-  PlusIcon,
-  Trash2,
-} from "lucide-react";
-import {
-  Group,
-  NumberField,
-  Button as ReactAriaButton,
-  Input as ReactInput,
-} from "react-aria-components";
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { createDailyCountEntry, fetchCategories, getIngredientsByCategory } from "@/lib/api";
@@ -46,6 +30,14 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  DivTable,
+  DivTableBody,
+  DivTableCell,
+  DivTableHead,
+  DivTableHeader,
+  DivTableRow,
+} from "@/components/ui/div-table";
+import {
   Form,
   FormControl,
   FormField,
@@ -53,7 +45,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DailyCountModalActions {
@@ -360,211 +352,134 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 border-y whitespace-nowrap">
-              <div className="relative w-full overflow-auto">
-                <div className="table w-full caption-bottom pb-2 text-sm" role="table">
-                  <div className="table-header-group" role="thead">
-                    <div
-                      className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      role="tr"
-                    >
-                      <div
-                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="th"
-                      >
-                        Ingredients
-                      </div>
+            <DivTable>
+              <DivTableHeader>
+                <DivTableRow>
+                  <DivTableHead>Ingredients</DivTableHead>
+                  <DivTableHead>Quantity</DivTableHead>
+                  <DivTableHead />
+                </DivTableRow>
+              </DivTableHeader>
 
-                      <div
-                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="th"
-                      >
-                        Quantity
-                      </div>
-
-                      <div
-                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="th"
-                      />
-                    </div>
-                  </div>
-
-                  <div
-                    className="table-row-group **:[[role=td]]:px-1 **:[[role=td]]:py-1"
-                    role="tbody"
-                  >
-                    {fields.map((_, index) => (
-                      <div
-                        className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                        role="tr"
-                        key={index}
-                      >
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.item`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
-                                  <Popover>
-                                    <PopoverTrigger asChild>
-                                      <FormControl>
-                                        <Button
-                                          className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
-                                          role="combobox"
-                                          variant="outline"
-                                        >
-                                          <span
-                                            className={cn(
-                                              "truncate",
-                                              field.value.length === 0 && "text-muted-foreground",
-                                            )}
-                                          >
-                                            {ingredients.length > 0
-                                              ? (ingredients.find(
-                                                  (ingredient) =>
-                                                    ingredient.id.toString() === field.value,
-                                                )?.raw_material ?? "Select an ingredient")
-                                              : "Select an ingredient"}
-                                          </span>
-                                          <ChevronDownIcon
-                                            className="shrink-0 text-muted-foreground/80"
-                                            aria-hidden="true"
-                                            size={16}
-                                          />
-                                        </Button>
-                                      </FormControl>
-                                    </PopoverTrigger>
-
-                                    <PopoverContent
-                                      className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
-                                      align="start"
+              <DivTableBody>
+                {fields.map((_, index) => (
+                  <DivTableRow key={index}>
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.item`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-2 space-y-0">
+                            <FormControl>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                                      role="combobox"
+                                      variant="outline"
                                     >
-                                      <Command>
-                                        <CommandInput placeholder="Search ingredient..." />
-                                        <CommandList>
-                                          <CommandEmpty>No category found.</CommandEmpty>
-                                          <CommandGroup>
-                                            {ingredients.map((ingredient) => (
-                                              <CommandItem
-                                                value={ingredient.raw_material}
-                                                key={ingredient.id}
-                                                onSelect={(value) => {
-                                                  const selectedIngredient = ingredients.find(
-                                                    (ingredient) =>
-                                                      ingredient.raw_material === value,
-                                                  );
-                                                  field.onChange(selectedIngredient?.id.toString());
-                                                }}
-                                              >
-                                                {ingredient.raw_material}
-                                                {ingredient.id.toString() === field.value && (
-                                                  <CheckIcon className="ml-auto" size={16} />
-                                                )}
-                                              </CommandItem>
-                                            ))}
-                                          </CommandGroup>
-                                        </CommandList>
-                                      </Command>
-                                    </PopoverContent>
-                                  </Popover>
-                                </FormControl>
-                                <FormMessage id={field.name} />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.count`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
-                                  <NumberField
-                                    className="min-w-40"
-                                    aria-label="Quantity"
-                                    defaultValue={field.value}
-                                    minValue={0}
-                                    onChange={field.onChange}
-                                  >
-                                    <Group className="relative inline-flex h-9 w-full items-center overflow-hidden rounded-md border border-input text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none data-disabled:opacity-50 data-focus-within:border-ring data-focus-within:ring-3 data-focus-within:ring-ring/20 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 dark:data-focus-within:has-aria-invalid:ring-destructive/40">
-                                      <ReactAriaButton
-                                        className="-ms-px flex aspect-square h-[inherit] items-center justify-center rounded-s-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                                        slot="decrement"
+                                      <span
+                                        className={cn(
+                                          "truncate",
+                                          field.value.length === 0 && "text-muted-foreground",
+                                        )}
                                       >
-                                        <MinusIcon aria-hidden="true" size={16} />
-                                      </ReactAriaButton>
-                                      <ReactInput className="w-full grow bg-background px-3 py-2 text-center text-foreground tabular-nums" />
-                                      <ReactAriaButton
-                                        className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                                        slot="increment"
-                                      >
-                                        <PlusIcon aria-hidden="true" size={16} />
-                                      </ReactAriaButton>
-                                    </Group>
-                                  </NumberField>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                                        {ingredients.length > 0
+                                          ? (ingredients.find(
+                                              (ingredient) =>
+                                                ingredient.id.toString() === field.value,
+                                            )?.raw_material ?? "Select an ingredient")
+                                          : "Select an ingredient"}
+                                      </span>
+                                      <ChevronDownIcon
+                                        className="shrink-0 text-muted-foreground/80"
+                                        aria-hidden="true"
+                                        size={16}
+                                      />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
 
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.unit`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
-                                  <Input
-                                    className="min-w-40 read-only:bg-muted"
-                                    type="text"
-                                    readOnly
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                                <PopoverContent
+                                  className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                                  align="start"
+                                >
+                                  <Command>
+                                    <CommandInput placeholder="Search ingredient..." />
+                                    <CommandList>
+                                      <CommandEmpty>No category found.</CommandEmpty>
+                                      <CommandGroup>
+                                        {ingredients.map((ingredient) => (
+                                          <CommandItem
+                                            value={ingredient.raw_material}
+                                            key={ingredient.id}
+                                            onSelect={(value) => {
+                                              const selectedIngredient = ingredients.find(
+                                                (ingredient) => ingredient.raw_material === value,
+                                              );
+                                              field.onChange(selectedIngredient?.id.toString());
+                                            }}
+                                          >
+                                            {ingredient.raw_material}
+                                            {ingredient.id.toString() === field.value && (
+                                              <CheckIcon className="ml-auto" size={16} />
+                                            )}
+                                          </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                    </CommandList>
+                                  </Command>
+                                </PopoverContent>
+                              </Popover>
+                            </FormControl>
+                            <FormMessage id={field.name} />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
 
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <Button
-                            className="text-destructive"
-                            type="button"
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => {
-                              handleRemove(index);
-                            }}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.count`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-2 space-y-0">
+                            <FormControl>
+                              <NumberInput
+                                className="min-w-32"
+                                value={field.value}
+                                aria-label="Quantity"
+                                onChange={(event) => {
+                                  field.onChange(event);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
 
-            <div className="flex flex-col gap-3">
+                    <DivTableCell>
+                      <Button
+                        className="text-destructive"
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          handleRemove(index);
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </DivTableCell>
+                  </DivTableRow>
+                ))}
+              </DivTableBody>
+            </DivTable>
+
+            <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add another product</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />

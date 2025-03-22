@@ -44,6 +44,14 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  DivTable,
+  DivTableBody,
+  DivTableCell,
+  DivTableHead,
+  DivTableHeader,
+  DivTableRow,
+} from "@/components/ui/div-table";
+import {
   Form,
   FormControl,
   FormField,
@@ -411,244 +419,199 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
               )}
             />
 
-            <div className="-mx-4 border-y whitespace-nowrap">
-              <div className="relative w-full overflow-auto">
-                <div className="table w-full caption-bottom pb-2 text-sm" role="table">
-                  <div className="table-header-group" role="thead">
-                    <div
-                      className="table-row border-b border-border transition-colors *:first:pl-4 *:last:pr-4 hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      role="tr"
-                    >
-                      <div
-                        className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="th"
-                      >
-                        Items
-                      </div>
-                      <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Quantity
-                      </div>
-                      <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Unit
-                      </div>
-                      <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Reason
-                      </div>
-                      <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5">
-                        Person(s) in charge
-                      </div>
-                      <div className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5" />
-                    </div>
-                  </div>
+            <DivTable>
+              <DivTableHeader>
+                <DivTableRow>
+                  <DivTableHead>Items</DivTableHead>
+                  <DivTableHead>Quantity</DivTableHead>
+                  <DivTableHead>Unit</DivTableHead>
+                  <DivTableHead>Reason</DivTableHead>
+                  <DivTableHead>Person(s) in charge</DivTableHead>
+                  <DivTableHead />
+                </DivTableRow>
+              </DivTableHeader>
 
-                  <div
-                    className="table-row-group **:[[role=td]]:px-1 **:[[role=td]]:py-1 **:[[role=td]]:first:pl-4 **:[[role=td]]:last:pr-4"
-                    role="tbody"
-                  >
-                    {fields.map((_, index) => (
-                      <div
-                        className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                        role="tr"
-                        key={index}
-                      >
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.item`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <FormControl>
-                                      <Button
-                                        className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
-                                        role="combobox"
-                                        variant="outline"
-                                      >
-                                        <span
-                                          className={cn(
-                                            "truncate",
-                                            field.value.length === 0 && "text-muted-foreground",
-                                          )}
-                                        >
-                                          {ingredients.length > 0
-                                            ? (ingredients.find(
-                                                (item) => item.id.toString() === field.value,
-                                              )?.raw_material ?? "Select an item")
-                                            : "Select an item"}
-                                        </span>
-                                        <ChevronDownIcon
-                                          className="shrink-0 text-muted-foreground/80"
-                                          aria-hidden="true"
-                                          size={16}
-                                        />
-                                      </Button>
-                                    </FormControl>
-                                  </PopoverTrigger>
-
-                                  <PopoverContent
-                                    className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
-                                    align="start"
+              <DivTableBody>
+                {fields.map((_, index) => (
+                  <DivTableRow key={index}>
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.item`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-2 space-y-0">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                                    role="combobox"
+                                    variant="outline"
                                   >
-                                    <Command>
-                                      <CommandInput placeholder="Search item..." />
-                                      <CommandList>
-                                        <CommandEmpty>No item found.</CommandEmpty>
-                                        <CommandGroup>
-                                          {ingredients.map((ingredient) => (
-                                            <CommandItem
-                                              value={ingredient.raw_material}
-                                              key={ingredient.id}
-                                              onSelect={(value) => {
-                                                const selectedItem = ingredients.find(
-                                                  (ingredient) => ingredient.raw_material === value,
-                                                );
-                                                field.onChange(selectedItem?.id.toString());
-                                                form.setValue(
-                                                  `items.${index}.unit`,
-                                                  selectedItem != null ? selectedItem.unit : "",
-                                                );
-                                              }}
-                                            >
-                                              {ingredient.raw_material}
-                                              {ingredient.id.toString() === field.value && (
-                                                <CheckIcon className="ml-auto" size={16} />
-                                              )}
-                                            </CommandItem>
-                                          ))}
-                                        </CommandGroup>
-                                      </CommandList>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.waste`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <NumberInput
-                                    className="min-w-32"
-                                    value={field.value}
-                                    aria-label="Quantity"
-                                    onChange={(event) => {
-                                      field.onChange(event);
-                                    }}
-                                  />
+                                    <span
+                                      className={cn(
+                                        "truncate",
+                                        field.value.length === 0 && "text-muted-foreground",
+                                      )}
+                                    >
+                                      {ingredients.length > 0
+                                        ? (ingredients.find(
+                                            (item) => item.id.toString() === field.value,
+                                          )?.raw_material ?? "Select an item")
+                                        : "Select an item"}
+                                    </span>
+                                    <ChevronDownIcon
+                                      className="shrink-0 text-muted-foreground/80"
+                                      aria-hidden="true"
+                                      size={16}
+                                    />
+                                  </Button>
                                 </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                              </PopoverTrigger>
 
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.unit`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
-                                  <Input
-                                    className="min-w-32 read-only:bg-muted"
-                                    type="text"
-                                    readOnly
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                              <PopoverContent
+                                className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
+                                align="start"
+                              >
+                                <Command>
+                                  <CommandInput placeholder="Search item..." />
+                                  <CommandList>
+                                    <CommandEmpty>No item found.</CommandEmpty>
+                                    <CommandGroup>
+                                      {ingredients.map((ingredient) => (
+                                        <CommandItem
+                                          value={ingredient.raw_material}
+                                          key={ingredient.id}
+                                          onSelect={(value) => {
+                                            const selectedItem = ingredients.find(
+                                              (ingredient) => ingredient.raw_material === value,
+                                            );
+                                            field.onChange(selectedItem?.id.toString());
+                                            form.setValue(
+                                              `items.${index}.unit`,
+                                              selectedItem != null ? selectedItem.unit : "",
+                                            );
+                                          }}
+                                        >
+                                          {ingredient.raw_material}
+                                          {ingredient.id.toString() === field.value && (
+                                            <CheckIcon className="ml-auto" size={16} />
+                                          )}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
 
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.reason`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
-                                  <Input className="min-w-40" type="text" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.waste`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <NumberInput
+                                className="min-w-32"
+                                value={field.value}
+                                aria-label="Quantity"
+                                onChange={(event) => {
+                                  field.onChange(event);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
 
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.employee`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col gap-2 space-y-0">
-                                <FormControl>
-                                  {/* @ts-expect-error -- Types dot not match yet */}
-                                  <MultipleSelector
-                                    placeholder="Select employee(s)"
-                                    options={employees}
-                                    commandProps={{
-                                      label: "Select employee(s)",
-                                    }}
-                                    emptyIndicator={
-                                      <p className="text-center text-sm">No employees found.</p>
-                                    }
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.unit`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-2 space-y-0">
+                            <FormControl>
+                              <Input
+                                className="min-w-32 read-only:bg-muted"
+                                type="text"
+                                readOnly
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
 
-                        <div
-                          className="table-cell align-top [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <Button
-                            className="text-destructive"
-                            type="button"
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => {
-                              handleRemove(index);
-                            }}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.reason`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-2 space-y-0">
+                            <FormControl>
+                              <Input className="min-w-40" type="text" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
 
-            <div className="flex flex-col gap-3 pt-1">
+                    <DivTableCell>
+                      <FormField
+                        name={`items.${index}.employee`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col gap-2 space-y-0">
+                            <FormControl>
+                              {/* @ts-expect-error -- Types dot not match yet */}
+                              <MultipleSelector
+                                placeholder="Select employee(s)"
+                                options={employees}
+                                commandProps={{
+                                  label: "Select employee(s)",
+                                }}
+                                emptyIndicator={
+                                  <p className="text-center text-sm">No employees found.</p>
+                                }
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
+
+                    <DivTableCell>
+                      <Button
+                        className="text-destructive"
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          handleRemove(index);
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </DivTableCell>
+                  </DivTableRow>
+                ))}
+              </DivTableBody>
+            </DivTable>
+
+            <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
