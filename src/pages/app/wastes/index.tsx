@@ -23,8 +23,8 @@ import { add } from "ionicons/icons";
 import { fetchWasteEntries } from "@/lib/api";
 import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
+import { Settings } from "@/components/settings";
 
-import Settings from "../settings";
 import { columns } from "./columns";
 import { WastesFormModal } from "./modal-form";
 

@@ -22,7 +22,7 @@ import { updateTheme } from "@/lib/utils";
  *
  * @returns The rendered component.
  */
-export default function Settings() {
+export function Settings() {
   const [currentBranch, setCurrentBranch] = useState<number | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
 

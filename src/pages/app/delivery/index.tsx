@@ -25,8 +25,8 @@ import { fetchDeliveryEntries } from "@/lib/api";
 import type { DeliveryItem } from "@/lib/types";
 import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
+import { Settings } from "@/components/settings";
 
-import Settings from "../settings";
 import { columns } from "./columns";
 import { DeliveryFormModal } from "./modal-form";
 

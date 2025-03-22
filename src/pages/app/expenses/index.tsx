@@ -17,8 +17,8 @@ import type { OverlayEventDetail } from "@ionic/react/dist/types/components/reac
 import { add } from "ionicons/icons";
 
 import { DataTable } from "@/components/ui/data-table";
+import { Settings } from "@/components/settings";
 
-import Settings from "../settings";
 import { columns } from "./columns";
 import { NewExpensesModal } from "./modal-form";
 
