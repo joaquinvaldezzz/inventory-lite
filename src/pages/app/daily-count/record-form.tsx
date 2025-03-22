@@ -308,10 +308,6 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                   >
                     Unit
                   </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  />
                 </div>
               </div>
 
