@@ -59,6 +59,13 @@ export const columns: Array<ColumnDef<DeliveryItem>> = [
     header: ({ column }) => <DataTableColumnHeader title="Status" column={column} />,
     cell: (cell) => {
       const status = cell.row.original.status;
+
+      if (status === "Requested") {
+        return <Badge variant="light">{status}</Badge>;
+      } else if (status === "Ordered") {
+        return <Badge variant="warning">{status}</Badge>;
+      }
+
       return <Badge variant="success">{status}</Badge>;
     },
   },
