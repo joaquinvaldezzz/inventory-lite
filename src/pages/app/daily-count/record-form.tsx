@@ -33,6 +33,14 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  DivTable,
+  DivTableBody,
+  DivTableCell,
+  DivTableHead,
+  DivTableHeader,
+  DivTableRow,
+} from "@/components/ui/div-table";
+import {
   Form,
   FormControl,
   FormField,
@@ -282,105 +290,60 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-1 border-y whitespace-nowrap">
-          <div className="relative w-full overflow-auto">
-            <div className="table w-full caption-bottom text-sm" role="table">
-              <div className="table-header-group" role="thead">
-                <div
-                  className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                  role="tr"
-                >
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Ingredients
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Inventory count
-                  </div>
-                  <div
-                    className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                    role="th"
-                  >
-                    Unit
-                  </div>
-                </div>
-              </div>
+        <DivTable>
+          <DivTableHeader>
+            <DivTableRow>
+              <DivTableHead>Ingredients</DivTableHead>
+              <DivTableHead>Inventory count</DivTableHead>
+              <DivTableHead>Unit</DivTableHead>
+            </DivTableRow>
+          </DivTableHeader>
 
-              <div className="table-row-group **:[[role=td]]:px-3" role="tbody">
-                {data.items.map((item, index) => {
-                  return (
-                    <div
-                      className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                      role="tr"
-                      key={item.id}
-                    >
-                      <div
-                        className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        {item.item}
-                      </div>
+          <DivTableBody>
+            {data.items.map((item, index) => (
+              <DivTableRow key={index}>
+                <DivTableCell>{item.item}</DivTableCell>
+                <DivTableCell>
+                  <FormField
+                    name={`items.${index}.count`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <NumberInput
+                            className="min-w-32"
+                            value={field.value}
+                            aria-label="Inventory count"
+                            onChange={(event) => {
+                              field.onChange(event);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </DivTableCell>
+                <DivTableCell>
+                  <FormField
+                    name={`items.${index}.unit`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <FormItem className="space-y-0">
+                        <FormControl>
+                          <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </DivTableCell>
+              </DivTableRow>
+            ))}
+          </DivTableBody>
+        </DivTable>
 
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.count`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <NumberInput
-                                  className="min-w-32"
-                                  value={field.value}
-                                  aria-label="Inventory count"
-                                  onChange={(event) => {
-                                    field.onChange(event);
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div
-                        className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                        role="td"
-                      >
-                        <FormField
-                          name={`items.${index}.unit`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <FormItem className="space-y-0">
-                              <FormControl>
-                                <Input
-                                  className="min-w-40 read-only:bg-muted"
-                                  readOnly
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-1 flex flex-col gap-3">
+        <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : "Save"}
           </Button>
