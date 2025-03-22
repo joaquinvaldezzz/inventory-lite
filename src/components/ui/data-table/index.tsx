@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -34,6 +34,9 @@ import {
 } from "@/components/ui/table";
 
 interface DataTableProps<TData extends { id: string | number }, TValue> {
+  searchPlaceholder: string;
+  idToSearch: string;
+  linkPath: string;
   columns: Array<ColumnDef<TData, TValue>>;
   data: TData[];
 }
@@ -45,11 +48,17 @@ interface DataTableProps<TData extends { id: string | number }, TValue> {
  * @template TData The type of data being displayed in the table. Must include an `id` property.
  * @template TValue The type of value being used in the table.
  * @param props The properties for the DataTable component.
+ * @param props.searchPlaceholder The placeholder text for the search input.
+ * @param props.idToSearch The ID of the data to search.
+ * @param props.linkPath The path to link to when a row is clicked.
  * @param props.columns The column definitions for the table.
  * @param props.data The data to be displayed in the table.
  * @returns The rendered DataTable component.
  */
 export function DataTable<TData extends { id: string | number }, TValue>({
+  searchPlaceholder,
+  idToSearch,
+  linkPath,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -69,6 +78,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
       sorting,
     },
   });
+  const idSearch = useId();
 
   return (
     <div className="space-y-4">
@@ -76,16 +86,16 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
           <Search strokeWidth={2} size={16} />
         </div>
-        <label className="sr-only" htmlFor="search-delivery">
-          Search by DR no. or PO no.
+        <label className="sr-only" htmlFor={`search-${idSearch}`}>
+          {searchPlaceholder}
         </label>
         <Input
           className="peer ps-9"
-          id="search-delivery"
+          id={`search-${idSearch}`}
           type="search"
-          placeholder="Search by DR no. or PO no."
-          value={table.getColumn("dr_no")?.getFilterValue()?.toString() ?? ""}
-          onChange={(event) => table.getColumn("dr_no")?.setFilterValue(event.target.value)}
+          placeholder={searchPlaceholder}
+          value={table.getColumn(idToSearch)?.getFilterValue()?.toString() ?? ""}
+          onChange={(event) => table.getColumn(idToSearch)?.setFilterValue(event.target.value)}
         />
       </div>
 
@@ -115,7 +125,7 @@ export function DataTable<TData extends { id: string | number }, TValue>({
                     <TableCell className="first:pl-4 last:pr-4" key={cell.id}>
                       <Link
                         className="absolute inset-0 size-full"
-                        to={`/app/delivery/${cell.row.original.id}`}
+                        to={`${linkPath}/${cell.row.original.id}`}
                       />
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
