@@ -35,6 +35,14 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  DivTable,
+  DivTableBody,
+  DivTableCell,
+  DivTableHead,
+  DivTableHeader,
+  DivTableRow,
+} from "@/components/ui/div-table";
+import {
   Form,
   FormControl,
   FormField,
@@ -334,268 +342,193 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             )}
           />
 
-          <div className="grid grid-cols-1 border-y whitespace-nowrap">
-            <div className="relative w-full overflow-auto">
-              <div className="table w-full caption-bottom text-sm" role="table">
-                <div className="table-header-group" role="thead">
-                  <div
-                    className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                    role="tr"
-                  >
-                    <div
-                      className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      Ingredients
-                    </div>
-                    <div
-                      className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      Actual Quantity
-                    </div>
-                    <div
-                      className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      PO
-                    </div>
-                    <div
-                      className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      DR Quantity
-                    </div>
-                    <div
-                      className="table-cell h-12 px-3 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      DR unit
-                    </div>
-                    <div
-                      className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      Unit price
-                    </div>
-                    <div
-                      className="table-cell h-12 px-3 text-right align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                      role="th"
-                    >
-                      Total amount
-                    </div>
-                  </div>
-                </div>
+          <DivTable>
+            <DivTableHeader>
+              <DivTableRow>
+                <DivTableHead>Ingredients</DivTableHead>
+                <DivTableHead>Actual quantity</DivTableHead>
+                <DivTableHead>Purchase order</DivTableHead>
+                <DivTableHead>Delivery quantity</DivTableHead>
+                <DivTableHead>Delivery unit</DivTableHead>
+                <DivTableHead>Unit price</DivTableHead>
+                <DivTableHead>Total amount</DivTableHead>
+              </DivTableRow>
+            </DivTableHeader>
 
-                <div className="table-row-group **:[[role=td]]:px-3" role="tbody">
-                  {data.items.map((item, index) => {
-                    return (
-                      <div
-                        className="table-row border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                        role="tr"
-                        key={item.id}
-                      >
-                        <div
-                          className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          {item.raw_material}
-                        </div>
+            <DivTableBody>
+              {data.items.map((item, index) => (
+                <DivTableRow key={index}>
+                  <DivTableCell>{item.raw_material}</DivTableCell>
 
-                        <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.quantity_actual`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <NumberInput
-                                    value={field.value}
-                                    aria-label="Actual Quantity"
-                                    onChange={(event) => {
-                                      field.onChange(event);
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.quantity_actual`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <NumberInput
+                              value={field.value}
+                              aria-label="Actual Quantity"
+                              onChange={(event) => {
+                                field.onChange(event);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
 
-                        <div
-                          className="table-cell h-12 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          {item.unit_dr}
-                        </div>
+                  <DivTableCell>{item.unit_dr}</DivTableCell>
 
-                        <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.quantity_dr`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <NumberInput
-                                    className="min-w-32"
-                                    value={field.value}
-                                    aria-label="DR Quantity"
-                                    onChange={(event) => {
-                                      field.onChange(event);
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.quantity_dr`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <NumberInput
+                              className="min-w-32"
+                              value={field.value}
+                              aria-label="DR Quantity"
+                              onChange={(event) => {
+                                field.onChange(event);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
 
-                        <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.unit_dr`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem className="space-y-0">
-                                <FormControl>
-                                  <Input
-                                    className="min-w-40 read-only:bg-muted"
-                                    readOnly
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.unit_dr`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
 
-                        <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.total_amount`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <ReactNumberField
-                                    formatOptions={{
-                                      style: "currency",
-                                      currency: "PHP",
-                                      currencySign: "accounting",
-                                    }}
-                                    aria-label="Unit Price"
-                                    defaultValue={field.value}
-                                  >
-                                    <ReactInput
-                                      className={cn(
-                                        inputVariants(),
-                                        "min-w-40 text-right tabular-nums read-only:bg-muted",
-                                      )}
-                                    />
-                                  </ReactNumberField>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.total_amount`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <ReactNumberField
+                              formatOptions={{
+                                style: "currency",
+                                currency: "PHP",
+                                currencySign: "accounting",
+                              }}
+                              aria-label="Unit Price"
+                              defaultValue={field.value}
+                            >
+                              <ReactInput
+                                className={cn(
+                                  inputVariants(),
+                                  "min-w-40 text-right tabular-nums read-only:bg-muted",
+                                )}
+                              />
+                            </ReactNumberField>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
 
-                        <div
-                          className="table-cell align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5"
-                          role="td"
-                        >
-                          <FormField
-                            name={`items.${index}.total_amount`}
-                            control={form.control}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <ReactNumberField
-                                    formatOptions={{
-                                      style: "currency",
-                                      currency: "PHP",
-                                      currencySign: "accounting",
-                                    }}
-                                    aria-label="Total amount"
-                                    defaultValue={field.value}
-                                  >
-                                    <ReactInput
-                                      className={cn(
-                                        inputVariants(),
-                                        "min-w-40 text-right tabular-nums read-only:bg-muted",
-                                      )}
-                                      readOnly
-                                    />
-                                  </ReactNumberField>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.total_amount`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <ReactNumberField
+                              formatOptions={{
+                                style: "currency",
+                                currency: "PHP",
+                                currencySign: "accounting",
+                              }}
+                              aria-label="Total amount"
+                              defaultValue={field.value}
+                            >
+                              <ReactInput
+                                className={cn(
+                                  inputVariants(),
+                                  "min-w-40 text-right tabular-nums read-only:bg-muted",
+                                )}
+                                readOnly
+                              />
+                            </ReactNumberField>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+                </DivTableRow>
+              ))}
+            </DivTableBody>
+          </DivTable>
 
           {/* Make these buttons sticky at the bottom */}
-          <div className="mt-1 flex flex-col gap-3">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button type="button" variant="ghost">
-                  Delete
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the delivery record.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => {
-                      void handleDelete();
-                    }}
-                    asChild
-                  >
-                    <Button type="button" variant="destructive">
-                      Confirm
-                    </Button>
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+          <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
+            <div className="flex items-center justify-between">
+              <div className="font-bold">Total</div>
+              <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Saving..." : "Save"}
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="ghost">
+                    Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the delivery
+                      record.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        void handleDelete();
+                      }}
+                      asChild
+                    >
+                      <Button type="button" variant="destructive">
+                        Confirm
+                      </Button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
         </form>
       </Form>
-
-      <hr className="my-4" />
-      <div className="flex items-center justify-between">
-        <div className="font-bold">Total</div>
-        <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>
-      </div>
     </Fragment>
   );
 }
