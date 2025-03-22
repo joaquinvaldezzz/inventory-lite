@@ -14,6 +14,8 @@ const badgeVariants = cva(
         outline: "text-foreground",
         success: "bg-green-50 text-green-700 ring-green-600/20",
         // TODO: Add more variants
+        warning: "bg-yellow-50 text-yellow-800 ring-yellow-600/20",
+        light: "bg-gray-50 text-gray-600 ring-gray-500/20",
       },
     },
     defaultVariants: {
