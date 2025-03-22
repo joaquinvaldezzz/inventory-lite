@@ -36,17 +36,19 @@ export function formatAsCurrency(int: number): string {
  * @param theme The theme to be applied. Can be "light", "dark", or "system".
  * @todo Implement system theme detection, and save the selected theme to local storage.
  */
-export function updateTheme(theme: "light" | "dark" | "system") {
+export function updateTheme(theme: "light" | "dark" | "system" | null) {
   const classList = document.documentElement.classList;
 
-  classList.remove("light", "dark", "system");
+  classList.remove("ion-palette-dark", "light", "dark", "system");
 
   if (theme === "light") {
-    classList.remove("ion-palette-dark");
     classList.add("light");
+    localStorage.setItem("theme", "light");
   } else if (theme === "dark") {
     classList.add("ion-palette-dark", "dark");
+    localStorage.setItem("theme", "dark");
   } else {
     classList.add("system");
+    localStorage.setItem("theme", "system");
   }
 }
