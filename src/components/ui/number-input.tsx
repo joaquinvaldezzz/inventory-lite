@@ -36,7 +36,7 @@ export const NumberInput = forwardRef<HTMLDivElement, NumberInputProps>(
           >
             <MinusIcon aria-hidden="true" size={16} />
           </Button>
-          <Input className="w-full grow bg-background px-3 py-2 text-center text-foreground tabular-nums" />
+          <Input className="w-fit grow bg-background px-3 py-2 text-center text-foreground tabular-nums" />
           <Button
             className="-me-px flex aspect-square h-[inherit] items-center justify-center rounded-e-md border border-input bg-background text-sm text-muted-foreground/80 transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
             slot="increment"
