@@ -485,7 +485,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
           </DivTableBody>
         </DivTable>
 
-        <div className="mt-1 flex flex-col gap-3">
+        <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving..." : "Save"}
           </Button>
