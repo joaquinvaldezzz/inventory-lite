@@ -40,15 +40,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface DailyCountRecordFormProps {
   data: DailyCountRecord;
@@ -371,18 +365,11 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                           render={({ field }) => (
                             <FormItem className="space-y-0">
                               <FormControl>
-                                <Select
-                                  name={field.name}
-                                  defaultValue={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <SelectTrigger className="min-w-40">
-                                    <SelectValue placeholder="Select a unit" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={field.value}>{field.value}</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Input
+                                  className="min-w-40 read-only:bg-muted"
+                                  readOnly
+                                  {...field}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
