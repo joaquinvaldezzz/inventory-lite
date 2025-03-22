@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const DivTable = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="-mx-4 grid grid-cols-1 border-y whitespace-nowrap">
+    <div className="-mx-4 grid grid-cols-1 border-t whitespace-nowrap">
       <div className="w-full overflow-x-auto">
         <div
           className={cn("table w-full caption-bottom text-sm", className)}
