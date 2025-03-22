@@ -16,9 +16,10 @@ import {
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { add } from "ionicons/icons";
 
+import { DataTable } from "@/components/ui/data-table";
+
 import Settings from "../settings";
 import { columns } from "./columns";
-import { DataTable } from "./data-table";
 import { NewExpensesModal } from "./modal-form";
 
 /**
@@ -75,7 +76,13 @@ export default function Expenses() {
           </IonHeader>
 
           <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-            <DataTable columns={columns} data={[]} />
+            <DataTable
+              idToSearch="raw_material_type"
+              columns={columns}
+              data={[]}
+              linkPath="/app/expenses"
+              searchPlaceholder="Search by category"
+            />
           </div>
 
           <IonFab horizontal="end" slot="fixed" vertical="bottom">

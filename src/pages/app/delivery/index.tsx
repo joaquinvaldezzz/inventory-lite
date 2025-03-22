@@ -144,7 +144,17 @@ export default function Delivery() {
           </IonHeader>
 
           <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-            {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
+            {isPending ? (
+              <Loading />
+            ) : (
+              <DataTable
+                idToSearch="dr_no"
+                columns={columns}
+                data={sortedData}
+                linkPath="/app/delivery"
+                searchPlaceholder="Search by DR no. or PO no."
+              />
+            )}
           </div>
 
           <IonFab horizontal="end" slot="fixed" vertical="bottom">

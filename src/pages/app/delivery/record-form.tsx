@@ -413,7 +413,6 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                               <FormItem>
                                 <FormControl>
                                   <NumberInput
-                                    className="min-w-32"
                                     value={field.value}
                                     aria-label="Actual Quantity"
                                     onChange={(event) => {

@@ -21,11 +21,11 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchWasteEntries } from "@/lib/api";
+import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
 
 import Settings from "../settings";
 import { columns } from "./columns";
-import { DataTable } from "./data-table";
 import { WastesFormModal } from "./modal-form";
 
 /**
@@ -118,7 +118,17 @@ export default function Wastes() {
           </IonHeader>
 
           <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
-            {isPending ? <Loading /> : <DataTable columns={columns} data={sortedData} />}
+            {isPending ? (
+              <Loading />
+            ) : (
+              <DataTable
+                idToSearch="raw_material_type"
+                columns={columns}
+                data={sortedData}
+                linkPath="/app/wastes"
+                searchPlaceholder="Search by category"
+              />
+            )}
           </div>
 
           <IonFab horizontal="end" slot="fixed" vertical="bottom">
