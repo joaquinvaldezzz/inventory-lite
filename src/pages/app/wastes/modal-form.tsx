@@ -198,8 +198,6 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
       async function submitForm() {
         try {
           if (parsedValues.data != null) await createWasteEntry(parsedValues.data);
-
-          console.log(parsedValues.data);
         } catch (error) {
           console.error("Form submission failed:", error);
         } finally {
