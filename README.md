@@ -32,7 +32,7 @@ Follow these steps to set up Inventory Lite on your local device:
 
 1. **Clone the Repository**
 
-   Download or clone this repository by running:
+   [Download](https://github.com/joaquinvaldezzz/inventory-lite/archive/refs/heads/main.zip) or clone this repository by running:
 
    ```bash
    git clone https://github.com/joaquinvaldezzz/inventory-lite.git
