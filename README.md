@@ -12,6 +12,7 @@ Before you begin, ensure you have the following software installed on your machi
 
 - [Git](https://git-scm.com)
 - [Node.js](https://nodejs.org/en)
+- [pnpm](https://pnpm.io/installation)
 
 #### Android Requirements
 
@@ -50,7 +51,7 @@ Follow these steps to set up Inventory Lite on your local device:
    Install the necessary dependencies:
 
    ```bash
-   npm install
+   pnpm install
    ```
 
 4. **Start the Development Server**
@@ -60,19 +61,19 @@ Follow these steps to set up Inventory Lite on your local device:
    - For Web:
 
      ```bash
-     npm run dev
+     pnpm run dev
      ```
 
    - For Android:
 
      ```bash
-     npm run dev:android
+     pnpm run dev:android
      ```
 
    - For iOS:
 
      ```bash
-     npm run dev:ios
+     pnpm run dev:ios
      ```
 
      You can view the app in your browser at [http://localhost:8100](http://localhost:8100).
