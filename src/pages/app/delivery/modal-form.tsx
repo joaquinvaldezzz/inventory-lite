@@ -50,6 +50,13 @@ import {
 import { Input, inputVariants } from "@/components/ui/input";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 interface DeliveryModalActions {
@@ -74,6 +81,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     defaultValues: {
       supplier: "",
       date_request: new Date(),
+      payment_type: "",
       remarks: "",
       items: [
         {
@@ -193,7 +201,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       /** Submits the delivery form by creating a new delivery entry. */
       async function submitForm() {
         try {
-          await createDeliveryEntry(formValues);
+          if (parsedValues.data != null) await createDeliveryEntry(parsedValues.data);
         } catch (error) {
           console.error("Form submission failed:", error);
         } finally {
@@ -354,6 +362,33 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                       </PopoverContent>
                     </Popover>
                   </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="payment_type"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment type</FormLabel>
+                  <Select
+                    name={field.name}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a payment type" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      <SelectItem value="1">Cash</SelectItem>
+                      <SelectItem value="0">Non-cash</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

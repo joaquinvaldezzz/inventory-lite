@@ -138,6 +138,8 @@ export interface DeliveryRecord {
   date_request: string;
   date_order: string;
   date_delivered: string;
+  payment_type_id: number;
+  payment_type: string;
   remarks: string;
   status_id: number;
   status: string;

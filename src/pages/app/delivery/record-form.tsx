@@ -53,6 +53,13 @@ import {
 import { Input, inputVariants } from "@/components/ui/input";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 interface DeliveryRecordFormProps {
@@ -77,6 +84,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       supplier: data.supplier_id.toString(),
       po_number: data.po_no,
       date_request: new Date(data.date_request),
+      payment_type: data.payment_type_id.toString(),
       remarks: data.remarks,
       items: data.items.map((item) => ({
         item: item.item_id,
@@ -149,7 +157,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       /** Submits the form data to update the delivery record. */
       async function submitForm() {
         try {
-          await updateDeliveryRecord(data.id, formValues);
+          if (parsedValues.data != null) await updateDeliveryRecord(data.id, parsedValues.data);
         } catch (error) {
           toast({
             description: "An error occurred while saving changes. Please try again.",
@@ -158,7 +166,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         } finally {
           setIsLoading(false);
           toast({ description: "Successfully saved changes" });
-          router.goBack();
+          // router.goBack();
         }
       }
 
@@ -323,6 +331,29 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     </PopoverContent>
                   </Popover>
                 </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="payment_type"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Payment type</FormLabel>
+                <Select name={field.name} defaultValue={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a payment type" />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    <SelectItem value="1">Cash</SelectItem>
+                    <SelectItem value="0">Non-cash</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

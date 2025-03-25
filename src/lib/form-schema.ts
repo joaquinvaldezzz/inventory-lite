@@ -30,6 +30,7 @@ export type BranchSelectorFormSchema = z.infer<typeof branchSelectorFormSchema>;
 export const newDeliveryFormSchema = z.object({
   supplier: z.string().min(1, { message: "Please select a supplier from the list." }).trim(),
   date_request: z.coerce.date({ message: "Please select a date." }),
+  payment_type: z.string().min(0, { message: "Please select a payment type." }).trim(),
   remarks: z
     .string()
     .max(256, { message: "Remarks must not exceed 256 characters." })
@@ -54,6 +55,7 @@ export const editDeliveryFormSchema = z.object({
   supplier: z.string().min(1, { message: "Please select a supplier from the list." }).trim(),
   po_number: z.string().trim(),
   date_request: z.coerce.date({ message: "Please select a date." }),
+  payment_type: z.string().min(0, { message: "Please select a payment type." }).trim(),
   remarks: z
     .string()
     .max(256, { message: "Remarks must not exceed 256 characters." })
