@@ -1,14 +1,6 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -76,7 +68,8 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
   const [suppliers, setSuppliers] = useState<Supplier>([]);
   const [items, setItems] = useState<Items>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
+  const [presentAlert] = useIonAlert();
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: "",
@@ -95,22 +88,19 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     },
     resolver: zodResolver(newDeliveryFormSchema),
   });
-
   const { fields, append, remove } = useFieldArray({
     name: "items",
     control: form.control,
   });
-
   const { toast } = useToast();
 
   useEffect(() => {
-    // TODO: Save these suppliers locally
-
     /**
      * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
      *
      * @throws Will log an error message if there is an issue fetching suppliers or parsing the
      *   data.
+     * @todo Implement local storage caching for suppliers.
      */
     async function fetchSuppliers() {
       try {
@@ -219,29 +209,47 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     })(event);
   }
 
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsFormDirty(true);
+    } else {
+      setIsFormDirty(false);
+    }
+  }, [form.formState.isDirty]);
+
+  /**
+   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
+   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
+   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
+   * action.
+   */
+  function handleDismissConfirmation() {
+    if (isFormDirty) {
+      void presentAlert({
+        header: "Discard changes?",
+        message: "Are you sure you want to close this form? Your changes will not be saved.",
+        buttons: [
+          {
+            text: "Cancel",
+          },
+          {
+            text: "Discard",
+            handler: () => {
+              dismiss(null, "confirm");
+            },
+          },
+        ],
+      });
+    } else {
+      dismiss(null, "cancel");
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "cancel");
-              }}
-            >
-              Cancel
-            </IonButton>
-          </IonButtons>
           <IonTitle className="text-center">New delivery</IonTitle>
-          <IonButtons slot="end">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "confirm");
-              }}
-            >
-              Confirm
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -646,9 +654,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                 type="button"
                 disabled={isLoading}
                 variant="ghost"
-                onClick={() => {
-                  dismiss(null, "cancel");
-                }}
+                onClick={handleDismissConfirmation}
               >
                 Cancel
               </Button>

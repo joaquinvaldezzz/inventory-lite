@@ -1,13 +1,5 @@
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -65,7 +57,9 @@ interface DailyCountModalActions {
 export function DailyCountModal({ dismiss }: DailyCountModalActions) {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [ingredients, setIngredients] = useState<Ingredients[]>([]);
+  const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [presentAlert] = useIonAlert();
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(),
@@ -198,29 +192,47 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     })(event);
   }
 
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsFormDirty(true);
+    } else {
+      setIsFormDirty(false);
+    }
+  }, [form.formState.isDirty]);
+
+  /**
+   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
+   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
+   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
+   * action.
+   */
+  function handleDismissConfirmation() {
+    if (isFormDirty) {
+      void presentAlert({
+        header: "Discard changes?",
+        message: "Are you sure you want to close this form? Your changes will not be saved.",
+        buttons: [
+          {
+            text: "Cancel",
+          },
+          {
+            text: "Discard",
+            handler: () => {
+              dismiss(null, "confirm");
+            },
+          },
+        ],
+      });
+    } else {
+      dismiss(null, "cancel");
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "cancel");
-              }}
-            >
-              Cancel
-            </IonButton>
-          </IonButtons>
           <IonTitle className="text-center">New daily count</IonTitle>
-          <IonButtons slot="end">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "confirm");
-              }}
-            >
-              Confirm
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -487,13 +499,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
               <Button type="submit" disabled={isLoading}>
                 Submit
               </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  dismiss(null, "cancel");
-                }}
-              >
+              <Button type="button" variant="ghost" onClick={handleDismissConfirmation}>
                 Cancel
               </Button>
             </div>

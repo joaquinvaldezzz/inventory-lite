@@ -1,14 +1,6 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -64,14 +56,14 @@ interface ExpensesModalActions {
  * @param props The props for the component.
  * @param props.dismiss Function to dismiss the modal.
  * @returns The rendered component.
+ * @todo Change function name and JSDoc comments
  */
 export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
-  /** Initializes the state variables for suppliers, items, and loading status. */
   const [suppliers, setSuppliers] = useState<Supplier>([]);
   const [items, setItems] = useState<Items>([]);
+  const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  /** Initializes the default form state using the `useForm` hook with the Zod resolver. */
+  const [presentAlert] = useIonAlert();
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: "",
@@ -89,14 +81,10 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     },
     resolver: zodResolver(newDeliveryFormSchema),
   });
-
-  /** Initializes the `useFieldArray` hook to manage the list of delivery items. */
   const { fields, append, remove } = useFieldArray({
     name: "items",
     control: form.control,
   });
-
-  /** Initializes the `useToast` hook for displaying toast messages. */
   const { toast } = useToast();
 
   useEffect(() => {
@@ -136,9 +124,11 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   }, []);
 
   useEffect(() => {
-    // TODO: Save these items locally
-
-    /** Fetches items from the server and updates the state with the retrieved items. */
+    /**
+     * Fetches items from the server and updates the state with the retrieved items.
+     *
+     * @todo Save these items locally
+     */
     async function fetchItems() {
       try {
         const request = await getItems();
@@ -216,29 +206,47 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     })(event);
   }
 
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsFormDirty(true);
+    } else {
+      setIsFormDirty(false);
+    }
+  }, [form.formState.isDirty]);
+
+  /**
+   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
+   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
+   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
+   * action.
+   */
+  function handleDismissConfirmation() {
+    if (isFormDirty) {
+      void presentAlert({
+        header: "Discard changes?",
+        message: "Are you sure you want to close this form? Your changes will not be saved.",
+        buttons: [
+          {
+            text: "Cancel",
+          },
+          {
+            text: "Discard",
+            handler: () => {
+              dismiss(null, "confirm");
+            },
+          },
+        ],
+      });
+    } else {
+      dismiss(null, "cancel");
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "cancel");
-              }}
-            >
-              Cancel
-            </IonButton>
-          </IonButtons>
           <IonTitle className="text-center">New expenses</IonTitle>
-          <IonButtons slot="end">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "confirm");
-              }}
-            >
-              Confirm
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -617,9 +625,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 type="button"
                 disabled={isLoading}
                 variant="ghost"
-                onClick={() => {
-                  dismiss(null, "cancel");
-                }}
+                onClick={handleDismissConfirmation}
               >
                 Cancel
               </Button>
