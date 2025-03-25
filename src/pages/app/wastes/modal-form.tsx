@@ -1,14 +1,6 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import {
@@ -86,7 +78,9 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [ingredients, setIngredients] = useState<Ingredients[]>([]);
   const [employees, setEmployees] = useState<Option[]>([]);
+  const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [presentAlert] = useIonAlert();
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(),
@@ -238,29 +232,47 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
     void getEmployees();
   }, []);
 
+  useEffect(() => {
+    if (form.formState.isDirty) {
+      setIsFormDirty(true);
+    } else {
+      setIsFormDirty(false);
+    }
+  }, [form.formState.isDirty]);
+
+  /**
+   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
+   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
+   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
+   * action.
+   */
+  function handleDismissConfirmation() {
+    if (isFormDirty) {
+      void presentAlert({
+        header: "Discard changes?",
+        message: "Are you sure you want to close this form? Your changes will not be saved.",
+        buttons: [
+          {
+            text: "Cancel",
+          },
+          {
+            text: "Discard",
+            handler: () => {
+              dismiss(null, "confirm");
+            },
+          },
+        ],
+      });
+    } else {
+      dismiss(null, "cancel");
+    }
+  }
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "cancel");
-              }}
-            >
-              Cancel
-            </IonButton>
-          </IonButtons>
           <IonTitle className="text-center">New wastes</IonTitle>
-          <IonButtons slot="end">
-            <IonButton
-              onClick={() => {
-                dismiss(null, "confirm");
-              }}
-            >
-              Submit
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -614,7 +626,6 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                 <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
-
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Submitting..." : "Submit"}
               </Button>
@@ -622,9 +633,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                 type="button"
                 disabled={isLoading}
                 variant="ghost"
-                onClick={() => {
-                  dismiss(null, "cancel");
-                }}
+                onClick={handleDismissConfirmation}
               >
                 Cancel
               </Button>
