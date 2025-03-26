@@ -466,3 +466,14 @@ export interface EmployeeData {
 }
 
 export type EmployeesResponse = Prettify<APIResponse<EmployeeData[]>>;
+
+export interface ExpensesRecordData {
+  date: string;
+  supplier: string;
+  tax_type: string;
+  tin: string;
+  mode_of_payment: string;
+  list_of_expenses: string;
+}
+
+export type ExpensesRecordResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
