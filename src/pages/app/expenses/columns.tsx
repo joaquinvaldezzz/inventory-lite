@@ -13,10 +13,22 @@ export const columns: Array<ColumnDef<WasteData>> = [
   },
   {
     accessorKey: "branch",
-    header: ({ column }) => <DataTableColumnHeader title="Branch name" column={column} />,
+    header: ({ column }) => <DataTableColumnHeader title="Supplier" column={column} />,
   },
   {
     accessorKey: "raw_material_type",
-    header: ({ column }) => <DataTableColumnHeader title="Category" column={column} />,
+    header: ({ column }) => <DataTableColumnHeader title="Tax type" column={column} />,
+  },
+  {
+    accessorKey: "waste_type",
+    header: ({ column }) => <DataTableColumnHeader title="TIN" column={column} />,
+  },
+  {
+    accessorKey: "branch_name",
+    header: ({ column }) => <DataTableColumnHeader title="Mode of payment" column={column} />,
+  },
+  {
+    accessorKey: "branch_id",
+    header: ({ column }) => <DataTableColumnHeader title="List of items" column={column} />,
   },
 ];
