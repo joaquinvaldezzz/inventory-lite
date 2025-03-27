@@ -424,11 +424,12 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                                       <CommandGroup>
                                         {ingredients.map((ingredient) => (
                                           <CommandItem
-                                            value={ingredient.raw_material}
+                                            value={ingredient.raw_material.trim()}
                                             key={ingredient.id}
                                             onSelect={(value) => {
                                               const selectedIngredient = ingredients.find(
-                                                (ingredient) => ingredient.raw_material === value,
+                                                (ingredient) =>
+                                                  ingredient.raw_material.trim() === value,
                                               );
                                               field.onChange(selectedIngredient?.id.toString());
                                             }}

@@ -476,11 +476,11 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                                     <CommandGroup>
                                       {items.map((item) => (
                                         <CommandItem
-                                          value={item.raw_material}
+                                          value={item.raw_material.trim()}
                                           key={item.id}
                                           onSelect={(value) => {
                                             const selectedItem = items.find(
-                                              (item) => item.raw_material === value,
+                                              (item) => item.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedItem?.id.toString());
                                             form.setValue(

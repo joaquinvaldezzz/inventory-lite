@@ -490,11 +490,12 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                                     <CommandGroup>
                                       {ingredients.map((ingredient) => (
                                         <CommandItem
-                                          value={ingredient.raw_material}
+                                          value={ingredient.raw_material.trim()}
                                           key={ingredient.id}
                                           onSelect={(value) => {
                                             const selectedItem = ingredients.find(
-                                              (ingredient) => ingredient.raw_material === value,
+                                              (ingredient) =>
+                                                ingredient.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedItem?.id.toString());
                                             form.setValue(
