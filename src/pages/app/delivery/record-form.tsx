@@ -1,8 +1,9 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
 import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from "react";
-import { useIonRouter } from "@ionic/react";
+import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useForm } from "react-hook-form";
@@ -12,7 +13,6 @@ import { editDeliveryFormSchema, type EditDeliveryFormSchema } from "@/lib/form-
 import { getFromStorage } from "@/lib/storage";
 import type { DeliveryRecord, Supplier } from "@/lib/types";
 import { cn, formatAsCurrency } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -98,7 +98,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     resolver: zodResolver(editDeliveryFormSchema),
   });
   const router = useIonRouter();
-  const { toast } = useToast();
+  const [presentToast] = useIonToast();
 
   useEffect(() => {
     // TODO: Save these suppliers locally
@@ -159,14 +159,21 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         try {
           if (parsedValues.data != null) await updateDeliveryRecord(data.id, parsedValues.data);
         } catch (error) {
-          toast({
-            description: "An error occurred while saving changes. Please try again.",
-            variant: "destructive",
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "An error occurred while saving changes. Please try again.",
+            swipeGesture: "vertical",
           });
         } finally {
           setIsLoading(false);
-          toast({ description: "Successfully saved changes" });
-          // router.goBack();
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Delivery record updated!",
+            swipeGesture: "vertical",
+          });
+          router.goBack();
         }
       }
 
@@ -182,12 +189,19 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       await deleteDeliveryRecord(data.id);
     } catch (error) {
       console.error("Error deleting delivery record:", error);
-      toast({
-        description: "An error occurred while deleting the delivery record. Please try again.",
-        variant: "destructive",
+      void presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "An error occurred while deleting the delivery record. Please try again.",
+        swipeGesture: "vertical",
       });
     } finally {
-      toast({ description: "Delivery record deleted" });
+      void presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Delivery record deleted!",
+        swipeGesture: "vertical",
+      });
       router.goBack();
     }
   }

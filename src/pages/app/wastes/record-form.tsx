@@ -1,8 +1,9 @@
 /* eslint-disable max-lines -- This is a large file */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import { useIonRouter } from "@ionic/react";
+import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -11,7 +12,6 @@ import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Categories, WasteRecordData } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -96,7 +96,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
     control: form.control,
   });
   const router = useIonRouter();
-  const { toast } = useToast();
+  const [presentToast] = useIonToast();
 
   useEffect(() => {
     /**
@@ -193,11 +193,22 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         try {
           if (parsedValues.data != null) await updateWasteRecord(data.id, parsedValues.data);
         } catch (error) {
+          void presentToast({
+            color: "danger",
+            icon: alertCircleOutline,
+            message: "An error occurred while updating the waste record. Please try again.",
+            swipeGesture: "vertical",
+          });
           console.error("Form submission failed:", error);
         } finally {
           setIsLoading(false);
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Waste record updated",
+            swipeGesture: "vertical",
+          });
           router.goBack();
-          toast({ description: "Successfully updated waste record" });
         }
       }
 
@@ -210,14 +221,21 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
     try {
       await deleteWasteRecordById(data.id);
     } catch (error) {
-      console.error("Error deleting waste record:", error);
-      toast({
-        description: "An error occurred while deleting the waste record. Please try again.",
-        variant: "destructive",
+      void presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "An error occurred while deleting the waste record. Please try again.",
+        swipeGesture: "vertical",
       });
+      console.error("Error deleting waste record:", error);
     } finally {
+      void presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Waste record deleted",
+        swipeGesture: "vertical",
+      });
       router.goBack();
-      toast({ description: "Waste record deleted" });
     }
   }
 

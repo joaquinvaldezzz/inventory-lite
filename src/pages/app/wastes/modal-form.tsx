@@ -1,8 +1,17 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  useIonAlert,
+  useIonToast,
+} from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import {
   CalendarIcon,
   CheckIcon,
@@ -24,7 +33,6 @@ import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Categories, Ingredients } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -81,6 +89,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
+  const [presentToast] = useIonToast();
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(),
@@ -102,7 +111,6 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
     name: "items",
     control: form.control,
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     /**
@@ -193,11 +201,20 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
         try {
           if (parsedValues.data != null) await createWasteEntry(parsedValues.data);
         } catch (error) {
+          void presentToast({
+            color: "danger",
+            icon: alertCircleOutline,
+            message: "Failed to create wastes entry. Please try again.",
+            swipeGesture: "vertical",
+          });
           console.error("Form submission failed:", error);
         } finally {
           setIsLoading(false);
-          toast({
-            description: "Delivery entry created successfully",
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Wastes entry created successfully",
+            swipeGesture: "vertical",
           });
           dismiss(null, "confirm");
         }

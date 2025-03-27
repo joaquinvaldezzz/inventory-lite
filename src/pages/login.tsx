@@ -1,6 +1,7 @@
 import { startTransition, useRef, useState, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonRouter } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { checkmarkCircleOutline } from "ionicons/icons";
 import { AlertCircle, Eye, EyeOff, KeyRound, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 
@@ -8,7 +9,6 @@ import { authenticateUser } from "@/lib/api";
 import { loginFormSchema, type LoginFormSchema } from "@/lib/form-schema";
 import { createSession } from "@/lib/session";
 import { saveToStorage } from "@/lib/storage";
-import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +39,7 @@ export default function Login() {
     resolver: zodResolver(loginFormSchema),
   });
   const router = useIonRouter();
-  const { toast } = useToast();
+  const [presentToast] = useIonToast();
 
   /**
    * Handles the form submission event for the login form.
@@ -73,8 +73,12 @@ export default function Login() {
 
           if (authenticatedUser.success) {
             await saveToStorage("currentUser", JSON.stringify(authenticatedUser));
-            toast({
-              description: "Logged in successfully!",
+
+            void presentToast({
+              duration: 1500,
+              icon: checkmarkCircleOutline,
+              message: "Logged in successfully!",
+              swipeGesture: "vertical",
             });
 
             const { user } = authenticatedUser.data;

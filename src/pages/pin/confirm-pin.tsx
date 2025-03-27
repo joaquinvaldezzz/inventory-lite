@@ -1,6 +1,7 @@
 import { useRef, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonRouter } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { checkmarkCircleOutline } from "ionicons/icons";
 import { useForm } from "react-hook-form";
 
 import { pinFormSchema, type PinFormSchema } from "@/lib/form-schema";
@@ -30,6 +31,7 @@ export default function ConfirmPIN() {
     resolver: zodResolver(pinFormSchema),
   });
   const router = useIonRouter();
+  const [presentToast] = useIonToast();
 
   /**
    * Handles the form submission event.
@@ -58,6 +60,12 @@ export default function ConfirmPIN() {
 
         try {
           if (pin === parsedData.data?.pin) {
+            void presentToast({
+              duration: 1500,
+              icon: checkmarkCircleOutline,
+              message: "PIN confirmed!",
+              swipeGesture: "vertical",
+            });
             router.push("/branch-selector");
           } else {
             form.setError("pin", {

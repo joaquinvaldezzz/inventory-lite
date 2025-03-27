@@ -1,7 +1,8 @@
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import { useIonRouter } from "@ionic/react";
+import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
 import { useForm } from "react-hook-form";
 
@@ -10,7 +11,6 @@ import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/for
 import { getFromStorage } from "@/lib/storage";
 import type { Categories, DailyCountRecord } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,7 +79,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
     resolver: zodResolver(newDailyCountFormSchema),
   });
   const router = useIonRouter();
-  const { toast } = useToast();
+  const [presentToast] = useIonToast();
 
   useEffect(() => {
     /**
@@ -138,11 +138,22 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         try {
           await updateDailyCountRecord(data.id, formValues);
         } catch (error) {
+          void presentToast({
+            color: "danger",
+            icon: alertCircleOutline,
+            message: "Failed to update daily count record. Please try again.",
+            swipeGesture: "vertical",
+          });
           console.error("Form submission failed:", error);
         } finally {
           setIsLoading(false);
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Daily count record updated!",
+            swipeGesture: "vertical",
+          });
           router.goBack();
-          toast({ description: "Successfully updated daily count record" });
         }
       }
 
@@ -158,13 +169,20 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
       await deleteDailyCountRecordById(data.id);
     } catch (error) {
       console.error("Error deleting daily count record:", error);
-      toast({
-        description: "An error occurred while deleting the daily count record. Please try again.",
-        variant: "destructive",
+      void presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to delete daily count record. Please try again.",
+        swipeGesture: "vertical",
       });
     } finally {
+      void presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Daily count record deleted!",
+        swipeGesture: "vertical",
+      });
       router.goBack();
-      toast({ description: "Daily count record deleted" });
     }
   }
 

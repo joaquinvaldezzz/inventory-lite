@@ -1,8 +1,17 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  useIonAlert,
+  useIonToast,
+} from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -12,7 +21,6 @@ import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-sc
 import { getFromStorage } from "@/lib/storage";
 import type { Items, Supplier } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -64,6 +72,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
+  const [presentToast] = useIonToast();
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: "",
@@ -85,7 +94,6 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     name: "items",
     control: form.control,
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     // TODO: Save these suppliers locally
@@ -190,11 +198,20 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
         try {
           await createDeliveryEntry(formValues);
         } catch (error) {
+          void presentToast({
+            color: "danger",
+            icon: alertCircleOutline,
+            message: "Failed to create expenses entry. Please try again.",
+            swipeGesture: "vertical",
+          });
           console.error("Form submission failed:", error);
         } finally {
           setIsLoading(false);
-          toast({
-            description: "Delivery entry created successfully",
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Expenses entry created successfully",
+            swipeGesture: "vertical",
           });
           dismiss(null, "confirm");
         }

@@ -1,7 +1,17 @@
+/* eslint-disable max-lines -- Idk */
 import { startTransition, useEffect, useState, type FormEvent } from "react";
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, useIonAlert } from "@ionic/react";
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  useIonAlert,
+  useIonToast,
+} from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -10,7 +20,6 @@ import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/for
 import { getFromStorage } from "@/lib/storage";
 import type { Categories, Ingredients } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -60,6 +69,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
+  const [presentToast] = useIonToast();
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(),
@@ -72,7 +82,6 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     name: "items",
     control: form.control,
   });
-  const { toast } = useToast();
 
   /** Adds a new row to the items field array. */
   function handleAdd() {
@@ -176,11 +185,20 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
         try {
           await createDailyCountEntry(formValues);
         } catch (error) {
+          void presentToast({
+            color: "danger",
+            icon: alertCircleOutline,
+            message: "Failed to create daily count entry. Please try again.",
+            swipeGesture: "vertical",
+          });
           console.error("Form submission failed:", error);
         } finally {
           setIsLoading(false);
-          toast({
-            description: "Daily count entry created successfully",
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Daily count entry created successfully!",
+            swipeGesture: "vertical",
           });
           dismiss(null, "confirm");
         }

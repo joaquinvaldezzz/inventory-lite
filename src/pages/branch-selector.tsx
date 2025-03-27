@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { IonContent, IonPage, useIonRouter } from "@ionic/react";
+import { IonContent, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { checkmarkCircleOutline } from "ionicons/icons";
 import { Store } from "lucide-react";
 import { useForm } from "react-hook-form";
 
@@ -8,7 +9,6 @@ import { fetchUserBranches, getCurrentUser } from "@/lib/dal";
 import { branchSelectorFormSchema, type BranchSelectorFormSchema } from "@/lib/form-schema";
 import { saveToStorage } from "@/lib/storage";
 import type { Branch } from "@/lib/types";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -45,7 +45,7 @@ export default function BranchSelector() {
     resolver: zodResolver(branchSelectorFormSchema),
   });
   const router = useIonRouter();
-  const { toast } = useToast();
+  const [presentToast] = useIonToast();
 
   useEffect(() => {
     void (async () => {
@@ -87,14 +87,16 @@ export default function BranchSelector() {
 
         try {
           await saveToStorage("currentBranch", JSON.stringify(formData));
-          toast({
-            description: "Branch selected successfully!",
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Branch selected successfully!",
+            swipeGesture: "vertical",
           });
           router.push("/app/delivery");
         } catch (error) {
-          toast({
-            description: "Failed to select branch. Please try again.",
-            variant: "destructive",
+          form.setError("branch", {
+            message: "Failed to select branch. Please try again.",
           });
           console.error("Form submission failed:", error);
         } finally {
