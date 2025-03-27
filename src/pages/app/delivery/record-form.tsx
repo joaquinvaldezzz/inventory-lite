@@ -530,8 +530,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             </DivTableBody>
           </DivTable>
 
-          {/* Make these buttons sticky at the bottom */}
-          <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
+          <div className="mt-1 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="font-bold">Total</div>
               <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>

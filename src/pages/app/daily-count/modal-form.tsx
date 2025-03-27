@@ -510,7 +510,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
               </DivTableBody>
             </DivTable>
 
-            <div className="sticky inset-x-0 -bottom-4 -mx-4 mt-1 flex flex-col gap-4 border-t bg-background p-4">
+            <div className="mt-1 flex flex-col gap-4">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add another product</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
