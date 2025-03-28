@@ -12,6 +12,7 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
+  useIonViewDidEnter,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { add } from "ionicons/icons";
@@ -50,6 +51,10 @@ export default function Expenses() {
       },
     });
   }
+
+  useIonViewDidEnter(() => {
+    console.log("Expenses page loaded");
+  });
 
   return (
     <Fragment>
