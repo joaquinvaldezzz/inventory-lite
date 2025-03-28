@@ -1,5 +1,5 @@
 import { useRef, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonViewDidEnter } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -27,6 +27,10 @@ export default function PIN() {
       pin: "",
     },
     resolver: zodResolver(pinFormSchema),
+  });
+
+  useIonViewDidEnter(() => {
+    form.setFocus("pin");
   });
 
   /**
@@ -80,7 +84,6 @@ export default function PIN() {
                           maxLength={6}
                           pushPasswordManagerStrategy="none"
                           onComplete={() => buttonRef.current?.click()}
-                          autoFocus
                           {...field}
                         >
                           <InputPINGroup className="w-full justify-center">

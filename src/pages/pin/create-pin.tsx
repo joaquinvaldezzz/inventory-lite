@@ -1,5 +1,5 @@
 import { useRef, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonRouter } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonRouter, useIonViewDidEnter } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -31,6 +31,10 @@ export default function CreatePIN() {
     resolver: zodResolver(pinFormSchema),
   });
   const router = useIonRouter();
+
+  useIonViewDidEnter(() => {
+    form.setFocus("pin");
+  });
 
   /**
    * Handles the form submission event.
@@ -101,7 +105,6 @@ export default function CreatePIN() {
                           maxLength={6}
                           pushPasswordManagerStrategy="none"
                           onComplete={() => buttonRef.current?.click()}
-                          autoFocus
                           {...field}
                         >
                           <InputPINGroup className="w-full justify-center">
