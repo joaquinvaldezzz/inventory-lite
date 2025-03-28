@@ -168,5 +168,10 @@
       "cva",
       "cn"
     ]
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "cypress"
+    ]
   }
 }
