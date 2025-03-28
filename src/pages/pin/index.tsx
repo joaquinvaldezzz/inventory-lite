@@ -84,7 +84,6 @@ export default function PIN() {
                           maxLength={6}
                           pushPasswordManagerStrategy="none"
                           onComplete={() => buttonRef.current?.click()}
-                          autoFocus
                           {...field}
                         >
                           <InputPINGroup className="w-full justify-center">
