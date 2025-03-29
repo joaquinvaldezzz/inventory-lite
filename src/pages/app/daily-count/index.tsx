@@ -15,6 +15,7 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
+  useIonViewDidEnter,
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
@@ -75,6 +76,10 @@ export default function DailyCount() {
       event.detail.complete();
     }
   }
+
+  useIonViewDidEnter(() => {
+    void refetch();
+  });
 
   return (
     <Fragment>

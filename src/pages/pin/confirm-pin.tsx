@@ -1,5 +1,12 @@
 import { useRef, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
+import {
+  IonContent,
+  IonImg,
+  IonPage,
+  useIonRouter,
+  useIonToast,
+  useIonViewDidEnter,
+} from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkmarkCircleOutline } from "ionicons/icons";
 import { useForm } from "react-hook-form";
@@ -32,6 +39,10 @@ export default function ConfirmPIN() {
   });
   const router = useIonRouter();
   const [presentToast] = useIonToast();
+
+  useIonViewDidEnter(() => {
+    form.setFocus("pin");
+  });
 
   /**
    * Handles the form submission event.
@@ -111,7 +122,6 @@ export default function ConfirmPIN() {
                           maxLength={6}
                           pushPasswordManagerStrategy="none"
                           onComplete={() => buttonRef.current?.click()}
-                          autoFocus
                           {...field}
                         >
                           <InputPINGroup className="w-full justify-center">
