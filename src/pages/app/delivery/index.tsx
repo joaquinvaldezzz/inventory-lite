@@ -105,7 +105,7 @@ export default function Delivery() {
     try {
       void refetch();
     } catch (error) {
-      console.error("Error fetching delivery entries:", error);
+      throw new Error("Error fetching delivery entries");
     } finally {
       event.detail.complete();
     }
