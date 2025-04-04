@@ -480,3 +480,18 @@ export async function deleteDailyCountRecordById(id: number): Promise<void> {
 export async function deleteWasteRecordById(id: number): Promise<void> {
   await apiRequest({ url: env.VITE_WASTE_API_URL, action: "delete", additionalData: { id } });
 }
+
+/**
+ * Logs out the current user by sending a POST request to the logout API endpoint.
+ *
+ * @throws {Error} If the logout request fails.
+ */
+export async function executeLogout() {
+  const { userId, token } = await getUserSession();
+
+  try {
+    await axios.post(env.VITE_LOGOUT_API_URL, { user_id: userId, token });
+  } catch (error) {
+    throw new Error("Failed to log out");
+  }
+}

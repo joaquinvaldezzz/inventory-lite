@@ -10,8 +10,11 @@ import {
   IonTitle,
   IonToggle,
   IonToolbar,
+  useIonAlert,
+  useIonRouter,
 } from "@ionic/react";
 
+import { executeLogout } from "@/lib/api";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
 import { saveToStorage } from "@/lib/storage";
 import type { Branch } from "@/lib/types";
@@ -25,6 +28,8 @@ import { updateTheme } from "@/lib/utils";
 export function Settings() {
   const [currentBranch, setCurrentBranch] = useState<number | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
+  const router = useIonRouter();
+  const [presentAlert] = useIonAlert();
 
   useEffect(() => {
     /**
@@ -75,7 +80,40 @@ export function Settings() {
           currentBranch: value.toString(),
         }),
       );
-    } catch (error) {}
+    } catch (error) {
+      throw new Error("Error saving branch information");
+    }
+  }
+
+  /**
+   * Logs the user out of the application.
+   *
+   * @throws {Error} If an error occurs during the logout process.
+   */
+  function logoutUser() {
+    void presentAlert({
+      header: "Logout",
+      message: "Are you sure you want to logout?",
+      buttons: [
+        {
+          text: "Cancel",
+          role: "cancel",
+        },
+        {
+          text: "Yes",
+          handler: async () => {
+            try {
+              await executeLogout();
+            } catch (error) {
+              throw new Error("Error logging out");
+            } finally {
+              router.push("/login");
+              window.location.reload();
+            }
+          },
+        },
+      ],
+    });
   }
 
   return (
@@ -117,7 +155,7 @@ export function Settings() {
             </IonToggle>
           </IonItem>
 
-          <IonItem>
+          <IonItem onClick={logoutUser}>
             <IonLabel color="danger">Logout</IonLabel>
           </IonItem>
         </IonList>
