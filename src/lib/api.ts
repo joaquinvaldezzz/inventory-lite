@@ -22,6 +22,7 @@ import type {
   DeliveryResponse,
   EmployeeData,
   EmployeesResponse,
+  ExpensesRecordsResponse,
   Ingredients,
   IngredientsResponse,
   Items,
@@ -103,7 +104,7 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
     const response = await axios.post<T>(url, requestData);
     return response.data;
   } catch (error) {
-    console.error(`API request failed (${action}):`, error);
+    // console.error(`API request failed (${action}):`, error);
     throw new Error(`Failed to ${action} data`);
   }
 }
@@ -124,7 +125,7 @@ export async function authenticateUser(username: string, password: string): Prom
     });
     return authenticatedUser.data;
   } catch (error) {
-    console.error("Failed to authenticate user:", error);
+    // console.error("Failed to authenticate user:", error);
     throw new Error("Failed to authenticate user");
   }
 }
@@ -312,6 +313,42 @@ export async function fetchEmployees(): Promise<EmployeeData[]> {
 }
 
 /**
+ * Fetches product categories for the current user and branch.
+ *
+ * The fetched categories are also saved to local storage for caching purposes.
+ *
+ * @returns A promise that resolves to an array of category objects.
+ * @throws {Error} If the API request fails.
+ */
+export async function fetchCategories(): Promise<Categories[]> {
+  const data = await apiRequest<CategoriesResponse>({
+    url: env.VITE_CATEGORIES_API_URL,
+    action: "fetch",
+  });
+  await saveToStorage("categories", JSON.stringify(data.data));
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
+ * Fetches the list of expense records from the API.
+ *
+ * This function sends a request to the expenses API endpoint and retrieves the data. If the
+ * response contains an array of expense records, it returns the array. Otherwise, it returns an
+ * empty array.
+ *
+ * @returns A promise that resolves to an array of expense records. If the response data is not an
+ *   array, an empty array is returned.
+ * @throws {Error} If the API request fails or encounters an error.
+ */
+export async function fetchExpenses() {
+  const data = await apiRequest<ExpensesRecordsResponse>({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
  * Fetches a specific daily count record by its ID.
  *
  * @param id The daily count record ID.
@@ -338,23 +375,6 @@ export async function getSpecificWastesRecordById(id: number): Promise<WasteReco
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
-}
-
-/**
- * Fetches product categories for the current user and branch.
- *
- * The fetched categories are also saved to local storage for caching purposes.
- *
- * @returns A promise that resolves to an array of category objects.
- * @throws {Error} If the API request fails.
- */
-export async function fetchCategories(): Promise<Categories[]> {
-  const data = await apiRequest<CategoriesResponse>({
-    url: env.VITE_CATEGORIES_API_URL,
-    action: "fetch",
-  });
-  await saveToStorage("categories", JSON.stringify(data.data));
   return Array.isArray(data.data) ? data.data : [];
 }
 

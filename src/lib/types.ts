@@ -87,8 +87,8 @@ export interface DeliveryResponse {
   message: string;
   data: {
     id: number;
-    po_no: string | null;
-    dr_no: string | null;
+    po_no: string;
+    dr_no: string;
     branch_id: number;
     branch: string;
     supplier_id: number;
@@ -468,12 +468,19 @@ export interface EmployeeData {
 export type EmployeesResponse = Prettify<APIResponse<EmployeeData[]>>;
 
 export interface ExpensesRecordData {
-  date: string;
-  supplier: string;
-  tax_type: string;
-  tin: string;
-  mode_of_payment: string;
-  list_of_expenses: string;
+  PurchaseID: number;
+  InvoiceNumber: string;
+  PONo: string;
+  InvoiceDate: string;
+  BankName: string;
+  CheckNumber: string;
+  CheckDate: string;
+  SupplierID: string;
+  BranchID: string;
+  Currency: string;
+  Rate: number;
+  AddedBy: string;
+  Status: number;
 }
 
-export type ExpensesRecordResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
+export type ExpensesRecordsResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
