@@ -8,6 +8,7 @@ import DailyCountRecord from "./daily-count/record";
 import Delivery from "./delivery";
 import DeliveryRecord from "./delivery/record";
 import Expenses from "./expenses";
+import ExpensesRecord from "./expenses/record";
 import Wastes from "./wastes";
 import WastesRecord from "./wastes/record";
 
@@ -36,6 +37,11 @@ export default function Tabs() {
             exact
           />
           <Route path="/app/wastes/:id" render={(props) => <WastesRecord {...props} />} exact />
+          <Route
+            path="/app/expenses/:PurchaseID"
+            render={(props) => <ExpensesRecord {...props} />}
+            exact
+          />
         </IonRouterOutlet>
 
         <IonTabBar slot="bottom">
