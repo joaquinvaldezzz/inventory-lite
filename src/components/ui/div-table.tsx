@@ -85,7 +85,7 @@ const DivTableCell = forwardRef<HTMLTableCellElement, TdHTMLAttributes<HTMLTable
   ({ className, ...props }, ref) => (
     <div
       className={cn(
-        "relative table-cell h-12 p-1 align-middle first:pl-4 last:pr-4 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5",
+        "relative table-cell h-12 p-1 align-top first:pl-4 last:pr-4 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-0.5",
         className,
       )}
       role="td"
