@@ -60,7 +60,7 @@ export default function Expenses() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
-          // void refetch()
+          void refetch();
         }
       },
     });
