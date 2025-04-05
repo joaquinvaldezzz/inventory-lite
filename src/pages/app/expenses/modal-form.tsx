@@ -17,7 +17,7 @@ import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
-import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
+import { newExpensesFormSchema, type NewExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Items, Supplier } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -47,10 +47,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input, inputVariants } from "@/components/ui/input";
+import { inputVariants } from "@/components/ui/input";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ExpensesModalActions {
   dismiss: (data?: string | number | null, role?: string) => void;
@@ -73,22 +79,21 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
-  const form = useForm<NewDeliveryFormSchema>({
+  const form = useForm<NewExpensesFormSchema>({
     defaultValues: {
       supplier: "",
-      date_request: new Date(),
-      remarks: "",
+      date: new Date(),
+      payment_type: "",
       items: [
         {
           item: "",
-          quantity_dr: 0,
-          unit_dr: "",
-          unit_price: 0,
+          quantity: 0,
+          price: 0,
           total_amount: 0,
         },
       ],
     },
-    resolver: zodResolver(newDeliveryFormSchema),
+    resolver: zodResolver(newExpensesFormSchema),
   });
   const { fields, append, remove } = useFieldArray({
     name: "items",
@@ -155,9 +160,8 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   function handleAdd() {
     append({
       item: "",
-      quantity_dr: 0,
-      unit_dr: "",
-      unit_price: 0,
+      quantity: 0,
+      price: 0,
       total_amount: 0,
     });
   }
@@ -184,7 +188,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     /** Submits the form data to create a new delivery entry. */
     void form.handleSubmit(() => {
       const formValues = form.getValues();
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues);
+      const parsedValues = newExpensesFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
         throw new Error("Form data is invalid");
@@ -195,7 +199,8 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
       /** Submits the delivery form by creating a new delivery entry. */
       async function submitForm() {
         try {
-          await createDeliveryEntry(formValues);
+          // await createDeliveryEntry(formValues);
+          console.log(parsedValues.data);
         } catch (error) {
           void presentToast({
             color: "danger",
@@ -349,7 +354,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
             />
 
             <FormField
-              name="date_request"
+              name="date"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -390,14 +395,27 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
             />
 
             <FormField
-              name="remarks"
+              name="payment_type"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Remarks</FormLabel>
-                  <FormControl>
-                    <Textarea className="min-h-24" placeholder="Enter your remarks" {...field} />
-                  </FormControl>
+                  <FormLabel>Mode of payment</FormLabel>
+                  <Select
+                    name={field.name}
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a payment type" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      <SelectItem value="1">Cash</SelectItem>
+                      <SelectItem value="0">Non-cash</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -408,7 +426,6 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 <DivTableRow>
                   <DivTableHead>Ingredients</DivTableHead>
                   <DivTableHead>Quantity</DivTableHead>
-                  <DivTableHead>Unit</DivTableHead>
                   <DivTableHead>Unit price</DivTableHead>
                   <DivTableHead>Total</DivTableHead>
                   <DivTableHead />
@@ -470,10 +487,6 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                               (item) => item.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedItem?.id.toString());
-                                            form.setValue(
-                                              `items.${index}.unit_dr`,
-                                              selectedItem != null ? selectedItem.unit : "",
-                                            );
                                           }}
                                         >
                                           {item.raw_material}
@@ -495,7 +508,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
 
                     <DivTableCell>
                       <FormField
-                        name={`items.${index}.quantity_dr`}
+                        name={`items.${index}.quantity`}
                         control={form.control}
                         render={({ field }) => (
                           <FormItem>
@@ -509,7 +522,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                   const { items } = form.getValues();
                                   form.setValue(
                                     `items.${index}.total_amount`,
-                                    items[index].quantity_dr * items[index].unit_price,
+                                    items[index].quantity * items[index].price,
                                   );
                                 }}
                               />
@@ -522,27 +535,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
 
                     <DivTableCell>
                       <FormField
-                        name={`items.${index}.unit_dr`}
-                        control={form.control}
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col gap-2 space-y-0">
-                            <FormControl>
-                              <Input
-                                className="min-w-32 read-only:bg-muted"
-                                type="text"
-                                readOnly
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </DivTableCell>
-
-                    <DivTableCell>
-                      <FormField
-                        name={`items.${index}.unit_price`}
+                        name={`items.${index}.price`}
                         control={form.control}
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
@@ -560,7 +553,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                   const { items } = form.getValues();
                                   form.setValue(
                                     `items.${index}.total_amount`,
-                                    items[index].quantity_dr * items[index].unit_price,
+                                    items[index].quantity * items[index].price,
                                   );
                                 }}
                               >
