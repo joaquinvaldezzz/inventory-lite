@@ -6,10 +6,6 @@ import { DataTableColumnHeader } from "@/components/ui/data-table/column-header"
 
 export const columns: Array<ColumnDef<ExpensesRecordData>> = [
   {
-    accessorKey: "PurchaseID",
-    header: ({ column }) => <DataTableColumnHeader title="Purchase ID" column={column} />,
-  },
-  {
     accessorKey: "PONo",
     header: ({ column }) => <DataTableColumnHeader title="REF no." column={column} />,
   },
