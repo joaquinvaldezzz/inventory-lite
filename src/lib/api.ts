@@ -418,6 +418,21 @@ export async function getIngredientsByCategory(category: string): Promise<Ingred
 }
 
 /**
+ * Fetches a specific waste record by its ID.
+ *
+ * @param id The waste record ID.
+ * @returns A promise that resolves to the waste record data.
+ */
+export async function getSpecificExpensesRecordById(id: number): Promise<WasteRecordData[]> {
+  const data = await apiRequest<WasteRecordResponse>({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "fetch",
+    additionalData: { id },
+  });
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
  * Edits an existing delivery record.
  *
  * @param id The ID of the delivery record.
