@@ -16,7 +16,7 @@ import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } fro
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
+import { createExpensesEntry, getItems, getSuppliers } from "@/lib/api";
 import { newExpensesFormSchema, type NewExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Items, Supplier } from "@/lib/types";
@@ -199,8 +199,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
       /** Submits the delivery form by creating a new delivery entry. */
       async function submitForm() {
         try {
-          // await createDeliveryEntry(formValues);
-          console.log(parsedValues.data);
+          await createExpensesEntry(formValues);
         } catch (error) {
           void presentToast({
             color: "danger",
@@ -208,7 +207,6 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
             message: "Failed to create expenses entry. Please try again.",
             swipeGesture: "vertical",
           });
-
           throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
