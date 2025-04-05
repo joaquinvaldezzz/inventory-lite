@@ -70,7 +70,7 @@ const DivTableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLTable
   ({ className, ...props }, ref) => (
     <div
       className={cn(
-        "table-cell h-12 p-2 text-left align-middle font-medium text-muted-foreground first:pl-4 last:pr-4 [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0",
+        "table-cell h-12 p-1 text-left align-middle font-medium text-muted-foreground first:pl-4 last:pr-4 [&:has([role=checkbox])]:w-px [&:has([role=checkbox])]:pr-0",
         className,
       )}
       role="th"
