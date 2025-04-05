@@ -7,6 +7,7 @@ import type {
   EditDeliveryFormSchema,
   NewDailyCountFormSchema,
   NewDeliveryFormSchema,
+  NewExpensesFormSchema,
   NewWasteFormSchema,
 } from "./form-schema";
 import { saveToStorage } from "./storage";
@@ -211,6 +212,26 @@ export async function createWasteEntry(waste: NewWasteFormSchema): Promise<void>
       waste_type: waste.waste_type,
       date: format(waste.date, "yyyy-MM-dd"),
       items: waste.items,
+    },
+  });
+}
+
+/**
+ * Creates a new expenses entry by sending a request to the expenses API.
+ *
+ * @param expenses The expenses data to be submitted.
+ * @returns A promise that resolves when the expenses entry is successfully created.
+ * @throws {Error} Throws an error if the API request fails.
+ */
+export async function createExpensesEntry(expenses: NewExpensesFormSchema): Promise<void> {
+  await apiRequest({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "add",
+    additionalData: {
+      date: format(expenses.date, "yyyy-MM-dd"),
+      supplier: Number(expenses.supplier),
+      payment_type: Number(expenses.payment_type),
+      items: expenses.items,
     },
   });
 }
