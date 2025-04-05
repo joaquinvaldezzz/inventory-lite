@@ -116,13 +116,13 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
           if (Array.isArray(parsedSuppliers)) {
             setSuppliers(parsedSuppliers);
           } else {
-            console.error("Suppliers data is invalid:", parsedSuppliers);
+            throw new Error("Invalid suppliers data");
           }
         } else {
-          console.error("No suppliers found in storage");
+          throw new Error("No suppliers found in storage");
         }
       } catch (error) {
-        console.error("Error fetching suppliers:", error);
+        throw new Error("Error fetching suppliers");
       }
     }
 
@@ -142,7 +142,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
         const request = await getItems();
         setItems(request);
       } catch (error) {
-        console.error("Error fetching items:", error);
+        throw new Error("Error fetching items");
       }
     }
 
@@ -187,8 +187,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
       const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error("Form data is invalid:", parsedValues.error);
-        return;
+        throw new Error("Form data is invalid");
       }
 
       setIsLoading(true);
@@ -204,7 +203,8 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
             message: "Failed to create expenses entry. Please try again.",
             swipeGesture: "vertical",
           });
-          console.error("Form submission failed:", error);
+
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
           void presentToast({
@@ -628,7 +628,6 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
               </DivTableBody>
             </DivTable>
 
-            {/* Make these buttons sticky at the bottom */}
             <div className="mt-1 flex flex-col gap-3">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add more ingredients</span>
