@@ -29,4 +29,8 @@ export const columns: Array<ColumnDef<ExpensesRecordData>> = [
       <div className="text-right tabular-nums">{formatAsCurrency(cell.row.original.TotalDR)}</div>
     ),
   },
+  {
+    accessorKey: "PaymentType",
+    header: ({ column }) => <DataTableColumnHeader title="Mode of payment" column={column} />,
+  },
 ];
