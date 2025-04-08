@@ -54,7 +54,15 @@ export default function Expenses() {
   let sortedData: ExpensesRecordData[] = [];
 
   if (data != null) {
-    sortedData = data.slice().sort((a, z) => z.InvoiceDate.localeCompare(a.InvoiceDate));
+    sortedData = data.slice().sort((a, b) => {
+      const dateComparison = new Date(b.InvoiceDate).getTime() - new Date(a.InvoiceDate).getTime();
+
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+
+      return b.PONo.localeCompare(a.PONo);
+    });
   }
 
   /**
