@@ -19,8 +19,7 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
       return parsedCurrentUser as LoginResponse;
     }
   } catch (error) {
-    console.error("Error parsing `currentUser` from storage:", error);
-    return null;
+    throw new Error("Error parsing `currentUser` from storage");
   }
 
   return null;
@@ -53,8 +52,7 @@ export async function getUserSelectedBranch(): Promise<number | null> {
       return Number(Object.values(branch)[0]);
     }
   } catch (error) {
-    console.error("Error parsing `currentBranch` from storage:", error);
-    return null;
+    throw new Error("Error parsing `currentBranch` from storage");
   }
 
   return null;
