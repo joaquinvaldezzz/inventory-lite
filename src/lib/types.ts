@@ -468,19 +468,30 @@ export interface EmployeeData {
 export type EmployeesResponse = Prettify<APIResponse<EmployeeData[]>>;
 
 export interface ExpensesRecordData {
+  CompanyID: string;
   PurchaseID: number;
   InvoiceNumber: string;
+  PaymentType: string;
   PONo: string;
   InvoiceDate: string;
-  BankName: string;
-  CheckNumber: string;
-  CheckDate: string;
+  BankName: string | null;
+  CheckNumber: string | null;
+  CheckDate: string | null;
   SupplierID: string;
+  SupplierName: string;
+  SupplierTIN: string;
+  SupplierAddress: string;
   BranchID: string;
+  BranchName: string;
+  BranchAddress: string;
+  BranchTIN: string;
   Currency: string;
   Rate: number;
-  AddedBy: string;
-  Status: number;
+  AddedBy: string | null;
+  StatusID: number;
+  Status: string;
+  TotalCR: number;
+  TotalDR: number;
 }
 
 export type ExpensesRecordsResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
