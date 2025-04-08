@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import type { ExpensesRecordData } from "@/lib/types";
+import { formatAsCurrency } from "@/lib/utils";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 
 export const columns: Array<ColumnDef<ExpensesRecordData>> = [
@@ -18,19 +19,14 @@ export const columns: Array<ColumnDef<ExpensesRecordData>> = [
         : "",
   },
   {
-    accessorKey: "SupplierID",
+    accessorKey: "SupplierName",
     header: ({ column }) => <DataTableColumnHeader title="Supplier" column={column} />,
   },
   {
-    accessorKey: "Rate",
+    accessorKey: "TotalDR",
     header: ({ column }) => <DataTableColumnHeader title="Grand total" column={column} />,
+    cell: (cell) => (
+      <div className="text-right tabular-nums">{formatAsCurrency(cell.row.original.TotalDR)}</div>
+    ),
   },
-  // {
-  //   accessorKey: "BranchID",
-  //   header: ({ column }) => <DataTableColumnHeader title="Mode of payment" column={column} />,
-  // },
-  // {
-  //   accessorKey: "branch_id",
-  //   header: ({ column }) => <DataTableColumnHeader title="List of items" column={column} />,
-  // },
 ];
