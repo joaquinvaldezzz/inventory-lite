@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchExpenses } from "@/lib/api";
+import type { ExpensesRecordData } from "@/lib/types";
 import { Settings } from "@/components/settings";
 
 import { columns } from "./columns";
@@ -49,6 +50,12 @@ export default function Expenses() {
   useIonViewDidEnter(() => {
     void refetch();
   });
+
+  let sortedData: ExpensesRecordData[] = [];
+
+  if (data != null) {
+    sortedData = data.slice().sort((a, z) => z.InvoiceDate.localeCompare(a.InvoiceDate));
+  }
 
   /**
    * Displays a modal and handles its dismissal event.
@@ -113,7 +120,7 @@ export default function Expenses() {
             <DataTable
               idToSearch="PONo"
               columns={columns}
-              data={data ?? []}
+              data={sortedData}
               linkPath="/app/expenses"
               searchPlaceholder="Search by reference number"
             />
