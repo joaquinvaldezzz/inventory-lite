@@ -4,14 +4,14 @@ import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
-import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
+import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Wallet } from "lucide-react";
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useForm } from "react-hook-form";
 
-import { deleteDeliveryRecord, updateDeliveryRecord } from "@/lib/api";
-import { editDeliveryFormSchema, type EditDeliveryFormSchema } from "@/lib/form-schema";
+import { deleteExpensesRecordById, getItems, updateExpensesRecord } from "@/lib/api";
+import { editExpensesFormSchema, type EditExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { DeliveryRecord, Supplier } from "@/lib/types";
+import type { ExpensesRecordData, Items, Supplier } from "@/lib/types";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import {
   AlertDialog,
@@ -60,10 +60,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 
 interface ExpenseRecordFormProps {
-  data: DeliveryRecord;
+  data: ExpensesRecordData;
 }
 
 /**
@@ -78,24 +77,22 @@ interface ExpenseRecordFormProps {
 export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [suppliers, setSuppliers] = useState<Supplier>([]);
+  const [items, setItems] = useState<Items>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const form = useForm<EditDeliveryFormSchema>({
+  const form = useForm<EditExpensesFormSchema>({
     defaultValues: {
-      supplier: data.supplier_id.toString(),
-      po_number: data.po_no,
-      date_request: new Date(data.date_request),
-      payment_type: data.payment_type_id.toString(),
-      remarks: data.remarks,
+      supplier: data.SupplierID.toString(),
+      supplier_tin: data.SupplierTIN,
+      date: new Date(data.InvoiceDate),
+      payment_type: data.PaymentType,
       items: data.items.map((item) => ({
-        item: item.item_id,
-        quantity_actual: item.quantity_actual,
-        quantity_dr: item.quantity_dr,
-        unit_dr: item.unit,
-        unit_price: item.price,
-        total_amount: item.total_amount,
+        item: item.Particulars,
+        quantity: item.Quantity,
+        price: item.Cost,
+        total_amount: item.Amount,
       })),
     },
-    resolver: zodResolver(editDeliveryFormSchema),
+    resolver: zodResolver(editExpensesFormSchema),
   });
   const router = useIonRouter();
   const [presentToast] = useIonToast();
@@ -135,6 +132,24 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
     });
   }, []);
 
+  useEffect(() => {
+    /**
+     * Fetches a list of items asynchronously and updates the state with the retrieved items.
+     *
+     * @throws An error message if the items cannot be fetched.
+     */
+    async function fetchItems() {
+      try {
+        const items = await getItems();
+        setItems(items);
+      } catch (error) {
+        throw new Error("Failed to fetch items");
+      }
+    }
+
+    void fetchItems();
+  }, []);
+
   /**
    * Handles the form submission event.
    *
@@ -145,7 +160,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
 
     void form.handleSubmit(() => {
       const formValues = form.getValues();
-      const parsedValues = editDeliveryFormSchema.safeParse(formValues);
+      const parsedValues = editExpensesFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
         throw new Error("Form data is invalid");
@@ -156,7 +171,8 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
       /** Submits the form data to update the delivery record. */
       async function submitForm() {
         try {
-          if (parsedValues.data != null) await updateDeliveryRecord(data.id, parsedValues.data);
+          if (parsedValues.data != null)
+            await updateExpensesRecord(data.PurchaseID, parsedValues.data);
         } catch (error) {
           void presentToast({
             duration: 1500,
@@ -169,7 +185,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
           void presentToast({
             duration: 1500,
             icon: checkmarkCircleOutline,
-            message: "Delivery record updated!",
+            message: "Expenses record updated!",
             swipeGesture: "vertical",
           });
           router.goBack();
@@ -182,23 +198,23 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
     })(event);
   }
 
-  /** Handles the deletion of a delivery record. */
-  async function handleDelete() {
+  /** Handles the deletion of a expenses record. */
+  function handleDelete() {
     try {
-      await deleteDeliveryRecord(data.id);
+      // await deleteExpensesRecordById(data.PurchaseID);
     } catch (error) {
       void presentToast({
         color: "danger",
         icon: alertCircleOutline,
-        message: "An error occurred while deleting the delivery record. Please try again.",
+        message: "An error occurred while deleting the expenses record. Please try again.",
         swipeGesture: "vertical",
       });
-      throw new Error("Failed to delete delivery record");
+      throw new Error("Failed to delete expenses record");
     } finally {
       void presentToast({
         duration: 1500,
         icon: checkmarkCircleOutline,
-        message: "Delivery record deleted!",
+        message: "Expenses record deleted!",
         swipeGesture: "vertical",
       });
       router.goBack();
@@ -215,9 +231,10 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Supplier</FormLabel>
+
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                    <Container aria-hidden="true" strokeWidth={2} size={16} />
+                    <Container strokeWidth={2} aria-hidden="true" size={16} />
                   </div>
                   <FormControl>
                     <Popover>
@@ -288,35 +305,28 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
           />
 
           <FormField
-            name="po_number"
+            name="supplier_tin"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>PO no.</FormLabel>
+                <FormLabel>Supplier TIN</FormLabel>
                 <FormControl>
-                  <Input
-                    className="read-only:bg-muted"
-                    type="text"
-                    readOnly
-                    {...field}
-                    value={data.po_no}
-                  />
+                  <Input className="read-only:bg-muted" type="text" readOnly {...field} />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
 
           <FormField
-            name="date_request"
+            name="date"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Date delivered</FormLabel>
+                <FormLabel>Date</FormLabel>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                    <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                    <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                   </div>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -355,32 +365,28 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Payment type</FormLabel>
-                <Select name={field.name} defaultValue={field.value} onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a payment type" />
-                    </SelectTrigger>
-                  </FormControl>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                    <Wallet strokeWidth={2} aria-hidden="true" size={16} />
+                  </div>
+                  <Select
+                    name={field.name}
+                    defaultValue={field.value === "Cash" ? "1" : "0"}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="ps-9">
+                        <SelectValue placeholder="Select a payment type" />
+                      </SelectTrigger>
+                    </FormControl>
 
-                  <SelectContent>
-                    <SelectItem value="1">Cash</SelectItem>
-                    <SelectItem value="0">Non-cash</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                    <SelectContent>
+                      <SelectItem value="1">Cash</SelectItem>
+                      <SelectItem value="0">Non-cash</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-          <FormField
-            name="remarks"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Remarks</FormLabel>
-                <FormControl>
-                  <Textarea className="min-h-24" placeholder="Enter your remarks" {...field} />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -389,31 +395,103 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
           <DivTable>
             <DivTableHeader>
               <DivTableRow>
-                <DivTableHead>Ingredients</DivTableHead>
-                <DivTableHead>Actual quantity</DivTableHead>
-                <DivTableHead>Purchase order</DivTableHead>
-                <DivTableHead>Delivery quantity</DivTableHead>
-                <DivTableHead>Delivery unit</DivTableHead>
+                <DivTableHead>Item</DivTableHead>
+                <DivTableHead>Quantity</DivTableHead>
                 <DivTableHead>Unit price</DivTableHead>
                 <DivTableHead>Total amount</DivTableHead>
+                <DivTableHead />
               </DivTableRow>
             </DivTableHeader>
 
             <DivTableBody>
-              {data.items.map((item, index) => (
+              {data.items.map((_, index) => (
                 <DivTableRow key={index}>
-                  <DivTableCell>{item.raw_material}</DivTableCell>
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.item`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                                    role="combobox"
+                                    variant="outline"
+                                  >
+                                    <span
+                                      className={cn(
+                                        "truncate",
+                                        field.value.length === 0 && "text-muted-foreground",
+                                      )}
+                                    >
+                                      {items.length > 0
+                                        ? (items.find(
+                                            (supplier) =>
+                                              supplier.raw_material.trim() === field.value.trim(),
+                                          )?.raw_material ?? "Select an item")
+                                        : "Select an item"}
+                                    </span>
+                                    <ChevronDownIcon
+                                      className="shrink-0 text-muted-foreground/80"
+                                      aria-hidden="true"
+                                      size={16}
+                                    />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+
+                              <PopoverContent
+                                className="w-full max-w-(--radix-popper-anchor-width) min-w-(--radix-popper-anchor-width) border-input p-0"
+                                align="start"
+                              >
+                                <Command>
+                                  <CommandInput placeholder="Search item..." />
+                                  <CommandList>
+                                    <CommandEmpty>No item found.</CommandEmpty>
+                                    <CommandGroup>
+                                      {items.map((item) => (
+                                        <CommandItem
+                                          value={item.raw_material}
+                                          key={item.id}
+                                          onSelect={(value) => {
+                                            const selectedSupplier = items.find(
+                                              (item) => item.raw_material.trim() === value,
+                                            );
+                                            field.onChange(selectedSupplier?.id.toString());
+                                          }}
+                                        >
+                                          <span className="truncate">{item.raw_material}</span>
+                                          {item.id.toString() === field.value && (
+                                            <CheckIcon className="ml-auto" size={16} />
+                                          )}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
 
                   <DivTableCell>
                     <FormField
-                      name={`items.${index}.quantity_actual`}
+                      name={`items.${index}.quantity`}
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
                             <NumberInput
+                              className="min-w-40"
                               value={field.value}
-                              aria-label="Actual Quantity"
+                              aria-label="Quantity"
                               onChange={(event) => {
                                 field.onChange(event);
                               }}
@@ -425,48 +503,9 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                     />
                   </DivTableCell>
 
-                  <DivTableCell>{item.unit_dr}</DivTableCell>
-
                   <DivTableCell>
                     <FormField
-                      name={`items.${index}.quantity_dr`}
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <NumberInput
-                              className="min-w-32"
-                              value={field.value}
-                              aria-label="DR Quantity"
-                              onChange={(event) => {
-                                field.onChange(event);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </DivTableCell>
-
-                  <DivTableCell>
-                    <FormField
-                      name={`items.${index}.unit_dr`}
-                      control={form.control}
-                      render={({ field }) => (
-                        <FormItem className="space-y-0">
-                          <FormControl>
-                            <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </DivTableCell>
-
-                  <DivTableCell>
-                    <FormField
-                      name={`items.${index}.total_amount`}
+                      name={`items.${index}.price`}
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
@@ -532,7 +571,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
           <div className="mt-1 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="font-bold">Total</div>
-              <div className="font-bold tabular-nums">{formatAsCurrency(data.total_amount)}</div>
+              <div className="font-bold tabular-nums">{formatAsCurrency(data.TotalDR)}</div>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -549,7 +588,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the delivery
+                      This action cannot be undone. This will permanently delete the expenses
                       record.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
@@ -557,7 +596,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        void handleDelete();
+                        handleDelete();
                       }}
                       asChild
                     >

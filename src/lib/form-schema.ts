@@ -134,3 +134,22 @@ export const newExpensesFormSchema = z.object({
 });
 
 export type NewExpensesFormSchema = z.infer<typeof newExpensesFormSchema>;
+
+export const editExpensesFormSchema = z.object({
+  date: z.coerce.date({ message: "Please select a date." }),
+  supplier: z.string().min(1, { message: "Please select a category." }).trim(),
+  supplier_tin: z.string().trim(),
+  payment_type: z.string().min(1, { message: "Please select a payment type." }).trim(),
+  items: z.array(
+    z.object({
+      item: z.string().min(1, { message: "Please select an item from the list." }).trim(),
+      quantity: z.coerce.number().min(0.01, { message: "Quantity must be greater than zero." }),
+      price: z.coerce.number().min(0.01, { message: "Unit price must be greater than zero." }),
+      total_amount: z.coerce
+        .number()
+        .min(0.01, { message: "Total amount must be greater than zero." }),
+    }),
+  ),
+});
+
+export type EditExpensesFormSchema = z.infer<typeof editExpensesFormSchema>;

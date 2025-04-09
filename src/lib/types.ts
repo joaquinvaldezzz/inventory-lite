@@ -492,6 +492,33 @@ export interface ExpensesRecordData {
   Status: string;
   TotalCR: number;
   TotalDR: number;
+  items: [
+    {
+      ID: number;
+      PurchaseID: number;
+      PONo: string;
+      Particulars: string;
+      item_pricelist_id: null;
+      GSC: null;
+      ChartAccountID: number;
+      Quantity: number;
+      Cost: number;
+      Amount: number;
+      TotalCR: number;
+      TotalDR: number;
+      TotalStatus: string;
+      WTax: null;
+      InputVat: null;
+      WTaxPayment: null;
+      DepartmentOffice: null;
+      Exempt: null;
+      ZeroRated: null;
+      GovtSales: null;
+      ATC: null;
+      TaxType: string;
+      vatable_sales: null;
+    },
+  ];
 }
 
 export type ExpensesRecordsResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
