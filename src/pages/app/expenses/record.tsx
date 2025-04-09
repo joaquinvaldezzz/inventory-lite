@@ -38,7 +38,7 @@ export default function ExpensesRecord({ match }: ExpensesPageProps) {
             <IonBackButton defaultHref="/app/expenses" />
           </IonButtons>
           <IonTitle>
-            {isPending ? "Loading expenses record..." : `Expenses #${data?.[0].id}`}
+            {isPending ? "Loading expenses record..." : `Expenses #${data?.[0].PurchaseID}`}
           </IonTitle>
         </IonToolbar>
       </IonHeader>
