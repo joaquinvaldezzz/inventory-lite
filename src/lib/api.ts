@@ -23,6 +23,7 @@ import type {
   DeliveryResponse,
   EmployeeData,
   EmployeesResponse,
+  ExpensesRecordData,
   ExpensesRecordsResponse,
   Ingredients,
   IngredientsResponse,
@@ -423,8 +424,8 @@ export async function getIngredientsByCategory(category: string): Promise<Ingred
  * @param id The waste record ID.
  * @returns A promise that resolves to the waste record data.
  */
-export async function getSpecificExpensesRecordById(id: number): Promise<WasteRecordData[]> {
-  const data = await apiRequest<WasteRecordResponse>({
+export async function getSpecificExpensesRecordById(id: number): Promise<ExpensesRecordData[]> {
+  const data = await apiRequest<ExpensesRecordsResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
     additionalData: { id },
@@ -502,6 +503,28 @@ export async function updateWasteRecord(id: number, data: NewWasteFormSchema): P
       raw_material_type: data.raw_material_type,
       waste_type: data.waste_type,
       date: format(data.date, "yyyy-MM-dd"),
+      items: data.items,
+    },
+  });
+}
+
+/**
+ * Updates an existing waste record in the database.
+ *
+ * @param id The unique identifier of the waste record to update.
+ * @param data The updated waste data.
+ * @returns Resolves when the update request is successful.
+ * @throws {Error} If the API request fails.
+ */
+export async function updateExpensesRecord(id: number, data: NewExpensesFormSchema): Promise<void> {
+  await apiRequest({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "edit",
+    additionalData: {
+      id,
+      supplier: Number(data.supplier),
+      date: format(data.date, "yyyy-MM-dd"),
+      payment_type: Number(data.payment_type),
       items: data.items,
     },
   });
