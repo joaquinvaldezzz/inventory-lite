@@ -301,8 +301,8 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                 {suppliers.length > 0
                                   ? (suppliers.find(
                                       (supplier) => supplier.id.toString() === field.value,
-                                    )?.supplier_name ?? "Select an item")
-                                  : "Select an item"}
+                                    )?.supplier_name ?? "Select a supplier")
+                                  : "Select a supplier"}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
