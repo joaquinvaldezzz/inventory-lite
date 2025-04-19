@@ -125,7 +125,7 @@
     "prettier-plugin-packagejson": "^2.5.8",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "sharp": "^0.33.5",
-    "tailwindcss": "^4.1.0",
+    "tailwindcss": "^4.1.4",
     "terser": "^5.37.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.0",
