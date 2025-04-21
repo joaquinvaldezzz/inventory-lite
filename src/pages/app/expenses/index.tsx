@@ -9,18 +9,25 @@ import {
   IonMenu,
   IonMenuButton,
   IonPage,
+  IonProgressBar,
+  IonRefresher,
+  IonRefresherContent,
   IonTitle,
   IonToolbar,
   useIonModal,
   useIonViewDidEnter,
+  type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
+import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
-import { DataTable } from "@/components/ui/data-table";
+import { fetchExpenses } from "@/lib/api";
+import type { ExpensesRecordData } from "@/lib/types";
 import { Settings } from "@/components/settings";
 
 import { columns } from "./columns";
+import { DataTable } from "./data-table";
 import { NewExpensesModal } from "./modal-form";
 
 /**
@@ -30,11 +37,33 @@ import { NewExpensesModal } from "./modal-form";
  * @returns The rendered component.
  */
 export default function Expenses() {
+  const { isFetching, isPending, data, refetch } = useQuery({
+    queryKey: ["expenses-entries"],
+    queryFn: async () => await fetchExpenses(),
+  });
   const [present, dismiss] = useIonModal(NewExpensesModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role);
     },
   });
+
+  useIonViewDidEnter(() => {
+    void refetch();
+  });
+
+  let sortedData: ExpensesRecordData[] = [];
+
+  if (data != null) {
+    sortedData = data.slice().sort((a, b) => {
+      const dateComparison = new Date(b.InvoiceDate).getTime() - new Date(a.InvoiceDate).getTime();
+
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+
+      return b.PONo.localeCompare(a.PONo);
+    });
+  }
 
   /**
    * Displays a modal and handles its dismissal event.
@@ -46,15 +75,26 @@ export default function Expenses() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
-          // void refetch()
+          void refetch();
         }
       },
     });
   }
 
-  useIonViewDidEnter(() => {
-    console.log("Expenses page loaded");
-  });
+  /**
+   * Handles the refresh event for the delivery page.
+   *
+   * @param event The refresh event containing the refresher details.
+   */
+  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    try {
+      void refetch();
+    } catch (error) {
+      throw new Error("Error fetching delivery entries");
+    } finally {
+      event.detail.complete();
+    }
+  }
 
   return (
     <Fragment>
@@ -69,11 +109,15 @@ export default function Expenses() {
               <IonMenuButton />
             </IonButtons>
             <IonTitle>Expenses</IonTitle>
-            {/* {isFetching && !isPending && <IonProgressBar type="indeterminate" />} */}
+            {isFetching && !isPending && <IonProgressBar type="indeterminate" />}
           </IonToolbar>
         </IonHeader>
 
         <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent />
+          </IonRefresher>
+
           <IonHeader collapse="condense">
             <IonToolbar>
               <IonTitle size="large">Expenses</IonTitle>
@@ -82,11 +126,11 @@ export default function Expenses() {
 
           <div className="ion-padding-horizontal ion-padding-top pb-[calc(--spacing(14)+--spacing(8))]">
             <DataTable
-              idToSearch="raw_material_type"
+              idToSearch="PONo"
               columns={columns}
-              data={[]}
+              data={sortedData}
               linkPath="/app/expenses"
-              searchPlaceholder="Search by category"
+              searchPlaceholder="Search by reference number"
             />
           </div>
 

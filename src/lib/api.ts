@@ -7,6 +7,7 @@ import type {
   EditDeliveryFormSchema,
   NewDailyCountFormSchema,
   NewDeliveryFormSchema,
+  NewExpensesFormSchema,
   NewWasteFormSchema,
 } from "./form-schema";
 import { saveToStorage } from "./storage";
@@ -22,6 +23,8 @@ import type {
   DeliveryResponse,
   EmployeeData,
   EmployeesResponse,
+  ExpensesRecordData,
+  ExpensesRecordsResponse,
   Ingredients,
   IngredientsResponse,
   Items,
@@ -103,7 +106,7 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
     const response = await axios.post<T>(url, requestData);
     return response.data;
   } catch (error) {
-    console.error(`API request failed (${action}):`, error);
+    // console.error(`API request failed (${action}):`, error);
     throw new Error(`Failed to ${action} data`);
   }
 }
@@ -124,7 +127,7 @@ export async function authenticateUser(username: string, password: string): Prom
     });
     return authenticatedUser.data;
   } catch (error) {
-    console.error("Failed to authenticate user:", error);
+    // console.error("Failed to authenticate user:", error);
     throw new Error("Failed to authenticate user");
   }
 }
@@ -210,6 +213,26 @@ export async function createWasteEntry(waste: NewWasteFormSchema): Promise<void>
       waste_type: waste.waste_type,
       date: format(waste.date, "yyyy-MM-dd"),
       items: waste.items,
+    },
+  });
+}
+
+/**
+ * Creates a new expenses entry by sending a request to the expenses API.
+ *
+ * @param expenses The expenses data to be submitted.
+ * @returns A promise that resolves when the expenses entry is successfully created.
+ * @throws {Error} Throws an error if the API request fails.
+ */
+export async function createExpensesEntry(expenses: NewExpensesFormSchema): Promise<void> {
+  await apiRequest({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "add",
+    additionalData: {
+      date: format(expenses.date, "yyyy-MM-dd"),
+      supplier: Number(expenses.supplier),
+      payment_type: Number(expenses.payment_type),
+      items: expenses.items,
     },
   });
 }
@@ -312,6 +335,42 @@ export async function fetchEmployees(): Promise<EmployeeData[]> {
 }
 
 /**
+ * Fetches product categories for the current user and branch.
+ *
+ * The fetched categories are also saved to local storage for caching purposes.
+ *
+ * @returns A promise that resolves to an array of category objects.
+ * @throws {Error} If the API request fails.
+ */
+export async function fetchCategories(): Promise<Categories[]> {
+  const data = await apiRequest<CategoriesResponse>({
+    url: env.VITE_CATEGORIES_API_URL,
+    action: "fetch",
+  });
+  await saveToStorage("categories", JSON.stringify(data.data));
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
+ * Fetches the list of expense records from the API.
+ *
+ * This function sends a request to the expenses API endpoint and retrieves the data. If the
+ * response contains an array of expense records, it returns the array. Otherwise, it returns an
+ * empty array.
+ *
+ * @returns A promise that resolves to an array of expense records. If the response data is not an
+ *   array, an empty array is returned.
+ * @throws {Error} If the API request fails or encounters an error.
+ */
+export async function fetchExpenses() {
+  const data = await apiRequest<ExpensesRecordsResponse>({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "fetch",
+  });
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
  * Fetches a specific daily count record by its ID.
  *
  * @param id The daily count record ID.
@@ -342,23 +401,6 @@ export async function getSpecificWastesRecordById(id: number): Promise<WasteReco
 }
 
 /**
- * Fetches product categories for the current user and branch.
- *
- * The fetched categories are also saved to local storage for caching purposes.
- *
- * @returns A promise that resolves to an array of category objects.
- * @throws {Error} If the API request fails.
- */
-export async function fetchCategories(): Promise<Categories[]> {
-  const data = await apiRequest<CategoriesResponse>({
-    url: env.VITE_CATEGORIES_API_URL,
-    action: "fetch",
-  });
-  await saveToStorage("categories", JSON.stringify(data.data));
-  return Array.isArray(data.data) ? data.data : [];
-}
-
-/**
  * Fetches a list of ingredients filtered by category.
  *
  * @param category The category of ingredients to fetch.
@@ -372,6 +414,21 @@ export async function getIngredientsByCategory(category: string): Promise<Ingred
     additionalData: {
       category,
     },
+  });
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
+ * Fetches a specific waste record by its ID.
+ *
+ * @param id The waste record ID.
+ * @returns A promise that resolves to the waste record data.
+ */
+export async function getSpecificExpensesRecordById(id: number): Promise<ExpensesRecordData[]> {
+  const data = await apiRequest<ExpensesRecordsResponse>({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "fetch",
+    additionalData: { id },
   });
   return Array.isArray(data.data) ? data.data : [];
 }
@@ -446,6 +503,28 @@ export async function updateWasteRecord(id: number, data: NewWasteFormSchema): P
       raw_material_type: data.raw_material_type,
       waste_type: data.waste_type,
       date: format(data.date, "yyyy-MM-dd"),
+      items: data.items,
+    },
+  });
+}
+
+/**
+ * Updates an existing waste record in the database.
+ *
+ * @param id The unique identifier of the waste record to update.
+ * @param data The updated waste data.
+ * @returns Resolves when the update request is successful.
+ * @throws {Error} If the API request fails.
+ */
+export async function updateExpensesRecord(id: number, data: NewExpensesFormSchema): Promise<void> {
+  await apiRequest({
+    url: env.VITE_EXPENSES_API_URL,
+    action: "edit",
+    additionalData: {
+      id,
+      supplier: Number(data.supplier),
+      date: format(data.date, "yyyy-MM-dd"),
+      payment_type: Number(data.payment_type),
       items: data.items,
     },
   });

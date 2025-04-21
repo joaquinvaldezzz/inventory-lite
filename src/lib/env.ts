@@ -15,6 +15,7 @@ export const env = createEnv({
     VITE_CATEGORIES_API_URL: z.string().url(),
     VITE_WASTE_API_URL: z.string().url(),
     VITE_EMPLOYEES_API_URL: z.string().url(),
+    VITE_EXPENSES_API_URL: z.string().url(),
     VITE_LOGOUT_API_URL: z.string().url(),
   },
 

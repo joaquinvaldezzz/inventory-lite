@@ -87,7 +87,7 @@ export interface DeliveryResponse {
   message: string;
   data: {
     id: number;
-    po_no: string | null;
+    po_no: string;
     dr_no: string | null;
     branch_id: number;
     branch: string;
@@ -468,12 +468,57 @@ export interface EmployeeData {
 export type EmployeesResponse = Prettify<APIResponse<EmployeeData[]>>;
 
 export interface ExpensesRecordData {
-  date: string;
-  supplier: string;
-  tax_type: string;
-  tin: string;
-  mode_of_payment: string;
-  list_of_expenses: string;
+  CompanyID: string;
+  PurchaseID: number;
+  InvoiceNumber: string;
+  PaymentType: string;
+  PONo: string;
+  InvoiceDate: string;
+  BankName: string | null;
+  CheckNumber: string | null;
+  CheckDate: string | null;
+  SupplierID: string;
+  SupplierName: string;
+  SupplierTIN: string;
+  SupplierAddress: string;
+  BranchID: string;
+  BranchName: string;
+  BranchAddress: string;
+  BranchTIN: string;
+  Currency: string;
+  Rate: number;
+  AddedBy: string | null;
+  StatusID: number;
+  Status: string;
+  TotalCR: number;
+  TotalDR: number;
+  items: [
+    {
+      ID: number;
+      PurchaseID: number;
+      PONo: string;
+      Particulars: string;
+      item_pricelist_id: null;
+      GSC: null;
+      ChartAccountID: number;
+      Quantity: number;
+      Cost: number;
+      Amount: number;
+      TotalCR: number;
+      TotalDR: number;
+      TotalStatus: string;
+      WTax: null;
+      InputVat: null;
+      WTaxPayment: null;
+      DepartmentOffice: null;
+      Exempt: null;
+      ZeroRated: null;
+      GovtSales: null;
+      ATC: null;
+      TaxType: string;
+      vatable_sales: null;
+    },
+  ];
 }
 
-export type ExpensesRecordResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
+export type ExpensesRecordsResponse = Prettify<APIResponse<ExpensesRecordData[]>>;
