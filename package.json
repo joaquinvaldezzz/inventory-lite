@@ -171,7 +171,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "cypress",
-      "esbuild"
+      "esbuild",
+      "sharp"
     ]
   }
 }
