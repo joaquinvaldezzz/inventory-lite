@@ -1,3 +1,11 @@
 {
-  "recommendations": ["ionic.ionic"]
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker",
+    "editorconfig.editorconfig",
+    "dsznajder.es7-react-js-snippets",
+    "dbaeumer.vscode-eslint",
+    "ionic.ionic",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss"
+  ]
 }
