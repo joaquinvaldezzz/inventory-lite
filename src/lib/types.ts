@@ -304,6 +304,8 @@ export interface IngredientsResponse {
     minimum_stock_level: number;
     maximum_stock_level: number;
     initial_stock_level: number;
+    days_stock: null;
+    ChartAccountID: null;
   };
 }
 
