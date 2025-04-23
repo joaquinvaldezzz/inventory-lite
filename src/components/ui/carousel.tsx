@@ -28,10 +28,20 @@ type CarouselContextProps = {
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null);
 
+/**
+ * Custom hook to access the carousel context.
+ *
+ * This hook provides access to the `CarouselContext` and ensures that it is used within a
+ * `<Carousel />` component. If the hook is called outside of a `<Carousel />`, it will throw an
+ * error.
+ *
+ * @returns The context value provided by the `<Carousel />` component.
+ * @throws An error if the hook is used outside of a `<Carousel />` component.
+ */
 function useCarousel() {
   const context = React.useContext(CarouselContext);
 
-  if (!context) {
+  if (context == null) {
     throw new Error("useCarousel must be used within a <Carousel />");
   }
 
@@ -53,7 +63,7 @@ const Carousel = React.forwardRef<
   const [canScrollNext, setCanScrollNext] = React.useState(false);
 
   const onSelect = React.useCallback((api: CarouselApi) => {
-    if (!api) {
+    if (api == null) {
       return;
     }
 
@@ -83,7 +93,7 @@ const Carousel = React.forwardRef<
   );
 
   React.useEffect(() => {
-    if (!api || !setApi) {
+    if (api == null || setApi == null) {
       return;
     }
 
@@ -91,7 +101,7 @@ const Carousel = React.forwardRef<
   }, [api, setApi]);
 
   React.useEffect(() => {
-    if (!api) {
+    if (api == null) {
       return;
     }
 
@@ -110,7 +120,8 @@ const Carousel = React.forwardRef<
         carouselRef,
         api,
         opts,
-        orientation: orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+        orientation:
+          orientation.length > 0 ? (opts?.axis === "y" ? "vertical" : "horizontal") : "horizontal",
         scrollPrev,
         scrollNext,
         canScrollPrev,
@@ -119,8 +130,8 @@ const Carousel = React.forwardRef<
     >
       <div
         className={cn("relative", className)}
-        aria-roledescription="carousel"
         role="region"
+        aria-roledescription="carousel"
         ref={ref}
         onKeyDownCapture={handleKeyDown}
         {...props}
@@ -164,8 +175,8 @@ const CarouselItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLD
           orientation === "horizontal" ? "pl-4" : "pt-4",
           className,
         )}
-        aria-roledescription="slide"
         role="group"
+        aria-roledescription="slide"
         ref={ref}
         {...props}
       />

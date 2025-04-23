@@ -15,6 +15,12 @@ type ToasterToast = ToastProps & {
 
 let count = 0;
 
+/**
+ * Generates a unique identifier as a string. The identifier is incremented cyclically and wraps
+ * around at `Number.MAX_SAFE_INTEGER`.
+ *
+ * @returns A unique identifier.
+ */
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER;
   return count.toString();
@@ -124,6 +130,12 @@ const listeners: Array<(state: State) => void> = [];
 
 let memoryState: State = { toasts: [] };
 
+/**
+ * Dispatches an action to update the state using the reducer function. It also notifies all
+ * registered listeners with the updated state.
+ *
+ * @param action The action object that describes the state change.
+ */
 function dispatch(action: Action) {
   memoryState = reducer(memoryState, action);
   listeners.forEach((listener) => {
@@ -133,6 +145,17 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
+/**
+ * Displays a toast notification with the given properties and provides methods to update or dismiss
+ * it.
+ *
+ * @param props The properties of the toast notification.
+ * @returns An object containing:
+ *
+ *   - `id`: The unique identifier for the toast.
+ *   - `dismiss`: A function to dismiss the toast.
+ *   - `update`: A function to update the toast properties.
+ */
 function toast({ ...props }: Toast) {
   const id = genId();
 
@@ -165,6 +188,18 @@ function toast({ ...props }: Toast) {
   };
 }
 
+/**
+ * A custom hook for managing toast notifications.
+ *
+ * This hook provides access to the current state of toast notifications, a function to trigger a
+ * toast, and a function to dismiss a specific toast by its ID or all toasts if no ID is provided.
+ *
+ * @returns An object containing:
+ *
+ *   - The current state of the toast notifications.
+ *   - `toast`: A function to trigger a new toast notification.
+ *   - `dismiss`: A function to dismiss a specific toast by its ID or all toasts.
+ */
 function useToast() {
   const [state, setState] = useState<State>(memoryState);
 
