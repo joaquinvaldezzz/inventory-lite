@@ -63,14 +63,12 @@ interface ExpensesModalActions {
 }
 
 /**
- * The `NewDeliveryModal` renders a modal for creating a new delivery entry. It includes a form with
- * fields for supplier, date, remarks, and a list of items. The form data is validated with a Zod
- * schema and submitted to create a new entry.
+ * The `NewExpensesModal` renders a modal for creating a new expenses entry. It includes a form with
+ * various fields such as supplier, date, payment type, and items.
  *
  * @param props The props for the component.
  * @param props.dismiss Function to dismiss the modal.
  * @returns The rendered component.
- * @todo Change function name and JSDoc comments
  */
 export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   const [suppliers, setSuppliers] = useState<Supplier>([]);
@@ -106,8 +104,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     /**
      * Fetches suppliers from an external source and updates the state with the retrieved suppliers.
      *
-     * @throws Will log an error message if there is an issue fetching suppliers or parsing the
-     *   data.
+     * @throws An error message if there is an issue fetching suppliers or parsing the data.
      */
     async function fetchSuppliers() {
       try {
