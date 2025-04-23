@@ -71,16 +71,14 @@ export default function BranchSelector() {
     try {
       void form.handleSubmit(async () => {
         if (formRef.current == null) {
-          console.error("Form reference is not available");
-          return;
+          throw new Error("Form reference is not available");
         }
 
         const formData = Object.fromEntries(new FormData(formRef.current));
         const parsedData = branchSelectorFormSchema.safeParse(formData);
 
         if (!parsedData.success) {
-          console.error("Form data is invalid:", parsedData.error);
-          return;
+          throw new Error("Form data is invalid:", parsedData.error);
         }
 
         setIsLoading(true);
@@ -98,13 +96,13 @@ export default function BranchSelector() {
           form.setError("branch", {
             message: "Failed to select branch. Please try again.",
           });
-          console.error("Form submission failed:", error);
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
         }
       })(event);
     } catch (error) {
-      console.error("Form submission failed:", error);
+      throw new Error("Form submission failed");
     }
   }
 
@@ -135,7 +133,7 @@ export default function BranchSelector() {
                       <FormLabel htmlFor={field.name}>Branch</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                          <Store aria-hidden="true" strokeWidth={2} size={16} />
+                          <Store strokeWidth={2} aria-hidden="true" size={16} />
                         </div>
                         <FormControl>
                           <Select

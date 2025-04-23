@@ -49,8 +49,7 @@ export default function CreatePIN() {
       const parsedData = pinFormSchema.safeParse(formValues);
 
       if (!parsedData.success) {
-        console.error("Form data is invalid:", parsedData.error);
-        return;
+        throw new Error("Form data is invalid:", parsedData.error);
       }
 
       /**

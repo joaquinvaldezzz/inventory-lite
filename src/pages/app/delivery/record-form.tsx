@@ -120,13 +120,13 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
           if (Array.isArray(parsedSuppliers)) {
             setSuppliers(parsedSuppliers);
           } else {
-            console.error("Suppliers data is invalid:", parsedSuppliers);
+            throw new Error("Suppliers data is invalid");
           }
         } else {
-          console.error("No suppliers found in storage");
+          throw new Error("No suppliers found in storage");
         }
       } catch (error) {
-        console.error("Error fetching suppliers:", error);
+        throw new Error("Error fetching suppliers");
       }
     }
 
@@ -148,8 +148,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       const parsedValues = editDeliveryFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error("Form data is invalid:", parsedValues.error);
-        return;
+        throw new Error("Form data is invalid:", parsedValues.error);
       }
 
       setIsLoading(true);
@@ -188,13 +187,13 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     try {
       await deleteDeliveryRecord(data.id);
     } catch (error) {
-      console.error("Error deleting delivery record:", error);
       void presentToast({
         color: "danger",
         icon: alertCircleOutline,
         message: "An error occurred while deleting the delivery record. Please try again.",
         swipeGesture: "vertical",
       });
+      throw new Error("Error deleting delivery record");
     } finally {
       void presentToast({
         duration: 1500,
@@ -218,7 +217,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                 <FormLabel>Supplier</FormLabel>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                    <Container aria-hidden="true" strokeWidth={2} size={16} />
+                    <Container strokeWidth={2} aria-hidden="true" size={16} />
                   </div>
                   <FormControl>
                     <Popover>
@@ -317,7 +316,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                 <FormLabel>Date delivered</FormLabel>
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                    <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                    <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                   </div>
                   <Popover>
                     <PopoverTrigger asChild>

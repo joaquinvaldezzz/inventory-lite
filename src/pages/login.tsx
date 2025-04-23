@@ -54,8 +54,7 @@ export default function Login() {
       const parsedData = loginFormSchema.safeParse(formValues);
 
       if (!parsedData.success) {
-        console.error("Form data is invalid:", parsedData.error);
-        return;
+        throw new Error("Form data is invalid:", parsedData.error);
       }
 
       setIsLoading(true);
@@ -95,10 +94,10 @@ export default function Login() {
             });
           }
         } catch (error) {
-          console.error("Form submission failed:", error);
           form.setError("root", {
             message: "Failed to log in. Please try again.",
           });
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
         }
@@ -147,7 +146,7 @@ export default function Login() {
                       <FormLabel>Username</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                          <User aria-hidden="true" strokeWidth={2} size={16} />
+                          <User strokeWidth={2} aria-hidden="true" size={16} />
                         </div>
                         <FormControl>
                           <Input
@@ -172,7 +171,7 @@ export default function Login() {
                       <FormLabel>Password</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                          <KeyRound aria-hidden="true" strokeWidth={2} size={16} />
+                          <KeyRound strokeWidth={2} aria-hidden="true" size={16} />
                         </div>
                         <FormControl>
                           <Input
@@ -194,9 +193,9 @@ export default function Login() {
                           }}
                         >
                           {isVisible ? (
-                            <EyeOff aria-hidden="true" strokeWidth={2} size={16} />
+                            <EyeOff strokeWidth={2} aria-hidden="true" size={16} />
                           ) : (
-                            <Eye aria-hidden="true" strokeWidth={2} size={16} />
+                            <Eye strokeWidth={2} aria-hidden="true" size={16} />
                           )}
                         </button>
                       </div>
