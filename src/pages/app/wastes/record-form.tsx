@@ -149,13 +149,13 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
           if (Array.isArray(parsedCategories)) {
             setCategories(parsedCategories);
           } else {
-            console.error("Categories data is invalid:", parsedCategories);
+            throw new Error("Categories data is invalid");
           }
         } else {
-          console.error("No categories found in storage");
+          throw new Error("No categories found in storage");
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        throw new Error("Error fetching categories");
       }
     }
 
@@ -177,8 +177,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
       const parsedValues = newWasteFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error("Form data is invalid:", parsedValues.error);
-        return;
+        throw new Error("Form data is invalid:", parsedValues.error);
       }
 
       setIsLoading(true);
@@ -199,7 +198,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
             message: "An error occurred while updating the waste record. Please try again.",
             swipeGesture: "vertical",
           });
-          console.error("Form submission failed:", error);
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
           void presentToast({
@@ -227,7 +226,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         message: "An error occurred while deleting the waste record. Please try again.",
         swipeGesture: "vertical",
       });
-      console.error("Error deleting waste record:", error);
+      throw new Error("Error deleting waste record");
     } finally {
       void presentToast({
         duration: 1500,
@@ -250,7 +249,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
               <FormLabel>Date</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                  <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -291,7 +290,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
               <FormLabel>Category</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Container aria-hidden="true" strokeWidth={2} size={16} />
+                  <Container strokeWidth={2} aria-hidden="true" size={16} />
                 </div>
                 <FormControl>
                   <Popover>
@@ -369,7 +368,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
               <FormLabel>Type</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Container aria-hidden="true" strokeWidth={2} size={16} />
+                  <Container strokeWidth={2} aria-hidden="true" size={16} />
                 </div>
                 <Select name={field.name} defaultValue={field.value} onValueChange={field.onChange}>
                   <FormControl>
@@ -404,7 +403,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
             {fields.map((item, index) => {
               return (
                 <DivTableRow key={item.id}>
-                  <DivTableCell>{item.item}</DivTableCell>
+                  <DivTableCell className="align-middle">{item.item}</DivTableCell>
 
                   <DivTableCell>
                     <FormField
