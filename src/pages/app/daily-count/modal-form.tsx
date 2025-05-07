@@ -129,7 +129,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
         if (Array.isArray(parsedCategories)) {
           setCategories(parsedCategories);
         } else {
-          console.error("Categories data is invalid:", parsedCategories);
+          throw new Error("Categories data is invalid");
         }
       }
     }
@@ -170,8 +170,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
       const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error("Form data is invalid:", parsedValues.error);
-        return;
+        throw new Error("Form data is invalid:", parsedValues.error);
       }
 
       setIsLoading(true);
@@ -191,7 +190,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
             message: "Failed to create daily count entry. Please try again.",
             swipeGesture: "vertical",
           });
-          console.error("Form submission failed:", error);
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
           void presentToast({
@@ -265,7 +264,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                      <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                     </div>
                     <Popover modal>
                       <PopoverTrigger asChild>
@@ -306,7 +305,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                   <FormLabel htmlFor={field.name}>Category</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <Container aria-hidden="true" strokeWidth={2} size={16} />
+                      <Container strokeWidth={2} aria-hidden="true" size={16} />
                     </div>
                     <FormControl>
                       <Popover>
@@ -513,7 +512,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
             <div className="mt-1 flex flex-col gap-4">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add another product</span>
-                <Plus aria-hidden="true" strokeWidth={2} size={16} />
+                <Plus strokeWidth={2} aria-hidden="true" size={16} />
               </Button>
               <Button type="submit" disabled={isLoading}>
                 Submit

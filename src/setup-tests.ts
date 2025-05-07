@@ -14,20 +14,19 @@ window.matchMedia = function (query: string): MediaQueryList {
     media: query,
     onchange: null,
     addListener: function (listener: (e: MediaQueryListEvent) => void) {
-      console.warn("addListener is not implemented.");
+      throw new Error("addListener is not implemented.");
     },
     removeListener: function (listener: (e: MediaQueryListEvent) => void) {
-      console.warn("removeListener is not implemented.");
+      throw new Error("removeListener is not implemented.");
     },
     addEventListener: function (type: string, listener: (e: Event) => void) {
-      console.warn("addEventListener is not implemented.");
+      throw new Error("addEventListener is not implemented.");
     },
     removeEventListener: function (type: string, listener: (e: Event) => void) {
-      console.warn("removeEventListener is not implemented.");
+      throw new Error("removeEventListener is not implemented.");
     },
     dispatchEvent: function (event: Event): boolean {
-      console.warn("dispatchEvent is not implemented.");
-      return false;
+      throw new Error("dispatchEvent is not implemented.");
     },
   };
 };

@@ -28,3 +28,5 @@ jobs:
         run: pnpm install
       - name: Run Prettier's CLI to check formatting
         run: pnpm run format:check
+      - name: Run ESLint to check for linting errors
+        run: pnpm run lint

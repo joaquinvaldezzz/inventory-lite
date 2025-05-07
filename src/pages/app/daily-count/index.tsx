@@ -71,7 +71,7 @@ export default function DailyCount() {
     try {
       void refetch();
     } catch (error) {
-      console.error("Error fetching delivery entries:", error);
+      throw new Error("Error fetching delivery entries");
     } finally {
       event.detail.complete();
     }
@@ -84,10 +84,10 @@ export default function DailyCount() {
   return (
     <Fragment>
       <IonMenu
+        contentId="daily-count-content"
         onIonDidClose={() => {
           void refetch();
         }}
-        contentId="daily-count-content"
       >
         <Settings />
       </IonMenu>
