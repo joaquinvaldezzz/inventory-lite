@@ -10,6 +10,7 @@ import type {
   NewExpensesFormSchema,
   NewWasteFormSchema,
 } from "./form-schema";
+import { deleteSession } from "./session";
 import { saveToStorage } from "./storage";
 import type {
   Categories,
@@ -587,6 +588,7 @@ export async function executeLogout() {
 
   try {
     await axios.post(env.VITE_LOGOUT_API_URL, { user_id: userId, token });
+    await deleteSession();
   } catch (error) {
     throw new Error("Failed to log out");
   }
