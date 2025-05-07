@@ -18,7 +18,7 @@ import ExpensesRecordForm from "./record-form";
 type ExpensesPageProps = RouteComponentProps<{ PurchaseID: string }>;
 
 /**
- * Component for displaying and editing a specific delivery record.
+ * Component for displaying and editing a specific expenses record.
  *
  * @param props The properties passed to the component.
  * @param props.match The match object containing route parameters.

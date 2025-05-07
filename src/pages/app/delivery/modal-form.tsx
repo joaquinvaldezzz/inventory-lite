@@ -122,13 +122,13 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
           if (Array.isArray(parsedSuppliers)) {
             setSuppliers(parsedSuppliers);
           } else {
-            console.error("Suppliers data is invalid:", parsedSuppliers);
+            throw new Error("Suppliers data is invalid");
           }
         } else {
-          console.error("No suppliers found in storage");
+          throw new Error("No suppliers found in storage");
         }
       } catch (error) {
-        console.error("Error fetching suppliers:", error);
+        throw new Error("Error fetching suppliers");
       }
     }
 
@@ -146,7 +146,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
         const request = await getItems();
         setItems(request);
       } catch (error) {
-        console.error("Error fetching items:", error);
+        throw new Error("Error fetching items");
       }
     }
 
@@ -190,8 +190,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error("Form data is invalid:", parsedValues.error);
-        return;
+        throw new Error("Form data is invalid:", parsedValues.error);
       }
 
       setIsLoading(true);
@@ -207,7 +206,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
             message: "Failed to create delivery entry. Please try again.",
             swipeGesture: "vertical",
           });
-          console.error("Form submission failed:", error);
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
           void presentToast({
@@ -281,7 +280,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                   <FormLabel>Supplier</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <Container aria-hidden="true" strokeWidth={2} size={16} />
+                      <Container strokeWidth={2} aria-hidden="true" size={16} />
                     </div>
                     <FormControl>
                       <Popover>
@@ -359,7 +358,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                      <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                     </div>
                     <Popover modal>
                       <PopoverTrigger asChild>
@@ -661,7 +660,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
             <div className="mt-1 flex flex-col gap-3">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add more ingredients</span>
-                <Plus aria-hidden="true" strokeWidth={2} size={16} />
+                <Plus strokeWidth={2} aria-hidden="true" size={16} />
               </Button>
 
               <Button type="submit" disabled={isLoading}>

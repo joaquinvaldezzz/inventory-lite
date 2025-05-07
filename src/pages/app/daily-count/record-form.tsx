@@ -99,13 +99,13 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
           if (Array.isArray(parsedCategories)) {
             setCategories(parsedCategories);
           } else {
-            console.error("Categories data is invalid:", parsedCategories);
+            throw new Error("Categories data is invalid");
           }
         } else {
-          console.error("No categories found in storage");
+          throw new Error("No categories found in storage");
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        throw new Error("Error fetching categories");
       }
     }
 
@@ -127,8 +127,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
       const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
       if (!parsedValues.success) {
-        console.error("Form data is invalid:", parsedValues.error);
-        return;
+        throw new Error("Form data is invalid:", parsedValues.error);
       }
 
       setIsLoading(true);
@@ -144,7 +143,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
             message: "Failed to update daily count record. Please try again.",
             swipeGesture: "vertical",
           });
-          console.error("Form submission failed:", error);
+          throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
           void presentToast({
@@ -168,13 +167,13 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
     try {
       await deleteDailyCountRecordById(data.id);
     } catch (error) {
-      console.error("Error deleting daily count record:", error);
       void presentToast({
         color: "danger",
         icon: alertCircleOutline,
         message: "Failed to delete daily count record. Please try again.",
         swipeGesture: "vertical",
       });
+      throw new Error("Error deleting daily count record");
     } finally {
       void presentToast({
         duration: 1500,
@@ -197,7 +196,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
               <FormLabel>Date</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                  <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -238,7 +237,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
               <FormLabel htmlFor={field.name}>Category</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Container aria-hidden="true" strokeWidth={2} size={16} />
+                  <Container strokeWidth={2} aria-hidden="true" size={16} />
                 </div>
                 <FormControl>
                   <Popover>

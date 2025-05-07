@@ -434,6 +434,23 @@ export async function getSpecificExpensesRecordById(id: number): Promise<Expense
 }
 
 /**
+ * Fetches a list of items associated with a specific supplier ID.
+ *
+ * @param supplier The ID of the supplier as a string. It will be converted to a number internally.
+ * @returns A promise that resolves to an array of items. If the response data is not an array, an
+ *   empty array is returned.
+ * @throws An error if the API request fails.
+ */
+export async function getItemsBySupplierId(supplier: string) {
+  const data = await apiRequest<IngredientsResponse>({
+    url: env.VITE_INGREDIENTS_API_URL,
+    action: "fetch",
+    additionalData: { supplier: Number(supplier) },
+  });
+  return Array.isArray(data.data) ? data.data : [];
+}
+
+/**
  * Edits an existing delivery record.
  *
  * @param id The ID of the delivery record.

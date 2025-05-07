@@ -80,7 +80,7 @@ export default function Wastes() {
     try {
       void refetch();
     } catch (error) {
-      console.error("Error fetching delivery entries:", error);
+      throw new Error("Error fetching delivery entries");
     } finally {
       event.detail.complete();
     }
@@ -93,10 +93,10 @@ export default function Wastes() {
   return (
     <Fragment>
       <IonMenu
+        contentId="wastes-content"
         onIonDidClose={() => {
           void refetch();
         }}
-        contentId="wastes-content"
       >
         <Settings />
       </IonMenu>

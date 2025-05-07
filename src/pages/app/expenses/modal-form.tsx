@@ -16,7 +16,7 @@ import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } fro
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { createExpensesEntry, getItems, getSuppliers } from "@/lib/api";
+import { createExpensesEntry, getItemsBySupplierId, getSuppliers } from "@/lib/api";
 import { newExpensesFormSchema, type NewExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Items, Supplier } from "@/lib/types";
@@ -63,14 +63,12 @@ interface ExpensesModalActions {
 }
 
 /**
- * The `NewDeliveryModal` renders a modal for creating a new delivery entry. It includes a form with
- * fields for supplier, date, remarks, and a list of items. The form data is validated with a Zod
- * schema and submitted to create a new entry.
+ * The `NewExpensesModal` renders a modal for creating a new expenses entry. It includes a form with
+ * various fields such as supplier, date, payment type, and items.
  *
  * @param props The props for the component.
  * @param props.dismiss Function to dismiss the modal.
  * @returns The rendered component.
- * @todo Change function name and JSDoc comments
  */
 export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   const [suppliers, setSuppliers] = useState<Supplier>([]);
@@ -106,8 +104,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     /**
      * Fetches suppliers from an external source and updates the state with the retrieved suppliers.
      *
-     * @throws Will log an error message if there is an issue fetching suppliers or parsing the
-     *   data.
+     * @throws An error message if there is an issue fetching suppliers or parsing the data.
      */
     async function fetchSuppliers() {
       try {
@@ -144,17 +141,19 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
      */
     async function fetchItems() {
       try {
-        const request = await getItems();
-        setItems(request);
+        const supplierId = form.getValues("supplier");
+
+        if (supplierId.length > 0) {
+          const request = await getItemsBySupplierId(supplierId);
+          setItems(request);
+        }
       } catch (error) {
         throw new Error("Error fetching items");
       }
     }
 
-    startTransition(() => {
-      void fetchItems();
-    });
-  }, []);
+    void fetchItems();
+  }, [form.watch("supplier")]);
 
   /** Adds a new row to the list of delivery items. */
   function handleAdd() {
@@ -281,7 +280,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                   <FormLabel>Supplier</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <Container aria-hidden="true" strokeWidth={2} size={16} />
+                      <Container strokeWidth={2} aria-hidden="true" size={16} />
                     </div>
                     <FormControl>
                       <Popover>
@@ -359,7 +358,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
+                      <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
                     </div>
                     <Popover modal>
                       <PopoverTrigger asChild>
@@ -622,7 +621,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
             <div className="mt-1 flex flex-col gap-3">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add more ingredients</span>
-                <Plus aria-hidden="true" strokeWidth={2} size={16} />
+                <Plus strokeWidth={2} aria-hidden="true" size={16} />
               </Button>
 
               <Button type="submit" disabled={isLoading}>

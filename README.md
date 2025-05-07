@@ -13,6 +13,10 @@ Before you begin, ensure you have the following software installed on your machi
 - [Git](https://git-scm.com)
 - [Node.js](https://nodejs.org/en)
 - [pnpm](https://pnpm.io/installation)
+- [Visual Studio Code](https://code.visualstudio.com/) (recommended, but you can use any IDE)
+
+> [!NOTE]
+> Recommended VSCode extensions will prompt you to install them when you open the project for the first time. Click "Install All" to add them to your workspace.
 
 #### Android Requirements
 
