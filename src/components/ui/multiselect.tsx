@@ -12,7 +12,7 @@ export interface Option {
   label: string;
   disable?: boolean;
 
-  /** Fixed option that can‘t be removed. */
+  /** Fixed option that can't be removed. */
   fixed?: boolean;
 
   /** Group the options by providing key. */
@@ -137,8 +137,8 @@ function transToGroupOption(options: Option[], groupBy?: string) {
 
   const groupOption: GroupOption = {};
   options.forEach((option) => {
-    const key = (option[groupBy] as string) || "";
-    groupOption[key] ||= [];
+    const key = typeof option[groupBy] === "string" ? String(option[groupBy]) : "";
+    groupOption[key] = [];
     groupOption[key].push(option);
   });
 
@@ -151,12 +151,34 @@ function transToGroupOption(options: Option[], groupBy?: string) {
  * @returns The options without the picked options.
  */
 function removePickedOption(groupOption: GroupOption, picked: Option[]) {
-  const cloneOption = JSON.parse(JSON.stringify(groupOption)) as GroupOption;
+  const parsed = JSON.parse(JSON.stringify(groupOption)) as unknown;
+  if (!isRecord(parsed)) {
+    return {};
+  }
+  const cloneOption: GroupOption = {};
 
-  for (const [key, value] of Object.entries(cloneOption)) {
-    cloneOption[key] = value.filter((val) => picked.find((p) => p.value === val.value) == null);
+  for (const [key, value] of Object.entries(parsed)) {
+    if (
+      Array.isArray(value) &&
+      value.every(
+        (item): item is Option =>
+          typeof item === "object" && item !== null && "value" in item && "label" in item,
+      )
+    ) {
+      cloneOption[key] = value.filter((val) => picked.find((p) => p.value === val.value) == null);
+    }
   }
   return cloneOption;
+}
+
+/**
+ * Type guard to check if a value is a plain object (Record).
+ *
+ * @param value The value to check
+ * @returns True if the value is a plain object
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -247,7 +269,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       ref,
       () => ({
         selectedValue: [...selected],
-        input: inputRef.current!,
+        input: inputRef.current ?? document.createElement("input"),
         focus: () => inputRef.current?.focus(),
         reset: () => {
           setSelected([]);
@@ -257,11 +279,13 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     );
 
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target;
       if (
         dropdownRef.current != null &&
-        !dropdownRef.current.contains(event.target as Node) &&
+        target instanceof Node &&
+        !dropdownRef.current.contains(target) &&
         inputRef.current != null &&
-        !inputRef.current.contains(event.target as Node)
+        !inputRef.current.contains(target)
       ) {
         setOpen(false);
         inputRef.current.blur();
@@ -321,15 +345,14 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     }, [value]);
 
     useEffect(() => {
-      /** If `onSearch` is provided, do not trigger options updated. */
       if (arrayOptions == null || onSearch != null) {
         return;
       }
-      const newOption = transToGroupOption(arrayOptions || [], groupBy);
+      const newOption = transToGroupOption(arrayOptions, groupBy);
       if (JSON.stringify(newOption) !== JSON.stringify(options)) {
         setOptions(newOption);
       }
-    }, [arrayDefaultOptions, arrayOptions, groupBy, onSearch, options]);
+    }, [arrayOptions, groupBy, onSearch, options]);
 
     useEffect(() => {
       /** Sync search */
@@ -515,7 +538,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                       e.stopPropagation();
                     }}
                   >
-                    <X aria-hidden="true" strokeWidth={2} size={14} />
+                    <X strokeWidth={2} aria-hidden="true" size={14} />
                   </button>
                 </div>
               );
@@ -572,7 +595,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 onChange?.(selected.filter((s) => s.fixed ?? false));
               }}
             >
-              <X aria-hidden="true" strokeWidth={2} size={16} />
+              <X strokeWidth={2} aria-hidden="true" size={16} />
             </button>
           </div>
         </div>
