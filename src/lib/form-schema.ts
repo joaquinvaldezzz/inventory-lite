@@ -153,3 +153,22 @@ export const editExpensesFormSchema = z.object({
 });
 
 export type EditExpensesFormSchema = z.infer<typeof editExpensesFormSchema>;
+
+export const signUpFormSchema = z.object({
+  first_name: z.string().min(1, { message: "First name is required." }).trim(),
+  middle_name: z.string().min(1, { message: "Middle name is required." }).trim(),
+  last_name: z.string().min(1, { message: "Last name is required." }).trim(),
+  email: z.string().email({ message: "Email address is required." }).trim(),
+  username: z.string().min(1, { message: "Username is required." }).trim(),
+  password: z.string().min(8, { message: "Password must be at least 8 characters long." }).trim(),
+  confirm_password: z.string().min(8, { message: "Re-type your password." }).trim(),
+  pin: z.string().min(6, { message: "PIN must be at least 6 characters long." }).trim(),
+  role: z.string().min(1, { message: "Please select a role." }).trim(),
+  branch: z.string().min(1, { message: "Please select a branch." }).trim(),
+});
+// .refine((value) => value.password === value.confirm_password, {
+//   message: "Passwords do not match.",
+//   path: ["confirm_password"],
+// });
+
+export type SignUpFormSchema = z.infer<typeof signUpFormSchema>;
