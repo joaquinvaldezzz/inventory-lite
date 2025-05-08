@@ -15,7 +15,7 @@
     "format": "prettier --write .",
     "format:src": "prettier --write src",
     "format:check": "prettier --check .",
-    "lint": "eslint --cache",
+    "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "generate:icons": "capacitor-assets generate",
     "test.e2e": "cypress run",
