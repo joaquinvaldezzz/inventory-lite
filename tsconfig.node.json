@@ -9,5 +9,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["vite.config.ts", "*.config.ts"]
+  "include": ["cypress", "vite.config.ts", "*.config.ts"]
 }

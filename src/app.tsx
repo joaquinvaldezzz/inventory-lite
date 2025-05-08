@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Route } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/toaster";
+import ProtectedRoute from "@/components/protected-route";
 
 import Tabs from "./pages/app/tabs";
 import BranchSelector from "./pages/branch-selector";
@@ -33,25 +34,11 @@ export default function App() {
               <Login />
             </Route>
 
-            <Route path="/create-pin" exact>
-              <CreatePIN />
-            </Route>
-
-            <Route path="/confirm-pin" exact>
-              <ConfirmPIN />
-            </Route>
-
-            <Route path="/pin" exact>
-              <PIN />
-            </Route>
-
-            <Route path="/branch-selector" exact>
-              <BranchSelector />
-            </Route>
-
-            <Route path="/app/*">
-              <Tabs />
-            </Route>
+            <ProtectedRoute component={CreatePIN} path="/create-pin" exact />
+            <ProtectedRoute component={ConfirmPIN} path="/confirm-pin" exact />
+            <ProtectedRoute component={PIN} path="/pin" exact />
+            <ProtectedRoute component={BranchSelector} path="/branch-selector" exact />
+            <ProtectedRoute component={Tabs} path="/app/*" />
 
             <Route path="/" exact>
               <Redirect to="/login" />
