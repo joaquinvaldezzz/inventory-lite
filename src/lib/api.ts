@@ -579,6 +579,16 @@ export async function deleteWasteRecordById(id: number): Promise<void> {
 }
 
 /**
+ * Deletes an expenses record by ID.
+ *
+ * @param id The ID of the record to delete.
+ * @returns Resolves when the record is deleted.
+ */
+export async function deleteExpensesRecordById(id: number): Promise<void> {
+  await apiRequest({ url: env.VITE_EXPENSES_API_URL, action: "delete", additionalData: { id } });
+}
+
+/**
  * Logs out the current user by sending a POST request to the logout API endpoint.
  *
  * @throws {Error} If the logout request fails.
