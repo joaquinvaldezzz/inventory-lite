@@ -52,7 +52,7 @@ export async function decrypt(session: string | undefined = "") {
  * @returns A promise that resolves to void.
  */
 export async function createSession(userId: string, userRole: string) {
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
   const session = await encrypt({ userId, userRole, expiresAt });
 
