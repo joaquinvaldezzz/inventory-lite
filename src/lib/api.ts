@@ -115,20 +115,19 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
 /**
  * Authenticates a user by sending their credentials to the login API.
  *
- * @param username The username of the user attempting to log in.
+ * @param email The email of the user attempting to log in.
  * @param password The user's password.
  * @returns A promise that resolves to the login response data if successful.
  * @throws {Error} If the authentication request fails.
  */
-export async function authenticateUser(username: string, password: string): Promise<LoginResponse> {
+export async function authenticateUser(email: string, password: string): Promise<LoginResponse> {
   try {
     const authenticatedUser = await axios.post<LoginResponse>(env.VITE_LOGIN_API_URL, {
-      username,
+      email,
       password,
     });
     return authenticatedUser.data;
   } catch (error) {
-    // console.error("Failed to authenticate user:", error);
     throw new Error("Failed to authenticate user");
   }
 }

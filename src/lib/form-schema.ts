@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const loginFormSchema = z.object({
-  username: z
+  email: z
     .string()
     .min(4, { message: "Username must be at least 4 characters long." })
     .max(64, { message: "Username cannot exceed 64 characters." })
