@@ -222,8 +222,8 @@ export default function Login() {
                 </Button>
               </p>
               <p>
-                <Button className="h-auto p-0" variant="link">
-                  Reset your password
+                <Button className="h-auto p-0" variant="link" asChild>
+                  <Link to="/reset-password">Reset your password</Link>
                 </Button>
               </p>
             </div>

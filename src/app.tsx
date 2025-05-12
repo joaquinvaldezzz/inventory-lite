@@ -12,6 +12,9 @@ import Login from "./pages/login";
 import PIN from "./pages/pin";
 import ConfirmPIN from "./pages/pin/confirm-pin";
 import CreatePIN from "./pages/pin/create-pin";
+import ResetPassword from "./pages/reset-password";
+import ResetPasswordPassword from "./pages/reset-password/password";
+import ResetPasswordUsername from "./pages/reset-password/username";
 import SignUp from "./pages/sign-up";
 
 import "./styles/main.css";
@@ -37,6 +40,18 @@ export default function App() {
 
             <Route path="/sign-up" exact>
               <SignUp />
+            </Route>
+
+            <Route path="/reset-password" exact>
+              <ResetPassword />
+            </Route>
+
+            <Route path="/reset-password/username" exact>
+              <ResetPasswordUsername />
+            </Route>
+
+            <Route path="/reset-password/password" exact>
+              <ResetPasswordPassword />
             </Route>
 
             <ProtectedRoute component={CreatePIN} path="/create-pin" exact />
