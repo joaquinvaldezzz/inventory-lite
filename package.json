@@ -9,7 +9,7 @@
     "dev:ios": "ionic capacitor run ios --livereload",
     "build": "vite build",
     "build:android": "ionic capacitor build android --no-open",
-    "build:ios": "ionic capacitor build ios",
+    "build:ios": "ionic capacitor build ios --no-open",
     "preview": "vite preview",
     "serve": "vite build && vite preview",
     "format": "prettier --write .",
