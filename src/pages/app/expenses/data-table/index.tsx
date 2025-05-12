@@ -200,7 +200,7 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
                   table.firstPage();
                 }}
               >
-                <ChevronFirst strokeWidth={2} aria-hidden="true" size={16} />
+                <ChevronFirst aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
             </PaginationItem>
 
@@ -215,7 +215,7 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
                   table.previousPage();
                 }}
               >
-                <ChevronLeft strokeWidth={2} aria-hidden="true" size={16} />
+                <ChevronLeft aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
             </PaginationItem>
 
@@ -230,7 +230,7 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
                   table.nextPage();
                 }}
               >
-                <ChevronRight strokeWidth={2} aria-hidden="true" size={16} />
+                <ChevronRight aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
             </PaginationItem>
 
@@ -245,7 +245,7 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
                   table.lastPage();
                 }}
               >
-                <ChevronLast strokeWidth={2} aria-hidden="true" size={16} />
+                <ChevronLast aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
             </PaginationItem>
           </PaginationContent>

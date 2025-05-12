@@ -264,7 +264,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
+                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <Popover modal>
                       <PopoverTrigger asChild>
@@ -305,7 +305,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                   <FormLabel htmlFor={field.name}>Category</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <Container strokeWidth={2} aria-hidden="true" size={16} />
+                      <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
                       <Popover>
@@ -512,7 +512,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
             <div className="mt-1 flex flex-col gap-4">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add another product</span>
-                <Plus strokeWidth={2} aria-hidden="true" size={16} />
+                <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
               <Button type="submit" disabled={isLoading}>
                 Submit

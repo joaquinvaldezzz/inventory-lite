@@ -303,7 +303,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
+                      <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <Popover modal>
                       <PopoverTrigger asChild>
@@ -344,7 +344,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                   <FormLabel>Category</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <Container strokeWidth={2} aria-hidden="true" size={16} />
+                      <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
                       <Popover>
@@ -422,7 +422,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                   <FormLabel>Type</FormLabel>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                      <PackageSearch strokeWidth={2} aria-hidden="true" size={16} />
+                      <PackageSearch aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <Select
                       name={field.name}
@@ -641,7 +641,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
             <div className="mt-1 flex flex-col gap-3">
               <Button type="button" variant="ghost" onClick={handleAdd}>
                 <span>Add more items</span>
-                <Plus strokeWidth={2} aria-hidden="true" size={16} />
+                <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Submitting..." : "Submit"}
