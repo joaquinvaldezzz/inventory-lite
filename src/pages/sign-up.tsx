@@ -219,9 +219,9 @@ export default function SignUp() {
                           }}
                         >
                           {isVisible ? (
-                            <EyeOff strokeWidth={2} aria-hidden="true" size={16} />
+                            <EyeOff aria-hidden="true" strokeWidth={2} size={16} />
                           ) : (
-                            <Eye strokeWidth={2} aria-hidden="true" size={16} />
+                            <Eye aria-hidden="true" strokeWidth={2} size={16} />
                           )}
                         </button>
                       </div>
@@ -255,9 +255,9 @@ export default function SignUp() {
                           }}
                         >
                           {isVisible ? (
-                            <EyeOff strokeWidth={2} aria-hidden="true" size={16} />
+                            <EyeOff aria-hidden="true" strokeWidth={2} size={16} />
                           ) : (
-                            <Eye strokeWidth={2} aria-hidden="true" size={16} />
+                            <Eye aria-hidden="true" strokeWidth={2} size={16} />
                           )}
                         </button>
                       </div>

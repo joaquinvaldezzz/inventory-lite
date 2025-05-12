@@ -538,7 +538,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                       e.stopPropagation();
                     }}
                   >
-                    <X strokeWidth={2} aria-hidden="true" size={14} />
+                    <X aria-hidden="true" strokeWidth={2} size={14} />
                   </button>
                 </div>
               );
@@ -595,7 +595,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 onChange?.(selected.filter((s) => s.fixed ?? false));
               }}
             >
-              <X strokeWidth={2} aria-hidden="true" size={16} />
+              <X aria-hidden="true" strokeWidth={2} size={16} />
             </button>
           </div>
         </div>
