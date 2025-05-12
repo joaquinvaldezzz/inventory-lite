@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonToast } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkmarkCircleOutline } from "ionicons/icons";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -49,6 +49,7 @@ export default function SignUp() {
     resolver: zodResolver(signUpFormSchema),
   });
   const [presentToast] = useIonToast();
+  const router = useIonRouter();
 
   /**
    * Handles the form submission event.
@@ -74,8 +75,6 @@ export default function SignUp() {
         setIsLoading(true);
 
         try {
-          // eslint-disable-next-line no-console -- TODO: Remove this once the form is implemented
-          console.log(formData);
           void presentToast({
             duration: 1500,
             icon: checkmarkCircleOutline,
@@ -86,6 +85,7 @@ export default function SignUp() {
           throw new Error("Form submission failed");
         } finally {
           setIsLoading(false);
+          router.goBack();
         }
       } catch (error) {
         throw new Error("Form submission failed");
@@ -331,7 +331,13 @@ export default function SignUp() {
             <div className="space-y-3 text-center text-sm">
               <p className="text-muted-foreground">
                 Already have an account? Log in{" "}
-                <Button className="h-auto p-0" variant="link">
+                <Button
+                  className="h-auto p-0"
+                  variant="link"
+                  onClick={() => {
+                    router.goBack();
+                  }}
+                >
                   here
                 </Button>
               </p>
