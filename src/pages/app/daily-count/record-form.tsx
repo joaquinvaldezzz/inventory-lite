@@ -196,7 +196,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
               <FormLabel>Date</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <CalendarIcon strokeWidth={2} aria-hidden="true" size={16} />
+                  <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -237,7 +237,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
               <FormLabel htmlFor={field.name}>Category</FormLabel>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                  <Container strokeWidth={2} aria-hidden="true" size={16} />
+                  <Container aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>
                   <Popover>
