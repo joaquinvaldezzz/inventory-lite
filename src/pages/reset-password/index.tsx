@@ -68,7 +68,12 @@ export default function ResetPassword() {
         throw new Error("Form data is invalid:", parsedData.error);
       }
 
-      if (parsedData.data.items.includes("username")) {
+      if (
+        parsedData.data.items.includes("username") &&
+        parsedData.data.items.includes("password")
+      ) {
+        router.push("/reset-password/username-password");
+      } else if (parsedData.data.items.includes("username")) {
         router.push("/reset-password/username");
       } else if (parsedData.data.items.includes("password")) {
         router.push("/reset-password/password");
