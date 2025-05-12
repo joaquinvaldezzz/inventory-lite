@@ -115,20 +115,19 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
 /**
  * Authenticates a user by sending their credentials to the login API.
  *
- * @param username The username of the user attempting to log in.
+ * @param email The email of the user attempting to log in.
  * @param password The user's password.
  * @returns A promise that resolves to the login response data if successful.
  * @throws {Error} If the authentication request fails.
  */
-export async function authenticateUser(username: string, password: string): Promise<LoginResponse> {
+export async function authenticateUser(email: string, password: string): Promise<LoginResponse> {
   try {
     const authenticatedUser = await axios.post<LoginResponse>(env.VITE_LOGIN_API_URL, {
-      username,
+      email,
       password,
     });
     return authenticatedUser.data;
   } catch (error) {
-    // console.error("Failed to authenticate user:", error);
     throw new Error("Failed to authenticate user");
   }
 }
@@ -576,6 +575,16 @@ export async function deleteDailyCountRecordById(id: number): Promise<void> {
  */
 export async function deleteWasteRecordById(id: number): Promise<void> {
   await apiRequest({ url: env.VITE_WASTE_API_URL, action: "delete", additionalData: { id } });
+}
+
+/**
+ * Deletes an expenses record by ID.
+ *
+ * @param id The ID of the record to delete.
+ * @returns Resolves when the record is deleted.
+ */
+export async function deleteExpensesRecordById(id: number): Promise<void> {
+  await apiRequest({ url: env.VITE_EXPENSES_API_URL, action: "delete", additionalData: { id } });
 }
 
 /**

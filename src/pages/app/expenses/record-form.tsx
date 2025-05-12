@@ -8,7 +8,7 @@ import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Wallet } from "luc
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useForm } from "react-hook-form";
 
-import { getItems, updateExpensesRecord } from "@/lib/api";
+import { deleteExpensesRecordById, getItems, updateExpensesRecord } from "@/lib/api";
 import { editExpensesFormSchema, type EditExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { ExpensesRecordData, Items, Supplier } from "@/lib/types";
@@ -199,9 +199,9 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   }
 
   /** Handles the deletion of a expenses record. */
-  function handleDelete() {
+  async function handleDelete() {
     try {
-      // await deleteExpensesRecordById(data.PurchaseID);
+      await deleteExpensesRecordById(data.PurchaseID);
     } catch (error) {
       void presentToast({
         color: "danger",
@@ -596,7 +596,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        handleDelete();
+                        void handleDelete();
                       }}
                       asChild
                     >

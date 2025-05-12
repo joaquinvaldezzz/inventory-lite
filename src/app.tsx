@@ -12,6 +12,7 @@ import Login from "./pages/login";
 import PIN from "./pages/pin";
 import ConfirmPIN from "./pages/pin/confirm-pin";
 import CreatePIN from "./pages/pin/create-pin";
+import SignUp from "./pages/sign-up";
 
 import "./styles/main.css";
 
@@ -32,6 +33,10 @@ export default function App() {
           <IonRouterOutlet>
             <Route path="/login" exact>
               <Login />
+            </Route>
+
+            <Route path="/sign-up" exact>
+              <SignUp />
             </Route>
 
             <ProtectedRoute component={CreatePIN} path="/create-pin" exact />

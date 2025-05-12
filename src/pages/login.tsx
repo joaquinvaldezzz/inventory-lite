@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { checkmarkCircleOutline } from "ionicons/icons";
 import { AlertCircle, Eye, EyeOff, KeyRound, User } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 
 import { authenticateUser } from "@/lib/api";
 import { loginFormSchema, type LoginFormSchema } from "@/lib/form-schema";
@@ -33,7 +34,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<LoginFormSchema>({
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
     resolver: zodResolver(loginFormSchema),
@@ -65,7 +66,7 @@ export default function Login() {
        * @returns A promise that resolves when the login process is complete.
        */
       async function loginUser() {
-        const { username, password } = formValues;
+        const { email: username, password } = formValues;
 
         try {
           const authenticatedUser = await authenticateUser(username, password);
@@ -139,11 +140,11 @@ export default function Login() {
             <Form {...form}>
               <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
                 <FormField
-                  name="username"
+                  name="email"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Email address</FormLabel>
                       <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                           <User strokeWidth={2} aria-hidden="true" size={16} />
@@ -151,8 +152,9 @@ export default function Login() {
                         <FormControl>
                           <Input
                             className="peer ps-9"
-                            placeholder="Enter your username"
-                            autoComplete="username"
+                            type="email"
+                            placeholder="Enter your email address"
+                            autoComplete="email"
                             disabled={isLoading}
                             {...field}
                           />
@@ -215,8 +217,8 @@ export default function Login() {
             <div className="space-y-3 text-center text-sm">
               <p className="text-muted-foreground">
                 First time?{" "}
-                <Button className="h-auto p-0" variant="link">
-                  Sign up now
+                <Button className="h-auto p-0" variant="link" asChild>
+                  <Link to="/sign-up">Sign up now</Link>
                 </Button>
               </p>
               <p>
