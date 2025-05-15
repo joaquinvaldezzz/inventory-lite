@@ -14,7 +14,7 @@ interface ProtectedRouteProps extends Omit<RouteProps, "component"> {
  * @param props.component The component to render if the user is authenticated
  * @returns The protected route component
  */
-export default function ProtectedRoute({ component: Component, ...rest }: ProtectedRouteProps) {
+export function ProtectedRoute({ component: Component, ...rest }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const location = useLocation();
 

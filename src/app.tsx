@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Route } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/toaster";
-import ProtectedRoute from "@/components/protected-route";
+import { ProtectedRoute } from "@/components/protected-route";
 
 import Tabs from "./pages/app/tabs";
 import BranchSelector from "./pages/branch-selector";
