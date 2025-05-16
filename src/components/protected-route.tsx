@@ -2,7 +2,7 @@ import { useContext } from "react";
 import type { ComponentType } from "react";
 import { Redirect, Route, type RouteProps } from "react-router-dom";
 
-import { AuthContext } from "@/lib/auth";
+import { AuthContext } from "@/lib/auth-context";
 
 interface ProtectedRouteProps extends Omit<RouteProps, "component"> {
   component: ComponentType<Record<string, unknown>>;
