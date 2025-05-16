@@ -33,7 +33,7 @@ const queryClient = new QueryClient();
  */
 function PublicRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Redirect to="/enter-pin" /> : children;
+  return isAuthenticated ? <Redirect to="/create-pin" /> : children;
 }
 
 /**
