@@ -46,3 +46,14 @@ export async function getFromStorage(key: string): Promise<string | null> {
 
   return typeof value === "string" ? value : null;
 }
+
+/**
+ * Deletes a value from local storage by key.
+ *
+ * @param key The key of the value to delete.
+ * @returns Resolves when the value is successfully deleted.
+ */
+export async function deleteFromStorage(key: string): Promise<void> {
+  await ensureStorageInitialized();
+  await storage.remove(key);
+}

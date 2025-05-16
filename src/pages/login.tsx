@@ -1,15 +1,12 @@
-import { startTransition, useRef, useState, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
+import { useRef, useState, type FormEvent } from "react";
+import { IonContent, IonImg, IonPage } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { checkmarkCircleOutline } from "ionicons/icons";
 import { AlertCircle, Eye, EyeOff, KeyRound, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 
-import { authenticateUser } from "@/lib/api";
 import { loginFormSchema, type LoginFormSchema } from "@/lib/form-schema";
-import { createSession } from "@/lib/session";
-import { saveToStorage } from "@/lib/storage";
+import { useAuth } from "@/hooks/use-auth";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,8 +36,7 @@ export default function Login() {
     },
     resolver: zodResolver(loginFormSchema),
   });
-  const router = useIonRouter();
-  const [presentToast] = useIonToast();
+  const { login } = useAuth();
 
   /**
    * Handles the form submission event for the login form.
@@ -60,53 +56,7 @@ export default function Login() {
 
       setIsLoading(true);
 
-      /**
-       * Logs in a user using the provided form values.
-       *
-       * @returns A promise that resolves when the login process is complete.
-       */
-      async function loginUser() {
-        const { email: username, password } = formValues;
-
-        try {
-          const authenticatedUser = await authenticateUser(username, password);
-
-          if (authenticatedUser.success) {
-            await saveToStorage("currentUser", JSON.stringify(authenticatedUser));
-
-            void presentToast({
-              duration: 1500,
-              icon: checkmarkCircleOutline,
-              message: "Logged in successfully!",
-              swipeGesture: "vertical",
-            });
-
-            const { user } = authenticatedUser.data;
-            const userId = user.id;
-            const userRole = user.level;
-
-            await createSession(userId, userRole);
-
-            router.push("/create-pin");
-          } else {
-            form.setError("root", {
-              message:
-                "Hmm, something went wrong. Please double-check your username and password. If you're still having trouble, you can reset your password.",
-            });
-          }
-        } catch (error) {
-          form.setError("root", {
-            message: "Failed to log in. Please try again.",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      startTransition(() => {
-        void loginUser();
-      });
+      void login(formValues.email, formValues.password);
     })(event);
   }
 

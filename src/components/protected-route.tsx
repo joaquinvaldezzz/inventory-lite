@@ -1,7 +1,8 @@
-import { useEffect, useState, type ComponentType } from "react";
-import { Redirect, Route, useLocation, type RouteProps } from "react-router-dom";
+import { useContext } from "react";
+import type { ComponentType } from "react";
+import { Redirect, Route, type RouteProps } from "react-router-dom";
 
-import { verifySession } from "@/lib/session";
+import { AuthContext } from "@/lib/auth";
 
 interface ProtectedRouteProps extends Omit<RouteProps, "component"> {
   component: ComponentType<Record<string, unknown>>;
@@ -15,38 +16,7 @@ interface ProtectedRouteProps extends Omit<RouteProps, "component"> {
  * @returns The protected route component
  */
 export default function ProtectedRoute({ component: Component, ...rest }: ProtectedRouteProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const location = useLocation();
-
-  /** Checks if the user is authenticated by verifying their session. */
-  async function checkAuth() {
-    const session = await verifySession();
-    setIsAuthenticated(session != null);
-  }
-
-  // Check auth on mount and route changes
-  useEffect(() => {
-    void checkAuth();
-  }, [location.pathname]);
-
-  // Periodic auth check every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(
-      () => {
-        void checkAuth();
-      },
-      5 * 60 * 1000,
-    );
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  if (isAuthenticated === null) {
-    // Still checking authentication
-    return null;
-  }
+  const { isAuthenticated } = useContext(AuthContext);
 
   return (
     <Route
