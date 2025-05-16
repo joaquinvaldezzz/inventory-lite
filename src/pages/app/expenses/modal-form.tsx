@@ -47,7 +47,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { inputVariants } from "@/components/ui/input";
+import { inputVariants } from "@/components/ui/input-variants";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {

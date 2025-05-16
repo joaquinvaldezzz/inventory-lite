@@ -8,6 +8,7 @@ import jsdoc from "eslint-plugin-jsdoc";
 import eslintPluginPerfectionist from "eslint-plugin-perfectionist";
 import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import eslintPluginReact from "eslint-plugin-react";
+import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import tseslint, { type Config } from "typescript-eslint";
 
 const config: Config = tseslint.config(
@@ -35,6 +36,7 @@ const config: Config = tseslint.config(
     files: ["src/**"],
     extends: [
       eslintPluginReact.configs.flat.recommended,
+      eslintPluginReactRefresh.configs.vite,
       eslintPluginQuery.configs["flat/recommended"],
       jsdoc.configs["flat/recommended-typescript"],
       jsdoc.configs["flat/stylistic-typescript"],

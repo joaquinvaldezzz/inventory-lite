@@ -1,76 +1,131 @@
+import type { ReactNode } from "react";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Route } from "react-router-dom";
 
-import { Toaster } from "@/components/ui/toaster";
-import { ProtectedRoute } from "@/components/protected-route";
-
+import { useAuth } from "./hooks/use-auth";
+import { AuthProvider } from "./lib/auth";
 import Tabs from "./pages/app/tabs";
-import BranchSelector from "./pages/branch-selector";
 import Login from "./pages/login";
-import PIN from "./pages/pin";
-import ConfirmPIN from "./pages/pin/confirm-pin";
-import CreatePIN from "./pages/pin/create-pin";
 import ResetPassword from "./pages/reset-password";
 import ResetPasswordPassword from "./pages/reset-password/password";
 import ResetPasswordUsername from "./pages/reset-password/username";
-import ResetPasswordUsernamePassword from "./pages/reset-password/username-password";
 import SignUp from "./pages/sign-up";
 
 import "./styles/main.css";
+
+import BranchSelector from "./pages/branch-selector";
+import EnterPIN from "./pages/pin";
+import ConfirmPIN from "./pages/pin/confirm-pin";
+import CreatePIN from "./pages/pin/create-pin";
 
 setupIonicReact();
 
 const queryClient = new QueryClient();
 
 /**
+ * A component that redirects to the app if the user is authenticated.
+ *
+ * @param props The component props.
+ * @param props.children The child components to render.
+ * @returns The child components if the user is not authenticated, otherwise a redirect to the app.
+ */
+function PublicRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Redirect to="/create-pin" /> : children;
+}
+
+/**
+ * A component that redirects to the login page if the user is not authenticated.
+ *
+ * @param props The component props.
+ * @param props.children The child components to render.
+ * @returns The child components if the user is authenticated, otherwise a redirect to the login
+ *   page.
+ */
+function PrivateRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Redirect to="/login" />;
+}
+
+/**
  * The main application component that sets up the routing and context providers.
  *
- * @returns The rendered component.
+ * @returns The rendered application.
  */
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <IonApp>
         <IonReactRouter>
-          <IonRouterOutlet>
-            <Route path="/login" exact>
-              <Login />
-            </Route>
+          <AuthProvider>
+            <IonRouterOutlet>
+              {/* Public routes */}
+              <Route path="/login" exact>
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              </Route>
+              <Route path="/sign-up" exact>
+                <PublicRoute>
+                  <SignUp />
+                </PublicRoute>
+              </Route>
+              <Route path="/reset-password" exact>
+                <PublicRoute>
+                  <ResetPassword />
+                </PublicRoute>
+              </Route>
+              <Route path="/reset-password/username" exact>
+                <PublicRoute>
+                  <ResetPasswordUsername />
+                </PublicRoute>
+              </Route>
+              <Route path="/reset-password/password" exact>
+                <PublicRoute>
+                  <ResetPasswordPassword />
+                </PublicRoute>
+              </Route>
 
-            <Route path="/sign-up" exact>
-              <SignUp />
-            </Route>
+              {/* PIN routes */}
+              <Route path="/enter-pin" exact>
+                <PrivateRoute>
+                  <EnterPIN />
+                </PrivateRoute>
+              </Route>
+              <Route path="/create-pin" exact>
+                <PrivateRoute>
+                  <CreatePIN />
+                </PrivateRoute>
+              </Route>
+              <Route path="/confirm-pin" exact>
+                <PrivateRoute>
+                  <ConfirmPIN />
+                </PrivateRoute>
+              </Route>
 
-            <Route path="/reset-password" exact>
-              <ResetPassword />
-            </Route>
+              {/* Branch selector */}
+              <Route path="/branch-selector" exact>
+                <PrivateRoute>
+                  <BranchSelector />
+                </PrivateRoute>
+              </Route>
 
-            <Route path="/reset-password/username" exact>
-              <ResetPasswordUsername />
-            </Route>
+              {/* App routes */}
+              <Route path="/app/*">
+                <PrivateRoute>
+                  <Tabs />
+                </PrivateRoute>
+              </Route>
 
-            <Route path="/reset-password/password" exact>
-              <ResetPasswordPassword />
-            </Route>
-
-            <Route path="/reset-password/username-password" exact>
-              <ResetPasswordUsernamePassword />
-            </Route>
-
-            <ProtectedRoute component={CreatePIN} path="/create-pin" exact />
-            <ProtectedRoute component={ConfirmPIN} path="/confirm-pin" exact />
-            <ProtectedRoute component={PIN} path="/pin" exact />
-            <ProtectedRoute component={BranchSelector} path="/branch-selector" exact />
-            <ProtectedRoute component={Tabs} path="/app/*" />
-
-            <Route path="/" exact>
-              <Redirect to="/login" />
-            </Route>
-          </IonRouterOutlet>
+              {/* Default redirect */}
+              <Route path="/" exact>
+                <Redirect to="/login" />
+              </Route>
+            </IonRouterOutlet>
+          </AuthProvider>
         </IonReactRouter>
-        <Toaster />
       </IonApp>
     </QueryClientProvider>
   );

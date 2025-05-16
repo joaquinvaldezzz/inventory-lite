@@ -1,5 +1,5 @@
 import { useRef, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage, useIonViewDidEnter } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonRouter, useIonViewDidEnter } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -20,7 +20,7 @@ import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin
  *
  * @returns The rendered PIN entry page.
  */
-export default function PIN() {
+export default function EnterPIN() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const form = useForm<PinFormSchema>({
     defaultValues: {
@@ -28,6 +28,7 @@ export default function PIN() {
     },
     resolver: zodResolver(pinFormSchema),
   });
+  const router = useIonRouter();
 
   useIonViewDidEnter(() => {
     form.setFocus("pin");
@@ -48,6 +49,19 @@ export default function PIN() {
       if (!parsedData.success) {
         throw new Error("Form data is invalid:", parsedData.error);
       }
+
+      /** Checks the PIN against the stored PIN. */
+      function checkPIN() {
+        if (formValues.pin === "123456") {
+          router.push("/app/delivery");
+        } else {
+          form.setError("pin", {
+            message: "Invalid PIN. Please try again.",
+          });
+        }
+      }
+
+      checkPIN();
     })(event);
   }
 

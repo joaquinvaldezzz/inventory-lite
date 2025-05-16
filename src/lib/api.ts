@@ -75,7 +75,7 @@ async function getUserSession(): Promise<UserSession> {
   }
 
   return {
-    userId: user.value.data.user.id,
+    userId: user.value.data.user.id.toString(),
     token: user.value.data.token,
     branch: branch.value,
   };
