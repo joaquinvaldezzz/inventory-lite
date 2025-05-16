@@ -5,6 +5,7 @@ import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 
 export interface Option {
@@ -97,27 +98,6 @@ export interface MultipleSelectorRef {
   input: HTMLInputElement;
   focus: () => void;
   reset: () => void;
-}
-
-/**
- * @param value The value to be debounced.
- * @param delay The delay time to debounce.
- * @returns The debounced value.
- */
-export function useDebounce<T>(value: T, delay?: number): T {
-  const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay ?? 500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
 }
 
 /**

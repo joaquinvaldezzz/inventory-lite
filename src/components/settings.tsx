@@ -11,14 +11,14 @@ import {
   IonToggle,
   IonToolbar,
   useIonAlert,
-  useIonRouter,
 } from "@ionic/react";
 
 import { executeLogout } from "@/lib/api";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
-import { saveToStorage } from "@/lib/storage";
+import { deleteFromStorage, saveToStorage } from "@/lib/storage";
 import type { Branch } from "@/lib/types";
 import { updateTheme } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * The `Settings` component handles the settings page. It contains the ...
@@ -28,8 +28,8 @@ import { updateTheme } from "@/lib/utils";
 export function Settings() {
   const [currentBranch, setCurrentBranch] = useState<number | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const router = useIonRouter();
   const [presentAlert] = useIonAlert();
+  const auth = useAuth();
 
   useEffect(() => {
     /**
@@ -85,11 +85,7 @@ export function Settings() {
     }
   }
 
-  /**
-   * Logs the user out of the application.
-   *
-   * @throws {Error} If an error occurs during the logout process.
-   */
+  /** Logs the user out of the application. */
   function logoutUser() {
     void presentAlert({
       header: "Logout",
@@ -102,14 +98,9 @@ export function Settings() {
         {
           text: "Yes",
           handler: async () => {
-            try {
-              await executeLogout();
-            } catch (error) {
-              throw new Error("Error logging out");
-            } finally {
-              router.push("/login");
-              window.location.reload();
-            }
+            auth.logout();
+            await executeLogout();
+            await deleteFromStorage("currentUser");
           },
         },
       ],

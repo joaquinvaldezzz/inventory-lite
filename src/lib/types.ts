@@ -29,21 +29,21 @@ interface APIResponse<T> {
 /** Represents a branch that a user has access to. */
 export interface Branch {
   /** Unique identifier of the branch. */
-  id: string | number;
+  id: number;
 
   /** Name of the branch. */
   branch: string;
 }
 
 /** Structure of the data returned in a successful login response. */
-interface LoginData {
+export interface LoginData {
   /** Authentication token for the logged-in user. */
   token: string;
 
   /** Details of the authenticated user. */
   user: {
     /** Unique identifier of the user. */
-    id: string;
+    id: number;
 
     /** Full name of the user. */
     name: string;
@@ -61,16 +61,16 @@ interface LoginData {
         module_name: string;
 
         /** Read permission for the module. */
-        read: string;
+        read: number | null;
 
         /** Write permission for the module. */
-        write: string;
+        write: number | null;
 
         /** Edit permission for the module. */
-        edit: string;
+        edit: number | null;
 
         /** Delete permission for the module. */
-        delete: string;
+        delete: number | null;
       },
     ];
 

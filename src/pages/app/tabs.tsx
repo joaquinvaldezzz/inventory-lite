@@ -3,6 +3,8 @@ import { IonReactRouter } from "@ionic/react-router";
 import { calendar, cash, cube, trash } from "ionicons/icons";
 import { Redirect, Route } from "react-router";
 
+import { useAuth } from "@/hooks/use-auth";
+
 import DailyCount from "./daily-count";
 import DailyCountRecord from "./daily-count/record";
 import Delivery from "./delivery";
@@ -20,6 +22,12 @@ import WastesRecord from "./wastes/record";
  * @returns The rendered tab navigation component.
  */
 export default function Tabs() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Redirect to="/login" />;
+  }
+
   return (
     <IonReactRouter>
       <IonTabs>
