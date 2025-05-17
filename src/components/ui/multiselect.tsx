@@ -131,7 +131,7 @@ function transToGroupOption(options: Option[], groupBy?: string) {
  * @returns The options without the picked options.
  */
 function removePickedOption(groupOption: GroupOption, picked: Option[]) {
-  const parsed = JSON.parse(JSON.stringify(groupOption)) as unknown;
+  const parsed = JSON.parse(JSON.stringify(groupOption));
   if (!isRecord(parsed)) {
     return {};
   }

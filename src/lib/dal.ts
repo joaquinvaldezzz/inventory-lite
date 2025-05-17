@@ -12,7 +12,7 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
 
     if (currentUser == null) return null;
 
-    const parsedCurrentUser = JSON.parse(currentUser) as unknown;
+    const parsedCurrentUser = JSON.parse(currentUser);
 
     if (parsedCurrentUser != null && typeof parsedCurrentUser === "object") {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know the type is correct
@@ -46,7 +46,7 @@ export async function getUserSelectedBranch(): Promise<number | null> {
 
     if (selectedBranch == null) return null;
 
-    const branch = JSON.parse(selectedBranch) as unknown;
+    const branch = JSON.parse(selectedBranch);
 
     if (branch != null && typeof branch === "object") {
       return Number(Object.values(branch)[0]);

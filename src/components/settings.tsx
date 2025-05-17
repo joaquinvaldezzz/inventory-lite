@@ -16,9 +16,10 @@ import {
 import { executeLogout } from "@/lib/api";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
 import { deleteFromStorage, saveToStorage } from "@/lib/storage";
+import { onChange } from "@/lib/theme-utils";
 import type { Branch } from "@/lib/types";
-import { updateTheme } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { useTheme } from "@/hooks/use-theme";
 
 /**
  * The `Settings` component handles the settings page. It contains the ...
@@ -30,6 +31,7 @@ export function Settings() {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [presentAlert] = useIonAlert();
   const auth = useAuth();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     /**
@@ -138,8 +140,9 @@ export function Settings() {
 
           <IonItem>
             <IonToggle
+              checked={theme === "dark"}
               onIonChange={(event) => {
-                updateTheme(event.detail.checked ? "dark" : "light");
+                onChange(event.detail.checked ? "dark" : "light", setTheme);
               }}
             >
               Dark mode

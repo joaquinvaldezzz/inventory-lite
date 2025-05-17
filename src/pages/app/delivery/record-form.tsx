@@ -116,7 +116,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         const savedSuppliers = await getFromStorage("suppliers");
 
         if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers) as unknown;
+          const parsedSuppliers = JSON.parse(savedSuppliers);
 
           if (Array.isArray(parsedSuppliers)) {
             setSuppliers(parsedSuppliers);

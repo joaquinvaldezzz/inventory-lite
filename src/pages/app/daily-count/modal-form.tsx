@@ -124,7 +124,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
       const savedCategories = await getFromStorage("categories");
 
       if (savedCategories != null) {
-        const parsedCategories = JSON.parse(savedCategories) as unknown;
+        const parsedCategories = JSON.parse(savedCategories);
 
         if (Array.isArray(parsedCategories)) {
           setCategories(parsedCategories);
