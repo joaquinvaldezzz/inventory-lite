@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 
 import App from "./app";
 
+import "./lib/dark-mode";
+
 const container = document.getElementById("root");
 
 if (container == null) {
