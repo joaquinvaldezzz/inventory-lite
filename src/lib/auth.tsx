@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const currentUser = await getFromStorage("currentUser");
       if (typeof currentUser === "string" && currentUser.length > 0) {
         try {
-          const parsedUser = JSON.parse(currentUser) as unknown;
+          const parsedUser = JSON.parse(currentUser);
           const result = loginResponseSchema.safeParse(parsedUser);
           if (result.success) {
             setIsAuthenticated(true);
