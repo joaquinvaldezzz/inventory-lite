@@ -4,6 +4,18 @@ import type { Branch, LoginResponse } from "./types";
 /**
  * Retrieves the current user from storage.
  *
+ * @param obj The object to check.
+ * @returns Resolves to the current user's login data if found, otherwise null.
+ */
+function isLoginResponse(obj: unknown): obj is LoginResponse {
+  return (
+    obj != null && typeof obj === "object" && "success" in obj && "message" in obj && "data" in obj
+  );
+}
+
+/**
+ * Retrieves the current user from storage.
+ *
  * @returns Resolves to the current user's login data if found, otherwise null.
  */
 export async function getCurrentUser(): Promise<LoginResponse | null> {
@@ -14,9 +26,8 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
 
     const parsedCurrentUser = JSON.parse(currentUser);
 
-    if (parsedCurrentUser != null && typeof parsedCurrentUser === "object") {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- We know the type is correct
-      return parsedCurrentUser as LoginResponse;
+    if (isLoginResponse(parsedCurrentUser)) {
+      return parsedCurrentUser;
     }
   } catch (error) {
     throw new Error("Error parsing `currentUser` from storage");
