@@ -188,12 +188,7 @@ export default function Login() {
 
             <div className="space-y-3 text-center text-sm">
               <p className="text-muted-foreground">
-                First time?{" "}
-                <Button className="h-auto p-0" variant="link" asChild>
-                  <Link to="/sign-up">Sign up now</Link>
-                </Button>
-              </p>
-              <p>
+                Having trouble logging in?{" "}
                 <Button className="h-auto p-0" variant="link" asChild>
                   <Link to="/reset-password">Reset your password</Link>
                 </Button>
