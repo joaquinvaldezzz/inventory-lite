@@ -9,9 +9,6 @@ import { AuthProvider } from "./lib/auth";
 import Tabs from "./pages/app/tabs";
 import Login from "./pages/login";
 import ResetPassword from "./pages/reset-password";
-import ResetPasswordPassword from "./pages/reset-password/password";
-import ResetPasswordUsername from "./pages/reset-password/username";
-import SignUp from "./pages/sign-up";
 
 import "./styles/main.css";
 
@@ -69,25 +66,9 @@ export default function App() {
                     <Login />
                   </PublicRoute>
                 </Route>
-                <Route path="/sign-up" exact>
-                  <PublicRoute>
-                    <SignUp />
-                  </PublicRoute>
-                </Route>
+
                 <Route path="/reset-password" exact>
-                  <PublicRoute>
-                    <ResetPassword />
-                  </PublicRoute>
-                </Route>
-                <Route path="/reset-password/username" exact>
-                  <PublicRoute>
-                    <ResetPasswordUsername />
-                  </PublicRoute>
-                </Route>
-                <Route path="/reset-password/password" exact>
-                  <PublicRoute>
-                    <ResetPasswordPassword />
-                  </PublicRoute>
+                  <ResetPassword />
                 </Route>
 
                 {/* PIN routes */}

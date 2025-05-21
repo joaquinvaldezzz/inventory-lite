@@ -156,6 +156,21 @@ export async function checkIfUserTokenIsValid(): Promise<boolean> {
 }
 
 /**
+ * Sends a request to the forgot password API endpoint.
+ *
+ * @param email The email of the user to send the forgot password request to.
+ * @returns A promise that resolves to the response data.
+ * @throws {Error} If the API request fails.
+ */
+export async function resetPassword(email: string): Promise<void> {
+  try {
+    await axios.post(env.VITE_FORGOT_PASSWORD_API_URL, { email });
+  } catch (error) {
+    throw new Error("Failed to reset password");
+  }
+}
+
+/**
  * Creates a new delivery entry.
  *
  * @param delivery The delivery details.
