@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
-import { IonContent, IonImg, IonPage } from "@ionic/react";
+import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { checkmarkCircleOutline } from "ionicons/icons";
 import { AlertCircle, Eye, EyeOff, KeyRound, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -37,6 +38,8 @@ export default function Login() {
     resolver: zodResolver(loginFormSchema),
   });
   const { login } = useAuth();
+  const [presentToast] = useIonToast();
+  const router = useIonRouter();
 
   /**
    * Handles the form submission event for the login form.
@@ -46,17 +49,36 @@ export default function Login() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedData = loginFormSchema.safeParse(formValues);
+    void form.handleSubmit(async (formData) => {
+      const parsedData = loginFormSchema.safeParse(formData);
 
       if (!parsedData.success) {
         throw new Error("Form data is invalid:", parsedData.error);
       }
 
-      setIsLoading(true);
+      try {
+        setIsLoading(true);
+        const response = await login(formData.email, formData.password);
 
-      void login(formValues.email, formValues.password);
+        if (!(response?.success ?? false)) {
+          form.setError("root", {
+            message:
+              "Hmm, something went wrong. Please double-check your username and password. If you're still having trouble, you can reset your password.",
+          });
+        } else {
+          void presentToast({
+            duration: 1500,
+            icon: checkmarkCircleOutline,
+            message: "Login successful!",
+            swipeGesture: "vertical",
+          });
+          router.push("/create-pin");
+        }
+      } catch (error) {
+        throw new Error("Failed to login");
+      } finally {
+        setIsLoading(false);
+      }
     })(event);
   }
 

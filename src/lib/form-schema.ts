@@ -15,6 +15,12 @@ export const loginFormSchema = z.object({
 
 export type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
+export const forgotPasswordFormSchema = z.object({
+  email: z.string().email({ message: "Email address is required." }).trim(),
+});
+
+export type ForgotPasswordFormSchema = z.infer<typeof forgotPasswordFormSchema>;
+
 export const pinFormSchema = z.object({
   pin: z.string().min(6, { message: "PIN must be at least 6 characters long." }).trim(),
 });
