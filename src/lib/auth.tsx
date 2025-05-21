@@ -50,18 +50,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string): Promise<LoginResponse | null> => {
       const authenticatedUser = await authenticateUser(email, password);
 
       if (authenticatedUser.success) {
         await saveToStorage("currentUser", JSON.stringify(authenticatedUser));
         setIsAuthenticated(true);
         setUser(authenticatedUser);
-
-        router.push("/create-pin");
+        return authenticatedUser;
       } else {
         setIsAuthenticated(false);
         setUser(null);
+        return null;
       }
     },
     [router],
