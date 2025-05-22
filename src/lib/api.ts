@@ -255,7 +255,7 @@ export async function createExpensesEntry(expenses: NewExpensesFormSchema): Prom
  *
  * @returns A promise that resolves to an array of delivery items.
  */
-export async function fetchDeliveryEntries(): Promise<DeliveryItem[] | unknown[]> {
+export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
   const data = await apiRequest<DeliveryResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
@@ -296,7 +296,7 @@ export async function getItems(): Promise<Items> {
  * @param id The delivery record ID.
  * @returns A promise that resolves to the delivery record data.
  */
-export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[] | unknown[]> {
+export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[]> {
   const data = await apiRequest<DeliveryResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
@@ -311,7 +311,7 @@ export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRec
  * @returns A promise that resolves to an array of daily count entries.
  * @throws {Error} If the API request fails.
  */
-export async function fetchDailyCountEntries(): Promise<DailyCountData[] | unknown[]> {
+export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
   const data = await apiRequest<DailyCountResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: "fetch",
@@ -326,7 +326,7 @@ export async function fetchDailyCountEntries(): Promise<DailyCountData[] | unkno
  * @returns A promise that resolves to an array of waste data entries.
  * @throws {Error} If the API request fails.
  */
-export async function fetchWasteEntries(): Promise<WasteData[] | unknown[]> {
+export async function fetchWasteEntries(): Promise<WasteData[]> {
   const data = await apiRequest<WasteResponse>({
     url: env.VITE_WASTE_API_URL,
     action: "fetch",
@@ -340,7 +340,7 @@ export async function fetchWasteEntries(): Promise<WasteData[] | unknown[]> {
  * @returns A promise that resolves to an array of employees.
  * @throws {Error} If the API request fails.
  */
-export async function fetchEmployees(): Promise<EmployeeData[] | unknown[]> {
+export async function fetchEmployees(): Promise<EmployeeData[]> {
   const data = await apiRequest<EmployeesResponse>({
     url: env.VITE_EMPLOYEES_API_URL,
     action: "fetch",
@@ -356,7 +356,7 @@ export async function fetchEmployees(): Promise<EmployeeData[] | unknown[]> {
  * @returns A promise that resolves to an array of category objects.
  * @throws {Error} If the API request fails.
  */
-export async function fetchCategories(): Promise<Categories[] | unknown[]> {
+export async function fetchCategories(): Promise<Categories[]> {
   const data = await apiRequest<CategoriesResponse>({
     url: env.VITE_CATEGORIES_API_URL,
     action: "fetch",
@@ -376,7 +376,7 @@ export async function fetchCategories(): Promise<Categories[] | unknown[]> {
  *   array, an empty array is returned.
  * @throws {Error} If the API request fails or encounters an error.
  */
-export async function fetchExpenses(): Promise<ExpensesRecordData[] | unknown[]> {
+export async function fetchExpenses(): Promise<ExpensesRecordData[]> {
   const data = await apiRequest<ExpensesRecordsResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
@@ -390,9 +390,7 @@ export async function fetchExpenses(): Promise<ExpensesRecordData[] | unknown[]>
  * @param id The daily count record ID.
  * @returns A promise that resolves to the daily count record data.
  */
-export async function getSpecificDailyCountRecordById(
-  id: number,
-): Promise<DailyCountRecord[] | unknown[]> {
+export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
   const data = await apiRequest<DailyCountRecordResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: "fetch",
@@ -407,9 +405,7 @@ export async function getSpecificDailyCountRecordById(
  * @param id The waste record ID.
  * @returns A promise that resolves to the waste record data.
  */
-export async function getSpecificWastesRecordById(
-  id: number,
-): Promise<WasteRecordData[] | unknown[]> {
+export async function getSpecificWastesRecordById(id: number): Promise<WasteRecordData[]> {
   const data = await apiRequest<WasteRecordResponse>({
     url: env.VITE_WASTE_API_URL,
     action: "fetch",
@@ -425,9 +421,7 @@ export async function getSpecificWastesRecordById(
  * @returns A promise that resolves to an array of ingredients.
  * @throws {Error} If the API request fails.
  */
-export async function getIngredientsByCategory(
-  category: string,
-): Promise<Ingredients[] | unknown[]> {
+export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
@@ -444,9 +438,7 @@ export async function getIngredientsByCategory(
  * @param id The waste record ID.
  * @returns A promise that resolves to the waste record data.
  */
-export async function getSpecificExpensesRecordById(
-  id: number,
-): Promise<ExpensesRecordData[] | unknown[]> {
+export async function getSpecificExpensesRecordById(id: number): Promise<ExpensesRecordData[]> {
   const data = await apiRequest<ExpensesRecordsResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
@@ -463,7 +455,7 @@ export async function getSpecificExpensesRecordById(
  *   empty array is returned.
  * @throws An error if the API request fails.
  */
-export async function getItemsBySupplierId(supplier: string): Promise<Items[] | unknown[]> {
+export async function getItemsBySupplierId(supplier: string): Promise<Items[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
