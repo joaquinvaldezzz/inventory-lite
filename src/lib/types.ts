@@ -104,6 +104,8 @@ export interface DeliveryResponse {
   };
 }
 
+export type ForgotPasswordResponse = Prettify<APIResponse<string>>;
+
 export type DeliveryItem = DeliveryResponse["data"];
 
 export interface AddDeliveryItem {

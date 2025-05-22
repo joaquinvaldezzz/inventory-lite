@@ -2,11 +2,12 @@ import { useRef, useState, type FormEvent } from "react";
 import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkmarkCircleOutline } from "ionicons/icons";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { resetPassword } from "@/lib/api";
 import { forgotPasswordFormSchema, type ForgotPasswordFormSchema } from "@/lib/form-schema";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -56,13 +57,18 @@ export default function ResetPassword() {
 
       try {
         setIsLoading(true);
-        await resetPassword(data.email);
-        void presentToast({
-          duration: 1500,
-          icon: checkmarkCircleOutline,
-          message: "Password reset successfully!",
-          swipeGesture: "vertical",
-        });
+        const response = await resetPassword(data.email);
+
+        if (response.success) {
+          void presentToast({
+            duration: 3000,
+            icon: checkmarkCircleOutline,
+            message: response.message,
+            swipeGesture: "vertical",
+          });
+        } else {
+          form.setError("root", { message: response.message });
+        }
       } catch (error) {
         throw new Error("Failed to reset password");
       } finally {
@@ -74,7 +80,7 @@ export default function ResetPassword() {
   return (
     <IonPage>
       <IonContent>
-        <div className="mt-safe py-12 text-pretty">
+        <div className="mt-safe py-12">
           <div className="space-y-8 px-4">
             <div className="space-y-6">
               <IonImg
@@ -90,13 +96,23 @@ export default function ResetPassword() {
               </div>
             </div>
 
+            {form.formState.errors.root != null && (
+              <Alert variant="destructive">
+                <AlertCircle className="w-4" />
+                <AlertTitle>Oh no!</AlertTitle>
+                <AlertDescription>
+                  <p>{form.formState.errors.root.message}</p>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <Form {...form}>
               <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
                 <FormField
                   name="email"
                   control={form.control}
                   render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
+                    <FormItem>
                       <FormLabel>Email address</FormLabel>
                       <FormControl>
                         <Input
@@ -113,7 +129,7 @@ export default function ResetPassword() {
 
                 <div className="flex flex-col gap-3 pt-1">
                   <Button type="submit" disabled={isLoading}>
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
+                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Submit"}
                   </Button>
                   <Button
                     type="button"
@@ -123,7 +139,7 @@ export default function ResetPassword() {
                       router.goBack();
                     }}
                   >
-                    Cancel
+                    Back
                   </Button>
                 </div>
               </form>

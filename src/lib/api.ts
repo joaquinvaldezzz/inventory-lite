@@ -25,6 +25,7 @@ import type {
   EmployeesResponse,
   ExpensesRecordData,
   ExpensesRecordsResponse,
+  ForgotPasswordResponse,
   Ingredients,
   IngredientsResponse,
   Items,
@@ -160,9 +161,12 @@ export async function checkIfUserTokenIsValid(): Promise<boolean> {
  * @returns A promise that resolves to the response data.
  * @throws {Error} If the API request fails.
  */
-export async function resetPassword(email: string): Promise<void> {
+export async function resetPassword(email: string): Promise<ForgotPasswordResponse> {
   try {
-    await axios.post(env.VITE_FORGOT_PASSWORD_API_URL, { email });
+    const response = await axios.post<ForgotPasswordResponse>(env.VITE_FORGOT_PASSWORD_API_URL, {
+      email,
+    });
+    return response.data;
   } catch (error) {
     throw new Error("Failed to reset password");
   }
