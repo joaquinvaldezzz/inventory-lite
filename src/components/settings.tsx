@@ -13,9 +13,8 @@ import {
   useIonAlert,
 } from "@ionic/react";
 
-import { executeLogout } from "@/lib/api";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
-import { deleteFromStorage, saveToStorage } from "@/lib/storage";
+import { saveToStorage } from "@/lib/storage";
 import { onChange } from "@/lib/theme-utils";
 import type { Branch } from "@/lib/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -99,10 +98,8 @@ export function Settings() {
         },
         {
           text: "Yes",
-          handler: async () => {
+          handler: () => {
             auth.logout();
-            await executeLogout();
-            await deleteFromStorage("currentUser");
           },
         },
       ],

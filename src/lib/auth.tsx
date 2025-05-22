@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useIonRouter } from "@ionic/react";
 
-import { authenticateUser } from "./api";
+import { authenticateUser, executeLogout } from "./api";
 import { AuthContext, loginResponseSchema, type LoginResponse } from "./auth-context";
-import { getFromStorage, saveToStorage } from "./storage";
+import { deleteFromStorage, getFromStorage, saveToStorage } from "./storage";
 
 /**
  * The `AuthProvider` component provides authentication context to its children. It manages the
@@ -49,6 +49,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void checkToken();
   }, []);
 
+  /**
+   * Logs in a user with the given email and password.
+   *
+   * @param email The user's email.
+   * @param password The user's password.
+   * @returns The authenticated user or null if authentication fails.
+   */
   const login = useCallback(
     async (email: string, password: string): Promise<LoginResponse | null> => {
       const authenticatedUser = await authenticateUser(email, password);
@@ -67,13 +74,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router],
   );
 
-  const logout = useCallback(() => {
-    sessionStorage.removeItem("token");
+  /**
+   * Logs out the current user by executing a logout request and deleting the user's session from
+   * storage.
+   */
+  const logout = useCallback(async () => {
+    await executeLogout();
+    await deleteFromStorage("currentUser");
     setIsAuthenticated(false);
     setUser(null);
     router.push("/login");
   }, [router]);
 
+  /**
+   * Creates a memoized value for the authentication context.
+   *
+   * @returns The memoized value for the authentication context.
+   */
   const value = useMemo(
     () => ({
       isAuthenticated,
