@@ -4,18 +4,18 @@ import { IonReactRouter } from "@ionic/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Route } from "react-router-dom";
 
-import { ThemeProvider } from "./components/theme-toggle";
-import { useAuth } from "./hooks/use-auth";
-import { AuthProvider } from "./lib/auth";
-import Tabs from "./pages/app/tabs";
-import BranchSelector from "./pages/branch-selector";
-import Login from "./pages/login";
-import EnterPIN from "./pages/pin";
-import ConfirmPIN from "./pages/pin/confirm-pin";
-import CreatePIN from "./pages/pin/create-pin";
-import ResetPassword from "./pages/reset-password";
+import { AuthProvider } from "@/lib/auth";
+import { useAuth } from "@/hooks/use-auth";
+import { ThemeProvider } from "@/components/theme-toggle";
+import Tabs from "@/pages/app/tabs";
+import BranchSelector from "@/pages/branch-selector";
+import Login from "@/pages/login";
+import EnterPIN from "@/pages/pin";
+import ConfirmPIN from "@/pages/pin/confirm-pin";
+import CreatePIN from "@/pages/pin/create-pin";
+import ResetPassword from "@/pages/reset-password";
 
-import "./styles/main.css";
+import "@/styles/main.css";
 
 setupIonicReact();
 
