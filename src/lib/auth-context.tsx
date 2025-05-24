@@ -34,6 +34,7 @@ type LoginResponse = z.infer<typeof loginResponseSchema>;
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  isPinSet: boolean;
   user: LoginResponse | null;
   login: (username: string, password: string) => Promise<LoginResponse | null>;
   logout: () => void;
@@ -49,6 +50,7 @@ const noopSync = () => {
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
+  isPinSet: false,
   user: null,
   login: noop,
   logout: noopSync,

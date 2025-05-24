@@ -29,8 +29,13 @@ const queryClient = new QueryClient();
  * @returns The child components if the user is not authenticated, otherwise a redirect to the app.
  */
 function PublicRoute({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Redirect to="/create-pin" /> : children;
+  const { isAuthenticated, isPinSet } = useAuth();
+
+  if (isAuthenticated) {
+    return isPinSet ? <Redirect to="/enter-pin" /> : <Redirect to="/create-pin" />;
+  }
+
+  return children;
 }
 
 /**

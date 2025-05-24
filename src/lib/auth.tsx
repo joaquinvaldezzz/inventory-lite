@@ -15,6 +15,7 @@ import { deleteFromStorage, getFromStorage, saveToStorage } from "./storage";
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isPinSet, setIsPinSet] = useState(false);
   const [user, setUser] = useState<LoginResponse | null>(null);
   const router = useIonRouter();
 
@@ -26,6 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
      */
     async function checkToken() {
       const currentUser = await getFromStorage("currentUser");
+      const savedPIN = await getFromStorage("pin");
+
+      if (savedPIN != null) {
+        setIsPinSet(true);
+      }
+
       if (typeof currentUser === "string" && currentUser.length > 0) {
         try {
           const parsedUser = JSON.parse(currentUser);
@@ -94,11 +101,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       isAuthenticated,
+      isPinSet,
       user,
       login,
       logout,
     }),
-    [isAuthenticated, user, login, logout],
+    [isAuthenticated, isPinSet, user, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
