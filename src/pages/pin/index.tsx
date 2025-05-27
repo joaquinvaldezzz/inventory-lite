@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { pinFormSchema, type PinFormSchema } from "@/lib/form-schema";
+import { getFromStorage } from "@/lib/storage";
 import {
   Form,
   FormControl,
@@ -42,7 +43,7 @@ export default function EnterPIN() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    void form.handleSubmit(() => {
+    void form.handleSubmit(async () => {
       const formValues = form.getValues();
       const parsedData = pinFormSchema.safeParse(formValues);
 
@@ -50,18 +51,15 @@ export default function EnterPIN() {
         throw new Error("Form data is invalid:", parsedData.error);
       }
 
-      /** Checks the PIN against the stored PIN. */
-      function checkPIN() {
-        if (formValues.pin === "123456") {
-          router.push("/app/delivery");
-        } else {
-          form.setError("pin", {
-            message: "Invalid PIN. Please try again.",
-          });
-        }
-      }
+      const storedPIN = await getFromStorage("pin");
 
-      checkPIN();
+      if (formValues.pin === storedPIN) {
+        router.push("/app/delivery");
+      } else {
+        form.setError("pin", {
+          message: "Invalid PIN. Please try again.",
+        });
+      }
     })(event);
   }
 
@@ -89,7 +87,7 @@ export default function EnterPIN() {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="sr-only">Username</FormLabel>
+                      <FormLabel className="sr-only">PIN</FormLabel>
                       <FormControl>
                         <InputPIN
                           maxLength={6}
