@@ -50,7 +50,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import MultipleSelector, { type Option } from "@/components/ui/multiselect";
+import type { Option } from "@/components/ui/multiselect";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -60,6 +60,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import MultiSelect from "./multiselect";
 
 interface WastesRecordFormProps {
   data: WasteRecordData;
@@ -76,6 +78,8 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [employees, setEmployees] = useState<Option[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- This is a valid type assertion
+  const employeeArray = JSON.parse(data.items.map((item) => item.employee)[0]) as string[];
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(data.date),
@@ -84,9 +88,9 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
       items: data.items.map((item) => ({
         item: item.raw_material_type,
         waste: item.waste,
-        unit: item.unit,
+        unit: item.unit ?? "pieces",
         reason: item.reason,
-        employee: [],
+        employee: employeeArray,
       })),
     },
     resolver: zodResolver(newWasteFormSchema),
@@ -172,9 +176,8 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = newWasteFormSchema.safeParse(formValues);
+    void form.handleSubmit(async (formData) => {
+      const parsedValues = newWasteFormSchema.safeParse(formData);
 
       if (!parsedValues.success) {
         throw new Error("Form data is invalid:", parsedValues.error);
@@ -188,30 +191,27 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
        * @returns A promise that resolves when the form submission is complete.
        * @throws Will log an error message to the console if the form submission fails.
        */
-      async function submitForm() {
-        try {
-          if (parsedValues.data != null) await updateWasteRecord(data.id, parsedValues.data);
-        } catch (error) {
-          void presentToast({
-            color: "danger",
-            icon: alertCircleOutline,
-            message: "An error occurred while updating the waste record. Please try again.",
-            swipeGesture: "vertical",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Waste record updated",
-            swipeGesture: "vertical",
-          });
-          router.goBack();
-        }
-      }
 
-      void submitForm();
+      try {
+        await updateWasteRecord(data.id, parsedValues.data);
+      } catch (error) {
+        void presentToast({
+          color: "danger",
+          icon: alertCircleOutline,
+          message: "An error occurred while updating the waste record. Please try again.",
+          swipeGesture: "vertical",
+        });
+        throw new Error("Form submission failed");
+      } finally {
+        setIsLoading(false);
+        void presentToast({
+          duration: 1500,
+          icon: checkmarkCircleOutline,
+          message: "Waste record updated",
+          swipeGesture: "vertical",
+        });
+        router.goBack();
+      }
     })(event);
   }
 
@@ -464,17 +464,14 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                       render={({ field }) => (
                         <FormItem className="space-y-0">
                           <FormControl>
-                            {/* @ts-expect-error -- Types dot not match yet */}
-                            <MultipleSelector
+                            <MultiSelect
+                              className="min-w-60"
                               placeholder="Select employee(s)"
+                              value={field.value}
+                              inputPlaceholder="Search employee..."
                               options={employees}
-                              commandProps={{
-                                label: "Select employee(s)",
-                              }}
-                              emptyIndicator={
-                                <p className="text-center text-sm">No employees found.</p>
-                              }
-                              {...field}
+                              onChange={field.onChange}
+                              multiple
                             />
                           </FormControl>
                           <FormMessage />
