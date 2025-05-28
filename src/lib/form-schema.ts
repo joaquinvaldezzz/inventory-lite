@@ -105,18 +105,10 @@ export const newWasteFormSchema = z.object({
   items: z.array(
     z.object({
       item: z.string().min(1, { message: "Please select an item from the list." }).trim(),
-      waste: z.coerce.number().min(0, { message: "Count must be greater than or equal to zero." }),
+      waste: z.coerce.number().min(0.01, { message: "Waste must be greater than zero." }),
       unit: z.string().min(1, { message: "Please select a unit from the list." }).trim(),
       reason: z.string().min(1, { message: "Please provide a reason." }).trim(),
-      employee: z
-        .array(
-          z.object({
-            label: z.string(),
-            value: z.string(),
-          }),
-        )
-        .min(1)
-        .transform((value) => value.map((employee) => employee.value.toString())),
+      employee: z.array(z.string()).min(1, { message: "Please select at least one employee." }),
     }),
   ),
 });

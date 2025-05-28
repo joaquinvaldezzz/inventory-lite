@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -60,7 +60,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import MultipleSelector, { type Option } from "@/components/ui/multiselect";
+import type { Option } from "@/components/ui/multiselect";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -70,6 +70,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import MultiSelect from "./multiselect";
 
 interface WastesModalActions {
   dismiss: (data?: string | number | null, role?: string) => void;
@@ -185,9 +187,8 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = newWasteFormSchema.safeParse(formValues);
+    void form.handleSubmit(async (data) => {
+      const parsedValues = newWasteFormSchema.safeParse(data);
 
       if (!parsedValues.success) {
         throw new Error("Form data is invalid:", parsedValues.error);
@@ -195,33 +196,26 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
 
       setIsLoading(true);
 
-      /** Submits the form data */
-      async function submitForm() {
-        try {
-          if (parsedValues.data != null) await createWasteEntry(parsedValues.data);
-        } catch (error) {
-          void presentToast({
-            color: "danger",
-            icon: alertCircleOutline,
-            message: "Failed to create wastes entry. Please try again.",
-            swipeGesture: "vertical",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Wastes entry created successfully",
-            swipeGesture: "vertical",
-          });
-          dismiss(null, "confirm");
-        }
+      try {
+        await createWasteEntry(parsedValues.data);
+      } catch (error) {
+        void presentToast({
+          color: "danger",
+          icon: alertCircleOutline,
+          message: "Failed to create wastes entry. Please try again.",
+          swipeGesture: "vertical",
+        });
+        throw new Error("Form submission failed");
+      } finally {
+        setIsLoading(false);
+        void presentToast({
+          duration: 1500,
+          icon: checkmarkCircleOutline,
+          message: "Wastes entry created successfully",
+          swipeGesture: "vertical",
+        });
+        dismiss(null, "confirm");
       }
-
-      startTransition(() => {
-        void submitForm();
-      });
     })(event);
   }
 
@@ -601,17 +595,14 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
                             <FormControl>
-                              {/* @ts-expect-error -- Types dot not match yet */}
-                              <MultipleSelector
+                              <MultiSelect
+                                className="min-w-60"
                                 placeholder="Select employee(s)"
+                                value={field.value}
+                                inputPlaceholder="Search employee..."
                                 options={employees}
-                                commandProps={{
-                                  label: "Select employee(s)",
-                                }}
-                                emptyIndicator={
-                                  <p className="text-center text-sm">No employees found.</p>
-                                }
-                                {...field}
+                                onChange={field.onChange}
+                                multiple
                               />
                             </FormControl>
                             <FormMessage />
