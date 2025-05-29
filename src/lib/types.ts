@@ -377,9 +377,9 @@ export interface WasteRecordData {
     raw_material_type_id: number;
     raw_material_type: string;
     item_id: number;
-    barcode: string;
-    item: string;
-    unit: string;
+    barcode: string | null;
+    item: string | null;
+    unit: string | null;
     waste: number;
     reason: string;
     employee: string;
