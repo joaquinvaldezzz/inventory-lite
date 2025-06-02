@@ -403,7 +403,9 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
             {fields.map((item, index) => {
               return (
                 <DivTableRow key={item.id}>
-                  <DivTableCell className="align-middle">{item.item}</DivTableCell>
+                  <DivTableCell>
+                    <div className="flex h-9 w-full items-center">{item.item}</div>
+                  </DivTableCell>
 
                   <DivTableCell>
                     <FormField
