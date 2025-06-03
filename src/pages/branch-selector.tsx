@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { IonContent, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkmarkCircleOutline } from "ionicons/icons";
@@ -47,18 +47,16 @@ export default function BranchSelector() {
   const router = useIonRouter();
   const [presentToast] = useIonToast();
 
-  useEffect(() => {
-    void (async () => {
-      const username = await getCurrentUser();
-      const userBranches = await fetchUserBranches();
+  void (async () => {
+    const username = await getCurrentUser();
+    const userBranches = await fetchUserBranches();
 
-      if (username != null) {
-        setUsername(username.data.user.name);
-      }
+    if (username != null) {
+      setUsername(username.data.user.name);
+    }
 
-      setBranches(userBranches);
-    })();
-  }, []);
+    setBranches(userBranches);
+  })();
 
   /**
    * Handles the form submission event.
@@ -91,7 +89,7 @@ export default function BranchSelector() {
             message: "Branch selected successfully!",
             swipeGesture: "vertical",
           });
-          router.push("/app/delivery");
+          router.push("/app/delivery", "forward", "pop");
         } catch (error) {
           form.setError("branch", {
             message: "Failed to select branch. Please try again.",
