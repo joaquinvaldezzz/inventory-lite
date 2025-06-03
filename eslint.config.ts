@@ -9,6 +9,7 @@ import eslintPluginPerfectionist from "eslint-plugin-perfectionist";
 import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
+import eslintPluginYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import tseslint, { type Config } from "typescript-eslint";
 
 const config: Config = tseslint.config(
@@ -43,13 +44,16 @@ const config: Config = tseslint.config(
     ],
     plugins: {
       perfectionist: eslintPluginPerfectionist,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Types are not defined yet
+      "react-you-might-not-need-an-effect": eslintPluginYouMightNotNeedAnEffect,
     },
     rules: {
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/prefer-destructuring": "off",
-      "react/react-in-jsx-scope": "off",
-      "jsdoc/tag-lines": "off",
       "jsdoc/check-line-alignment": "off",
+      "jsdoc/tag-lines": "off",
+      "react-you-might-not-need-an-effect/you-might-not-need-an-effect": "warn",
+      "react/react-in-jsx-scope": "off",
       "perfectionist/sort-jsx-props": [
         "error",
         {
