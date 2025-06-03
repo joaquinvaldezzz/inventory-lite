@@ -54,7 +54,7 @@ export default function EnterPIN() {
       const storedPIN = await getFromStorage("pin");
 
       if (formValues.pin === storedPIN) {
-        router.push("/app/delivery");
+        router.push("/app/delivery", "forward", "pop");
       } else {
         form.setError("pin", {
           message: "Invalid PIN. Please try again.",
