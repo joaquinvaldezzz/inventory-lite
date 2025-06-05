@@ -8,7 +8,7 @@ import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-reac
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useForm } from "react-hook-form";
 
-import { deleteDeliveryRecord, updateDeliveryRecord } from "@/lib/api";
+import { deleteDeliveryRecord, getSuppliers, updateDeliveryRecord } from "@/lib/api";
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { DeliveryRecord, Supplier } from "@/lib/types";
@@ -89,7 +89,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       remarks: data.remarks,
       items: data.items.map((item) => ({
         item: item.item_id,
-        quantity_actual: item.quantity_actual,
+        quantity_actual: item.quantity,
         quantity_dr: item.quantity_dr,
         unit_dr: item.unit,
         unit_price: item.price,
@@ -112,6 +112,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
      * @throws An error message to the console if there is an issue fetching the suppliers.
      */
     async function fetchSuppliers() {
+      await getSuppliers();
+
       try {
         const savedSuppliers = await getFromStorage("suppliers");
 
@@ -403,7 +405,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             <DivTableBody>
               {data.items.map((item, index) => (
                 <DivTableRow key={index}>
-                  <DivTableCell>{item.raw_material}</DivTableCell>
+                  <DivTableCell>
+                    <div className="flex h-9 items-center">{item.raw_material}</div>
+                  </DivTableCell>
 
                   <DivTableCell>
                     <FormField
@@ -426,7 +430,9 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     />
                   </DivTableCell>
 
-                  <DivTableCell>{item.unit_dr}</DivTableCell>
+                  <DivTableCell>
+                    <div className="flex h-9 items-center">{item.unit_dr}</div>
+                  </DivTableCell>
 
                   <DivTableCell>
                     <FormField
