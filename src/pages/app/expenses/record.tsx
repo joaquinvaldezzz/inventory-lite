@@ -1,13 +1,16 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import { print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificExpensesRecordById } from "@/lib/api";
@@ -40,6 +43,11 @@ export default function ExpensesRecord({ match }: ExpensesPageProps) {
           <IonTitle>
             {isPending ? "Loading expenses record..." : `Expenses #${data?.[0].PurchaseID}`}
           </IonTitle>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon icon={print} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 

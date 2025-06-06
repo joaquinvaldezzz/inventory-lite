@@ -1,13 +1,16 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import { print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDailyCountRecordById } from "@/lib/api";
@@ -40,6 +43,11 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
           <IonTitle>
             {isPending ? "Loading daily count record..." : `Daily Count #${data?.[0].id}`}
           </IonTitle>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon icon={print} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 

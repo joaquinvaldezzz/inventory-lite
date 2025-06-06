@@ -1,13 +1,16 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import { print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDeliveryRecord } from "@/lib/api";
@@ -40,6 +43,11 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
           <IonTitle>
             {isPending ? "Loading delivery record..." : `Delivery #${data?.[0].id}`}
           </IonTitle>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon icon={print} slot="icon-only" />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 

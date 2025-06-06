@@ -1,13 +1,16 @@
 import {
   IonBackButton,
+  IonButton,
   IonButtons,
   IonContent,
   IonHeader,
+  IonIcon,
   IonPage,
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import { print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificWastesRecordById } from "@/lib/api";
@@ -38,6 +41,11 @@ export default function WastesRecord({ match }: WastesPageProps) {
             <IonBackButton defaultHref="/app/wastes" />
           </IonButtons>
           <IonTitle>{isPending ? "Loading wastes record..." : `Wastes #${data?.[0].id}`}</IonTitle>
+          <IonButtons slot="end">
+            <IonButton>
+              <IonIcon icon={print} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
