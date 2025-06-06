@@ -7,7 +7,12 @@ import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { deleteWasteRecordById, fetchEmployees, updateWasteRecord } from "@/lib/api";
+import {
+  deleteWasteRecordById,
+  fetchCategories,
+  fetchEmployees,
+  updateWasteRecord,
+} from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Categories, WasteRecordData } from "@/lib/types";
@@ -143,7 +148,9 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
      * @throws Will log an error message to the console if there is an issue fetching the
      *   categories.
      */
-    async function fetchCategories() {
+    async function getCategories() {
+      await fetchCategories();
+
       try {
         const savedCategories = await getFromStorage("categories");
 
@@ -164,7 +171,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
     }
 
     startTransition(() => {
-      void fetchCategories();
+      void getCategories();
     });
   }, []);
 

@@ -6,7 +6,7 @@ import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
 import { useForm } from "react-hook-form";
 
-import { deleteDailyCountRecordById, updateDailyCountRecord } from "@/lib/api";
+import { deleteDailyCountRecordById, fetchCategories, updateDailyCountRecord } from "@/lib/api";
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { Categories, DailyCountRecord } from "@/lib/types";
@@ -89,7 +89,9 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
      *   updated.
      * @throws Will log an error message to the console if there is an issue fetching the suppliers.
      */
-    async function fetchCategories() {
+    async function getCategories() {
+      await fetchCategories();
+
       try {
         const savedCategories = await getFromStorage("categories");
 
@@ -110,7 +112,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
     }
 
     startTransition(() => {
-      void fetchCategories();
+      void getCategories();
     });
   }, []);
 

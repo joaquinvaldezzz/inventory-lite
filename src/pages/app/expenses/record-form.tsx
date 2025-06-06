@@ -8,7 +8,7 @@ import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Wallet } from "luc
 import { Input as ReactInput, NumberField as ReactNumberField } from "react-aria-components";
 import { useForm } from "react-hook-form";
 
-import { deleteExpensesRecordById, getItems, updateExpensesRecord } from "@/lib/api";
+import { deleteExpensesRecordById, getItems, getSuppliers, updateExpensesRecord } from "@/lib/api";
 import { editExpensesFormSchema, type EditExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
 import type { ExpensesRecordData, Items, Supplier } from "@/lib/types";
@@ -109,6 +109,8 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
      * @throws An error message to the console if there is an issue fetching the suppliers.
      */
     async function fetchSuppliers() {
+      await getSuppliers();
+
       try {
         const savedSuppliers = await getFromStorage("suppliers");
 
