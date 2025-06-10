@@ -34,33 +34,25 @@ Before you begin, ensure you have the following software installed on your machi
 
 Follow these steps to set up Inventory Lite on your local device:
 
-1. **Clone the Repository**
-
-   [Download](https://github.com/joaquinvaldezzz/inventory-lite/archive/refs/heads/main.zip) or clone this repository by running:
+1. [Download](https://github.com/joaquinvaldezzz/inventory-lite/archive/refs/heads/main.zip) or clone this repository by running:
 
    ```bash
    git clone https://github.com/joaquinvaldezzz/inventory-lite.git
    ```
 
-2. **Navigate to the Project Directory**
-
-   Change to the project directory:
+2. Change to the project directory:
 
    ```bash
    cd inventory-lite
    ```
 
-3. **Install Project Dependencies**
-
-   Install the necessary dependencies:
+3. Install the necessary dependencies:
 
    ```bash
    pnpm install
    ```
 
-4. **Start the Development Server**
-
-   Run the development server in the background:
+4. Run the development server in the background:
 
    - For Web:
 
