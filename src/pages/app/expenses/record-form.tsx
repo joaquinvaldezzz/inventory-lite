@@ -80,6 +80,9 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const [suppliers, setSuppliers] = useState<Supplier>([]);
   const [items, setItems] = useState<Items>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
+  const [isItemOpen, setIsItemOpen] = useState<boolean>(false);
   const form = useForm<EditExpensesFormSchema>({
     defaultValues: {
       supplier: data.SupplierID.toString(),
@@ -240,7 +243,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                     <Container aria-hidden="true" strokeWidth={2} size={16} />
                   </div>
                   <FormControl>
-                    <Popover>
+                    <Popover open={isSupplierOpen} onOpenChange={setIsSupplierOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -331,7 +334,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                     <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                   </div>
-                  <Popover>
+                  <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -416,7 +419,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Popover>
+                            <Popover open={isItemOpen} onOpenChange={setIsItemOpen}>
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
@@ -464,6 +467,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                               (item) => item.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedSupplier?.id.toString());
+                                            setIsItemOpen(false);
                                           }}
                                         >
                                           <span className="truncate">{item.raw_material}</span>

@@ -75,6 +75,9 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   const [items, setItems] = useState<Items>([]);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
+  const [isItemOpen, setIsItemOpen] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
   const form = useForm<NewExpensesFormSchema>({
@@ -283,7 +286,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
-                      <Popover>
+                      <Popover open={isSupplierOpen} onOpenChange={setIsSupplierOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -330,6 +333,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                         (supplier) => supplier.supplier_name === value,
                                       );
                                       field.onChange(selectedSupplier?.id.toString());
+                                      setIsSupplierOpen(false);
                                     }}
                                   >
                                     {supplier.supplier_name}
@@ -360,7 +364,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
-                    <Popover modal>
+                    <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -380,7 +384,10 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                           disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            setIsDateOpen(false);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -438,7 +445,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                         control={form.control}
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
-                            <Popover>
+                            <Popover open={isItemOpen} onOpenChange={setIsItemOpen}>
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
@@ -484,6 +491,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                               (item) => item.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedItem?.id.toString());
+                                            setIsItemOpen(false);
                                           }}
                                         >
                                           {item.raw_material}

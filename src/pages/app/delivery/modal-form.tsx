@@ -78,6 +78,8 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
   const [items, setItems] = useState<Items>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
+  const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
   const form = useForm<NewDeliveryFormSchema>({
@@ -284,7 +286,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
-                      <Popover>
+                      <Popover open={isSupplierOpen} onOpenChange={setIsSupplierOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -331,6 +333,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                                         (supplier) => supplier.supplier_name === value,
                                       );
                                       field.onChange(selectedSupplier?.id.toString());
+                                      setIsSupplierOpen(false);
                                     }}
                                   >
                                     <span className="truncate">{supplier.supplier_name}</span>
@@ -361,7 +364,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
-                    <Popover modal>
+                    <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -381,7 +384,10 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                           disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            setIsDateOpen(false);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>

@@ -65,6 +65,8 @@ interface DailyCountRecordFormProps {
  */
 export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
   const [categories, setCategories] = useState<Categories[]>([]);
+  const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
@@ -200,7 +202,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
-                <Popover>
+                <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
@@ -220,7 +222,10 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                       disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
+                      onSelect={(date) => {
+                        field.onChange(date);
+                        setIsDateOpen(false);
+                      }}
                       initialFocus
                     />
                   </PopoverContent>
@@ -242,7 +247,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                   <Container aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>
-                  <Popover>
+                  <Popover open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
                     <PopoverTrigger id={field.name} asChild>
                       <FormControl>
                         <Button
@@ -289,6 +294,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                                     (supplier) => supplier.raw_material_type === value,
                                   );
                                   field.onChange(selectedSupplier?.id.toString());
+                                  setIsCategoryOpen(false);
                                 }}
                               >
                                 {category.raw_material_type}

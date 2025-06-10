@@ -90,6 +90,9 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
   const [employees, setEmployees] = useState<Option[]>([]);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
+  const [isItemOpen, setIsItemOpen] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
   const form = useForm<NewWasteFormSchema>({
@@ -299,7 +302,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
-                    <Popover modal>
+                    <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -319,7 +322,10 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                           disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            setIsDateOpen(false);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -341,7 +347,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
-                      <Popover>
+                      <Popover open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -388,6 +394,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                                         (supplier) => supplier.raw_material_type === value,
                                       );
                                       field.onChange(selectedSupplier?.id.toString());
+                                      setIsCategoryOpen(false);
                                     }}
                                   >
                                     {category.raw_material_type}
@@ -460,7 +467,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                         control={form.control}
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
-                            <Popover>
+                            <Popover open={isItemOpen} onOpenChange={setIsItemOpen}>
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
@@ -512,6 +519,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                                               `items.${index}.unit`,
                                               selectedItem != null ? selectedItem.unit : "",
                                             );
+                                            setIsItemOpen(false);
                                           }}
                                         >
                                           {ingredient.raw_material}

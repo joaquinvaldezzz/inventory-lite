@@ -78,6 +78,8 @@ interface DeliveryRecordFormProps {
  */
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [suppliers, setSuppliers] = useState<Supplier>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<EditDeliveryFormSchema>({
@@ -222,68 +224,68 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                     <Container aria-hidden="true" strokeWidth={2} size={16} />
                   </div>
-                  <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
-                            role="combobox"
-                            variant="outline"
-                          >
-                            <span
-                              className={cn(
-                                "truncate ps-6",
-                                field.value.length === 0 && "text-muted-foreground",
-                              )}
-                            >
-                              {suppliers.length > 0
-                                ? (suppliers.find(
-                                    (supplier) => supplier.id.toString() === field.value,
-                                  )?.supplier_name ?? "Select a supplier")
-                                : "Select a supplier"}
-                            </span>
-                            <ChevronDownIcon
-                              className="shrink-0 text-muted-foreground/80"
-                              aria-hidden="true"
-                              size={16}
-                            />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
 
-                      <PopoverContent
-                        className="w-full max-w-(--radix-popper-anchor-width) min-w-(--radix-popper-anchor-width) border-input p-0"
-                        align="start"
-                      >
-                        <Command>
-                          <CommandInput placeholder="Search supplier..." />
-                          <CommandList>
-                            <CommandEmpty>No supplier found.</CommandEmpty>
-                            <CommandGroup>
-                              {suppliers.map((supplier) => (
-                                <CommandItem
-                                  value={supplier.supplier_name}
-                                  key={supplier.id}
-                                  onSelect={(value) => {
-                                    const selectedSupplier = suppliers.find(
-                                      (supplier) => supplier.supplier_name === value,
-                                    );
-                                    field.onChange(selectedSupplier?.id.toString());
-                                  }}
-                                >
-                                  <span className="truncate"> {supplier.supplier_name}</span>
-                                  {supplier.id.toString() === field.value && (
-                                    <CheckIcon className="ml-auto" size={16} />
-                                  )}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
+                  <Popover open={isSupplierOpen} onOpenChange={setIsSupplierOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
+                          role="combobox"
+                          variant="outline"
+                        >
+                          <span
+                            className={cn(
+                              "truncate ps-6",
+                              field.value.length === 0 && "text-muted-foreground",
+                            )}
+                          >
+                            {suppliers.length > 0
+                              ? (suppliers.find(
+                                  (supplier) => supplier.id.toString() === field.value,
+                                )?.supplier_name ?? "Select a supplier")
+                              : "Select a supplier"}
+                          </span>
+                          <ChevronDownIcon
+                            className="shrink-0 text-muted-foreground/80"
+                            aria-hidden="true"
+                            size={16}
+                          />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+
+                    <PopoverContent
+                      className="w-full max-w-(--radix-popper-anchor-width) min-w-(--radix-popper-anchor-width) border-input p-0"
+                      align="start"
+                    >
+                      <Command>
+                        <CommandInput placeholder="Search supplier..." />
+                        <CommandList>
+                          <CommandEmpty>No supplier found.</CommandEmpty>
+                          <CommandGroup>
+                            {suppliers.map((supplier) => (
+                              <CommandItem
+                                value={supplier.supplier_name}
+                                key={supplier.id}
+                                onSelect={(value) => {
+                                  const selectedSupplier = suppliers.find(
+                                    (supplier) => supplier.supplier_name === value,
+                                  );
+                                  field.onChange(selectedSupplier?.id.toString());
+                                  setIsSupplierOpen(false);
+                                }}
+                              >
+                                <span className="truncate"> {supplier.supplier_name}</span>
+                                {supplier.id.toString() === field.value && (
+                                  <CheckIcon className="ml-auto" size={16} />
+                                )}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <FormMessage />
               </FormItem>
@@ -321,7 +323,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                     <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                   </div>
-                  <Popover>
+                  <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -341,7 +343,10 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                         disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
+                        onSelect={(date) => {
+                          field.onChange(date);
+                          setIsDateOpen(false);
+                        }}
                         initialFocus
                       />
                     </PopoverContent>
