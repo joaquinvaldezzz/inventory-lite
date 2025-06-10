@@ -459,7 +459,7 @@ export async function getSpecificExpensesRecordById(id: number): Promise<Expense
  *   empty array is returned.
  * @throws An error if the API request fails.
  */
-export async function getItemsBySupplierId(supplier: string): Promise<Items[]> {
+export async function getItemsBySupplierId(supplier: string): Promise<Items> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
