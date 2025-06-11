@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -135,9 +135,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       }
     }
 
-    startTransition(() => {
-      void fetchSuppliers();
-    });
+    void fetchSuppliers();
   }, []);
 
   useEffect(() => {
@@ -153,9 +151,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       }
     }
 
-    startTransition(() => {
-      void fetchItems();
-    });
+    void fetchItems();
   }, []);
 
   /** Adds a new row to the list of delivery items. */
@@ -188,7 +184,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     event.preventDefault();
 
     /** Submits the form data to create a new delivery entry. */
-    void form.handleSubmit(() => {
+    void form.handleSubmit(async () => {
       const formValues = form.getValues();
       const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
@@ -198,33 +194,26 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
 
       setIsLoading(true);
 
-      /** Submits the delivery form by creating a new delivery entry. */
-      async function submitForm() {
-        try {
-          if (parsedValues.data != null) await createDeliveryEntry(parsedValues.data);
-        } catch (error) {
-          void presentToast({
-            color: "danger",
-            icon: alertCircleOutline,
-            message: "Failed to create delivery entry. Please try again.",
-            swipeGesture: "vertical",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Delivery entry created successfully",
-            swipeGesture: "vertical",
-          });
-          dismiss(null, "confirm");
-        }
+      try {
+        await createDeliveryEntry(parsedValues.data);
+      } catch (error) {
+        void presentToast({
+          color: "danger",
+          icon: alertCircleOutline,
+          message: "Failed to create delivery entry. Please try again.",
+          swipeGesture: "vertical",
+        });
+        throw new Error("Form submission failed");
+      } finally {
+        setIsLoading(false);
+        void presentToast({
+          duration: 1500,
+          icon: checkmarkCircleOutline,
+          message: "Delivery entry created successfully",
+          swipeGesture: "vertical",
+        });
+        dismiss(null, "confirm");
       }
-
-      startTransition(() => {
-        void submitForm();
-      });
     })(event);
   }
 
