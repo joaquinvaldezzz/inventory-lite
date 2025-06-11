@@ -80,6 +80,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
+  const [isItemsOpen, setIsItemsOpen] = useState<boolean>(false);
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
   const form = useForm<NewDeliveryFormSchema>({
@@ -449,7 +450,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                         control={form.control}
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
-                            <Popover>
+                            <Popover open={isItemsOpen} onOpenChange={setIsItemsOpen}>
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
@@ -499,6 +500,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                                               `items.${index}.unit_dr`,
                                               selectedItem != null ? selectedItem.unit : "",
                                             );
+                                            setIsItemsOpen(false);
                                           }}
                                         >
                                           {item.raw_material}
