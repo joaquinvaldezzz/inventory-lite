@@ -80,7 +80,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [isItemsOpen, setIsItemsOpen] = useState<boolean>(false);
+  const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
   const form = useForm<NewDeliveryFormSchema>({
@@ -94,7 +94,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
           item: "",
           quantity_dr: 0,
           unit_dr: "",
-          unit_price: 0,
+          price: 0,
           total_amount: 0,
         },
       ],
@@ -161,7 +161,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       item: "",
       quantity_dr: 0,
       unit_dr: "",
-      unit_price: 0,
+      price: 0,
       total_amount: 0,
     });
   }
@@ -276,7 +276,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
-                      <Popover open={isSupplierOpen} onOpenChange={setIsSupplierOpen}>
+                      <Popover open={isSupplierOpen} onOpenChange={setIsSupplierOpen} modal>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -354,7 +354,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                     <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
-                    <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+                    <Popover open={isDateOpen} onOpenChange={setIsDateOpen} modal>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -450,7 +450,16 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                         control={form.control}
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
-                            <Popover open={isItemsOpen} onOpenChange={setIsItemsOpen}>
+                            <Popover
+                              open={isItemPopoverOpen[index] || false}
+                              onOpenChange={(open) => {
+                                setIsItemPopoverOpen((prev) => ({
+                                  ...prev,
+                                  [index]: open,
+                                }));
+                              }}
+                              modal
+                            >
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
@@ -500,7 +509,10 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                                               `items.${index}.unit_dr`,
                                               selectedItem != null ? selectedItem.unit : "",
                                             );
-                                            setIsItemsOpen(false);
+                                            setIsItemPopoverOpen((prev) => ({
+                                              ...prev,
+                                              [index]: false,
+                                            }));
                                           }}
                                         >
                                           {item.raw_material}
@@ -536,7 +548,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                                   const { items } = form.getValues();
                                   form.setValue(
                                     `items.${index}.total_amount`,
-                                    items[index].quantity_dr * items[index].unit_price,
+                                    items[index].quantity_dr * items[index].price,
                                   );
                                 }}
                               />
@@ -569,7 +581,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
 
                     <DivTableCell>
                       <FormField
-                        name={`items.${index}.unit_price`}
+                        name={`items.${index}.price`}
                         control={form.control}
                         render={({ field }) => (
                           <FormItem className="flex flex-col gap-2 space-y-0">
@@ -587,7 +599,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                                   const { items } = form.getValues();
                                   form.setValue(
                                     `items.${index}.total_amount`,
-                                    items[index].quantity_dr * items[index].unit_price,
+                                    items[index].quantity_dr * items[index].price,
                                   );
                                 }}
                               >
