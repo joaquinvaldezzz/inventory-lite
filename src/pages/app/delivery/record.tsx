@@ -14,6 +14,7 @@ import { print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDeliveryRecord } from "@/lib/api";
+import { handleConnectButtonClick } from "@/lib/printer";
 import { Loading } from "@/components/loading";
 
 import DeliveryRecordForm from "./record-form";
@@ -44,7 +45,11 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
             {isPending ? "Loading delivery record..." : `Delivery #${data?.[0].id}`}
           </IonTitle>
           <IonButtons slot="end">
-            <IonButton>
+            <IonButton
+              onClick={() => {
+                void handleConnectButtonClick();
+              }}
+            >
               <IonIcon icon={print} slot="icon-only" />
             </IonButton>
           </IonButtons>
