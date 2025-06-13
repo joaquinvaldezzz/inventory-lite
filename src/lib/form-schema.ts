@@ -47,7 +47,7 @@ export const newDeliveryFormSchema = z.object({
       item: z.string().min(1, { message: "Please select an item from the list." }).trim(),
       quantity_dr: z.coerce.number().min(0.01, { message: "Quantity must be greater than zero." }),
       unit_dr: z.string().min(1, { message: "Please select a unit from the list." }).trim(),
-      unit_price: z.coerce.number().min(0.01, { message: "Unit price must be greater than zero." }),
+      price: z.coerce.number().min(0.01, { message: "Unit price must be greater than zero." }),
       total_amount: z.coerce
         .number()
         .min(0.01, { message: "Total amount must be greater than zero." }),
@@ -75,6 +75,7 @@ export const editDeliveryFormSchema = z.object({
         .min(0.01, { message: "Quantity must be greater than zero." }),
       quantity_dr: z.coerce.number(),
       unit_dr: z.string().min(1, { message: "Please select a unit from the list." }).trim(),
+      price: z.coerce.number().min(0.01, { message: "Unit price must be greater than zero." }),
       total_amount: z.coerce
         .number()
         .min(0.01, { message: "Total amount must be greater than zero." }),

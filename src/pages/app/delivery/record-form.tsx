@@ -94,7 +94,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         quantity_actual: item.quantity,
         quantity_dr: item.quantity_dr,
         unit_dr: item.unit,
-        unit_price: item.price,
+        price: item.price,
         total_amount: item.total_amount,
       })),
     },
@@ -478,7 +478,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
 
                   <DivTableCell>
                     <FormField
-                      name={`items.${index}.total_amount`}
+                      name={`items.${index}.price`}
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>
