@@ -15,7 +15,7 @@ import tseslint, { type Config } from "typescript-eslint";
 const config: Config = tseslint.config(
   // Ignore files in .gitignore
   includeIgnoreFile(path.resolve(".gitignore")),
-  { ignores: ["android/**", "ios/**", "**/vite-env.d.ts", "*.esm.js"] },
+  { ignores: ["android/**", "ios/**", "**/vite-env.d.ts", "**/*.esm.js"] },
 
   // Rules for all files
   {
