@@ -403,7 +403,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         <DivTable>
           <DivTableHeader>
             <DivTableRow>
-              <DivTableHead>Ingredients</DivTableHead>
+              <DivTableHead>Items</DivTableHead>
               <DivTableHead>Inventory count</DivTableHead>
               <DivTableHead>Unit</DivTableHead>
               <DivTableHead>Reason</DivTableHead>

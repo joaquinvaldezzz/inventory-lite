@@ -82,7 +82,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [isItemOpen, setIsItemOpen] = useState<boolean>(false);
+  const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
   const form = useForm<EditExpensesFormSchema>({
     defaultValues: {
       supplier: data.SupplierID.toString(),
@@ -419,7 +419,16 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Popover open={isItemOpen} onOpenChange={setIsItemOpen}>
+                            <Popover
+                              open={isItemPopoverOpen[index] || false}
+                              onOpenChange={(open) => {
+                                setIsItemPopoverOpen((prev) => ({
+                                  ...prev,
+                                  [index]: open,
+                                }));
+                              }}
+                              modal
+                            >
                               <PopoverTrigger asChild>
                                 <FormControl>
                                   <Button
@@ -467,7 +476,10 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                               (item) => item.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedSupplier?.id.toString());
-                                            setIsItemOpen(false);
+                                            setIsItemPopoverOpen((prev) => ({
+                                              ...prev,
+                                              [index]: false,
+                                            }));
                                           }}
                                         >
                                           <span className="truncate">{item.raw_material}</span>
@@ -496,7 +508,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                         <FormItem>
                           <FormControl>
                             <NumberInput
-                              className="min-w-40"
+                              className="min-w-32"
                               value={field.value}
                               aria-label="Quantity"
                               onChange={(event) => {

@@ -432,7 +432,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
             <DivTable>
               <DivTableHeader>
                 <DivTableRow>
-                  <DivTableHead>Ingredients</DivTableHead>
+                  <DivTableHead>Items</DivTableHead>
                   <DivTableHead>Quantity</DivTableHead>
                   <DivTableHead>Unit</DivTableHead>
                   <DivTableHead>Unit price</DivTableHead>
@@ -669,7 +669,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
 
             <div className="mt-1 flex flex-col gap-3">
               <Button type="button" variant="ghost" onClick={handleAdd}>
-                <span>Add more ingredients</span>
+                <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 

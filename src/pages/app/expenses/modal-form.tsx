@@ -428,7 +428,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
             <DivTable>
               <DivTableHeader>
                 <DivTableRow>
-                  <DivTableHead>Ingredients</DivTableHead>
+                  <DivTableHead>Items</DivTableHead>
                   <DivTableHead>Quantity</DivTableHead>
                   <DivTableHead>Unit price</DivTableHead>
                   <DivTableHead>Total</DivTableHead>
@@ -640,7 +640,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
 
             <div className="mt-1 flex flex-col gap-3">
               <Button type="button" variant="ghost" onClick={handleAdd}>
-                <span>Add more ingredients</span>
+                <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 

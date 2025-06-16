@@ -388,7 +388,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
             <DivTable>
               <DivTableHeader>
                 <DivTableRow>
-                  <DivTableHead>Ingredients</DivTableHead>
+                  <DivTableHead>Items</DivTableHead>
                   <DivTableHead>Quantity</DivTableHead>
                   <DivTableHead />
                 </DivTableRow>
@@ -431,8 +431,8 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                                           ? (ingredients.find(
                                               (ingredient) =>
                                                 ingredient.id.toString() === field.value,
-                                            )?.raw_material ?? "Select an ingredient")
-                                          : "Select an ingredient"}
+                                            )?.raw_material ?? "Select an item")
+                                          : "Select an item"}
                                       </span>
                                       <ChevronDownIcon
                                         className="shrink-0 text-muted-foreground/80"

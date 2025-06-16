@@ -397,7 +397,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
           <DivTable>
             <DivTableHeader>
               <DivTableRow>
-                <DivTableHead>Ingredients</DivTableHead>
+                <DivTableHead>Items</DivTableHead>
                 <DivTableHead>Actual quantity</DivTableHead>
                 <DivTableHead>Purchase order</DivTableHead>
                 <DivTableHead>Delivery quantity</DivTableHead>

@@ -318,7 +318,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         <DivTable>
           <DivTableHeader>
             <DivTableRow>
-              <DivTableHead>Ingredients</DivTableHead>
+              <DivTableHead>Items</DivTableHead>
               <DivTableHead>Inventory count</DivTableHead>
               <DivTableHead>Unit</DivTableHead>
             </DivTableRow>
