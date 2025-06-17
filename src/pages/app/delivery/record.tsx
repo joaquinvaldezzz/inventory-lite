@@ -8,8 +8,10 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  isPlatform,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
+import { CapacitorThermalPrinter } from "capacitor-thermal-printer";
 import { print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
@@ -33,6 +35,28 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   });
 
+  /** Handles the printing of a delivery record. */
+  async function handlePrint() {
+    if (!isPlatform("android") || !isPlatform("ios")) {
+      // TODO: Use WebBluetoothReceiptPrinter instead here
+      throw new Error("Bluetooth printing is not supported on this platform");
+    }
+
+    await CapacitorThermalPrinter.startScan();
+
+    await CapacitorThermalPrinter.addListener("discoverDevices", (devices) => {
+      // TODO: Handle device selection and connect to the selected device
+      // eslint-disable-next-line no-console -- debug
+      console.log("Discovered devices list:", devices);
+    });
+
+    await CapacitorThermalPrinter.addListener("discoveryFinish", () => {
+      // TODO: Handle device selection
+      // eslint-disable-next-line no-console -- debug
+      console.log("Discovery finished");
+    });
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -44,7 +68,11 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
             {isPending ? "Loading delivery record..." : `Delivery #${data?.[0].id}`}
           </IonTitle>
           <IonButtons slot="end">
-            <IonButton>
+            <IonButton
+              onClick={() => {
+                void handlePrint();
+              }}
+            >
               <IonIcon icon={print} slot="icon-only" />
             </IonButton>
           </IonButtons>
