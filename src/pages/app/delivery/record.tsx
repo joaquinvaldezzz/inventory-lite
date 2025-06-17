@@ -38,7 +38,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
   /** Handles the printing of a delivery record. */
   async function handlePrint() {
     if (!isPlatform("android") || !isPlatform("ios")) {
-      // TODO: Use WebBluetoothReceiptPrinter instead here
+      // TODO: Use WebBluetoothReceiptPrinter here instead
       throw new Error("Bluetooth printing is not supported on this platform");
     }
 
