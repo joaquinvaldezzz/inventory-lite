@@ -8,6 +8,8 @@ PODS:
     - Capacitor
   - CapacitorKeyboard (7.0.1):
     - Capacitor
+  - CapacitorThermalPrinter (0.2.5):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/.pnpm/@capacitor+ios@7.2.0_@capacitor+core@7.2.0/node_modules/@capacitor/ios`)"
@@ -15,6 +17,7 @@ DEPENDENCIES:
   - "CapacitorCordova (from `../../node_modules/.pnpm/@capacitor+ios@7.2.0_@capacitor+core@7.2.0/node_modules/@capacitor/ios`)"
   - "CapacitorHaptics (from `../../node_modules/.pnpm/@capacitor+haptics@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/.pnpm/@capacitor+keyboard@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/keyboard`)"
+  - "CapacitorThermalPrinter (from `../../node_modules/.pnpm/capacitor-thermal-printer@0.2.5_@capacitor+core@7.2.0/node_modules/capacitor-thermal-printer`)"
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -27,6 +30,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/.pnpm/@capacitor+haptics@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/haptics"
   CapacitorKeyboard:
     :path: "../../node_modules/.pnpm/@capacitor+keyboard@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/keyboard"
+  CapacitorThermalPrinter:
+    :path: "../../node_modules/.pnpm/capacitor-thermal-printer@0.2.5_@capacitor+core@7.2.0/node_modules/capacitor-thermal-printer"
 
 SPEC CHECKSUMS:
   Capacitor: 03bc7cbdde6a629a8b910a9d7d78c3cc7ed09ea7
@@ -34,7 +39,8 @@ SPEC CHECKSUMS:
   CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
   CapacitorHaptics: 1f1e17041f435d8ead9ff2a34edd592c6aa6a8d6
   CapacitorKeyboard: 09fd91dcde4f8a37313e7f11bde553ad1ed52036
+  CapacitorThermalPrinter: 37ba847a690c296fb94499c1b3c37fd696cc1f82
 
-PODFILE CHECKSUM: 2cc56b74879333f6e41f8df38b836869791d8e91
+PODFILE CHECKSUM: 372ce91ad6420af69f0940a0f89b5544c88ad396
 
 COCOAPODS: 1.16.2

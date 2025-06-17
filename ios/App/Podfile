@@ -14,6 +14,7 @@ def capacitor_pods
   pod 'CapacitorApp', :path => '../../node_modules/.pnpm/@capacitor+app@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/app'
   pod 'CapacitorHaptics', :path => '../../node_modules/.pnpm/@capacitor+haptics@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/haptics'
   pod 'CapacitorKeyboard', :path => '../../node_modules/.pnpm/@capacitor+keyboard@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/keyboard'
+  pod 'CapacitorThermalPrinter', :path => '../../node_modules/.pnpm/capacitor-thermal-printer@0.2.5_@capacitor+core@7.2.0/node_modules/capacitor-thermal-printer'
 end
 
 target 'App' do

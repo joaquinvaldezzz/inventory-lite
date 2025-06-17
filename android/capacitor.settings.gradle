@@ -10,3 +10,6 @@ project(':capacitor-haptics').projectDir = new File('../node_modules/.pnpm/@capa
 
 include ':capacitor-keyboard'
 project(':capacitor-keyboard').projectDir = new File('../node_modules/.pnpm/@capacitor+keyboard@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/keyboard/android')
+
+include ':capacitor-thermal-printer'
+project(':capacitor-thermal-printer').projectDir = new File('../node_modules/.pnpm/capacitor-thermal-printer@0.2.5_@capacitor+core@7.2.0/node_modules/capacitor-thermal-printer/android')

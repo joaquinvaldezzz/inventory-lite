@@ -137,6 +137,9 @@ importers:
       axios:
         specifier: ^1.9.0
         version: 1.9.0
+      capacitor-thermal-printer:
+        specifier: ^0.2.5
+        version: 0.2.5(@capacitor/core@7.2.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -3534,6 +3537,11 @@ packages:
 
   caniuse-lite@1.0.30001717:
     resolution: {integrity: sha512-auPpttCq6BDEG8ZAuHJIplGw6GODhjw+/11e7IjpnYCxZcW/ONgPs0KVBJ0d1bY3e2+7PRe5RCLyP+PfwVgkYw==}
+
+  capacitor-thermal-printer@0.2.5:
+    resolution: {integrity: sha512-5/iq8P7PywmWpIaXk4eXv3wtgovLotbtYPHmcK26OvweAnv6UXq0UQcuY1vMG1c69XmV/+hTAQYm1PaJGyiksg==}
+    peerDependencies:
+      '@capacitor/core': ^7.0.0
 
   caseless@0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -10994,6 +11002,10 @@ snapshots:
   camelcase@5.3.1: {}
 
   caniuse-lite@1.0.30001717: {}
+
+  capacitor-thermal-printer@0.2.5(@capacitor/core@7.2.0):
+    dependencies:
+      '@capacitor/core': 7.2.0
 
   caseless@0.12.0: {}
 
