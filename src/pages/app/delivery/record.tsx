@@ -9,10 +9,11 @@ import {
   IonTitle,
   IonToolbar,
   isPlatform,
+  useIonToast,
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
 import { CapacitorThermalPrinter } from "capacitor-thermal-printer";
-import { print } from "ionicons/icons";
+import { alertCircleOutline, print } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDeliveryRecord } from "@/lib/api";
@@ -34,12 +35,21 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
     queryKey: ["delivery-entry", match.params.id],
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   });
+  const [presentToast] = useIonToast();
 
   /** Handles the printing of a delivery record. */
   async function handlePrint() {
     if (!isPlatform("android") || !isPlatform("ios")) {
       // TODO: Use WebBluetoothReceiptPrinter here instead
-      throw new Error("Bluetooth printing is not supported on this platform");
+      void presentToast({
+        color: "danger",
+        duration: 3000,
+        icon: alertCircleOutline,
+        message:
+          "Wireless printing isn't supported on this platform. Please use an Android or iOS device instead.",
+        swipeGesture: "vertical",
+      });
+      return;
     }
 
     await CapacitorThermalPrinter.startScan();
