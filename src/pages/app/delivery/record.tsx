@@ -13,7 +13,7 @@ import {
 } from "@ionic/react";
 import { useQuery } from "@tanstack/react-query";
 import { CapacitorThermalPrinter } from "capacitor-thermal-printer";
-import { alertCircleOutline, print } from "ionicons/icons";
+import { alertCircleOutline, checkmarkCircleOutline, print, searchOutline } from "ionicons/icons";
 import type { RouteComponentProps } from "react-router";
 
 import { getSpecificDeliveryRecord } from "@/lib/api";
@@ -39,11 +39,12 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
 
   /** Handles the printing of a delivery record. */
   async function handlePrint() {
-    if (!isPlatform("android") || !isPlatform("ios")) {
-      // TODO: Use WebBluetoothReceiptPrinter here instead
+    let isThereAnyDevice = false;
+
+    if (!isPlatform("android")) {
       void presentToast({
         color: "danger",
-        duration: 3000,
+        duration: 3500,
         icon: alertCircleOutline,
         message:
           "Wireless printing isn't supported on this platform. Please use an Android or iOS device instead.",
@@ -54,16 +55,43 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
 
     await CapacitorThermalPrinter.startScan();
 
+    void presentToast({
+      duration: 3500,
+      icon: searchOutline,
+      message: "Searching for devices... Please wait.",
+      swipeGesture: "vertical",
+    });
+
     await CapacitorThermalPrinter.addListener("discoverDevices", (devices) => {
-      // TODO: Handle device selection and connect to the selected device
-      // eslint-disable-next-line no-console -- debug
-      console.log("Discovered devices list:", devices);
+      if (devices.devices.length > 0) {
+        isThereAnyDevice = true;
+        void presentToast({
+          duration: 3500,
+          icon: checkmarkCircleOutline,
+          message: "Device found. Please select a device to print to.",
+          swipeGesture: "vertical",
+        });
+      } else {
+        isThereAnyDevice = false;
+      }
     });
 
     await CapacitorThermalPrinter.addListener("discoveryFinish", () => {
-      // TODO: Handle device selection
-      // eslint-disable-next-line no-console -- debug
-      console.log("Discovery finished");
+      if (isThereAnyDevice) {
+        void presentToast({
+          duration: 3500,
+          icon: checkmarkCircleOutline,
+          message: "Search complete. Please select a device to print to.",
+          swipeGesture: "vertical",
+        });
+      } else {
+        void presentToast({
+          duration: 3500,
+          icon: alertCircleOutline,
+          message: "No devices found. Please try again.",
+          swipeGesture: "vertical",
+        });
+      }
     });
   }
 
