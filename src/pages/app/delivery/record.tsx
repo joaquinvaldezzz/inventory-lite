@@ -52,7 +52,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {data == null ? <Loading /> : <DeliveryRecordForm data={data[0]} />}
+        {isPending || data == null ? <Loading /> : <DeliveryRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

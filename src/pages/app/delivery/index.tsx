@@ -23,7 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchDeliveryEntries } from "@/lib/api";
-import type { DeliveryItem } from "@/lib/types";
+import type { DeliveryRecordData } from "@/lib/types/delivery";
 import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
 import { Settings } from "@/components/settings";
@@ -47,8 +47,8 @@ export default function Delivery() {
     queryFn: async () => await fetchDeliveryEntries(),
   });
 
-  /** Initializes an empty array to store sorted delivery data of type `DeliveryItem`. */
-  let sortedData: DeliveryItem[] = [];
+  /** Initializes an empty array to store sorted delivery data of type `DeliveryRecordData`. */
+  let sortedData: DeliveryRecordData[] = [];
 
   /**
    * Sorts delivery data by delivery date (newest first) and DR number (descending), then stores the

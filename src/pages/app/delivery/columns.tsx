@@ -1,18 +1,18 @@
 import type { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { formatDate } from "date-fns";
 
-import type { DeliveryItem } from "@/lib/types";
+import type { DeliveryRecordData } from "@/lib/types/delivery";
 import { formatAsCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 
-const multiColumnFilterFn: FilterFn<DeliveryItem> = (row, _columnId, filterValue: string) => {
+const multiColumnFilterFn: FilterFn<DeliveryRecordData> = (row, _columnId, filterValue: string) => {
   const searchableRowContent = `${row.original.dr_no} ${row.original.po_no}`.toLowerCase();
   const searchTerm = filterValue.toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
 
-export const columns: Array<ColumnDef<DeliveryItem>> = [
+export const columns: Array<ColumnDef<DeliveryRecordData>> = [
   {
     accessorKey: "dr_no",
     header: ({ column }) => <DataTableColumnHeader title="DR no." column={column} />,

@@ -19,7 +19,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Items, Supplier } from "@/lib/types";
+import type { Item, Supplier } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -74,8 +74,8 @@ interface DeliveryModalActions {
  * @returns The rendered component.
  */
 export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
-  const [suppliers, setSuppliers] = useState<Supplier>([]);
-  const [items, setItems] = useState<Items>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
