@@ -27,7 +27,6 @@ import type {
   IngredientsResponse,
   Item,
   ItemsResponse,
-  LoginResponse,
   Supplier,
   SuppliersResponse,
   WasteData,
@@ -40,6 +39,7 @@ import type {
   DeliveryRecordList,
   DeliveryRecordResponse,
 } from "./types/delivery";
+import type { LoginResponse } from "./types/login";
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error("API URL is not defined");
