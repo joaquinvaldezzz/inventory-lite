@@ -6,7 +6,7 @@
  *
  * @template T - The type to be prettified.
  */
-type Prettify<T> = {
+export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
@@ -15,7 +15,7 @@ type Prettify<T> = {
  *
  * @template T - The type of the `data` property in the response.
  */
-interface APIResponse<T> {
+export interface APIResponse<T> {
   /** Indicates whether the API request was successful. */
   success: boolean;
 
@@ -23,7 +23,5 @@ interface APIResponse<T> {
   message: string;
 
   /** The actual data returned by the API. */
-  data: T;
+  data: T | null;
 }
-
-export type { APIResponse, Prettify };
