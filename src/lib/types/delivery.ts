@@ -56,7 +56,7 @@ export type DeliveryFormData = DeliveryRecordData & {
 };
 
 /** API response type for retrieving a list of delivery records. */
-export type DeliveryRecordList = Prettify<APIResponse<DeliveryRecordData[]>>;
+export type DeliveryRecordListResponse = Prettify<APIResponse<DeliveryRecordData[]>>;
 
 /** API response type for retrieving a single delivery record by `id` for use in a form. */
 export type DeliveryRecordResponse = Prettify<APIResponse<DeliveryFormData[]>>;

@@ -34,7 +34,7 @@ import type {
 } from "./types";
 import type {
   DeliveryRecordData,
-  DeliveryRecordList,
+  DeliveryRecordListResponse,
   DeliveryRecordResponse,
 } from "./types/delivery";
 import type { LoginResponse } from "./types/login";
@@ -260,12 +260,12 @@ export async function createExpensesEntry(expenses: NewExpensesFormSchema): Prom
  *
  * @returns A promise that resolves to an array of delivery items.
  */
-export async function fetchDeliveryEntries(): Promise<DeliveryRecordData[]> {
-  const response = await apiRequest<DeliveryRecordList>({
+export async function fetchDeliveryEntries(): Promise<DeliveryRecordData[] | null> {
+  const response = await apiRequest<DeliveryRecordListResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
   });
-  return response.data ?? [];
+  return response.data;
 }
 
 /**
