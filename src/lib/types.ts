@@ -521,6 +521,7 @@ export interface ExpensesRecordData {
       ATC: null;
       TaxType: string;
       vatable_sales: null;
+      Unit: string | null;
     },
   ];
 }

@@ -47,6 +47,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { inputVariants } from "@/components/ui/input-variants";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -89,6 +90,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
         {
           item: "",
           quantity: 0,
+          unit: "",
           price: 0,
           total_amount: 0,
         },
@@ -163,6 +165,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     append({
       item: "",
       quantity: 0,
+      unit: "",
       price: 0,
       total_amount: 0,
     });
@@ -430,6 +433,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 <DivTableRow>
                   <DivTableHead>Items</DivTableHead>
                   <DivTableHead>Quantity</DivTableHead>
+                  <DivTableHead>Unit</DivTableHead>
                   <DivTableHead>Unit price</DivTableHead>
                   <DivTableHead>Total</DivTableHead>
                   <DivTableHead />
@@ -444,7 +448,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                         name={`items.${index}.item`}
                         control={form.control}
                         render={({ field }) => (
-                          <FormItem className="flex flex-col gap-2 space-y-0">
+                          <FormItem>
                             <Popover
                               open={isItemPopoverOpen[index] || false}
                               onOpenChange={(open) => {
@@ -500,6 +504,10 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                               (item) => item.raw_material.trim() === value,
                                             );
                                             field.onChange(selectedItem?.id.toString());
+                                            form.setValue(
+                                              `items.${index}.unit`,
+                                              selectedItem?.unit ?? "",
+                                            );
                                             setIsItemPopoverOpen((prev) => ({
                                               ...prev,
                                               [index]: false,
@@ -552,10 +560,25 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
 
                     <DivTableCell>
                       <FormField
+                        name={`items.${index}.unit`}
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </DivTableCell>
+
+                    <DivTableCell>
+                      <FormField
                         name={`items.${index}.price`}
                         control={form.control}
                         render={({ field }) => (
-                          <FormItem className="flex flex-col gap-2 space-y-0">
+                          <FormItem>
                             <FormControl>
                               <ReactNumberField
                                 formatOptions={{
@@ -593,7 +616,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                         name={`items.${index}.total_amount`}
                         control={form.control}
                         render={({ field }) => (
-                          <FormItem className="flex flex-col gap-2 space-y-0">
+                          <FormItem>
                             <FormControl>
                               <ReactNumberField
                                 formatOptions={{

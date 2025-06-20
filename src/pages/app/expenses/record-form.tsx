@@ -92,6 +92,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
       items: data.items.map((item) => ({
         item: item.Particulars,
         quantity: item.Quantity,
+        unit: item.Unit ?? "",
         price: item.Cost,
         total_amount: item.Amount,
       })),
@@ -403,6 +404,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
               <DivTableRow>
                 <DivTableHead>Item</DivTableHead>
                 <DivTableHead>Quantity</DivTableHead>
+                <DivTableHead>Unit</DivTableHead>
                 <DivTableHead>Unit price</DivTableHead>
                 <DivTableHead>Total amount</DivTableHead>
                 <DivTableHead />
@@ -515,6 +517,21 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                 field.onChange(event);
                               }}
                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.unit`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
