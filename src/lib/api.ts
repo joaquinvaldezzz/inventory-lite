@@ -12,32 +12,34 @@ import type {
 } from "./form-schema";
 import { saveToStorage } from "./storage";
 import type {
-  Categories,
   CategoriesResponse,
+  Category,
   DailyCountData,
   DailyCountRecord,
   DailyCountRecordResponse,
   DailyCountResponse,
-  DeliveryItem,
-  DeliveryRecord,
-  DeliveryResponse,
   EmployeeData,
   EmployeesResponse,
   ExpensesRecordData,
   ExpensesRecordsResponse,
   ForgotPasswordResponse,
-  Ingredients,
+  Ingredient,
   IngredientsResponse,
-  Items,
+  Item,
   ItemsResponse,
   LoginResponse,
   Supplier,
-  SupplierResponse,
+  SuppliersResponse,
   WasteData,
   WasteRecordData,
   WasteRecordResponse,
   WasteResponse,
 } from "./types";
+import type {
+  DeliveryRecordData,
+  DeliveryRecordList,
+  DeliveryRecordResponse,
+} from "./types/delivery";
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error("API URL is not defined");
@@ -139,7 +141,7 @@ export async function authenticateUser(email: string, password: string): Promise
  */
 export async function checkIfUserTokenIsValid(): Promise<boolean> {
   try {
-    const request = await apiRequest<DeliveryResponse>({
+    const request = await apiRequest<DeliveryRecordResponse>({
       url: env.VITE_DELIVERY_API_URL,
       action: "fetch",
     });
@@ -259,12 +261,12 @@ export async function createExpensesEntry(expenses: NewExpensesFormSchema): Prom
  *
  * @returns A promise that resolves to an array of delivery items.
  */
-export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
-  const data = await apiRequest<DeliveryResponse>({
+export async function fetchDeliveryEntries(): Promise<DeliveryRecordData[]> {
+  const response = await apiRequest<DeliveryRecordList>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return response.data ?? [];
 }
 
 /**
@@ -272,8 +274,8 @@ export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
  *
  * @returns A promise that resolves to an array of suppliers.
  */
-export async function getSuppliers(): Promise<Supplier> {
-  const data = await apiRequest<SupplierResponse>({
+export async function getSuppliers(): Promise<Supplier[]> {
+  const data = await apiRequest<SuppliersResponse>({
     url: env.VITE_SUPPLIERS_API_URL,
     action: "fetch",
   });
@@ -286,7 +288,7 @@ export async function getSuppliers(): Promise<Supplier> {
  *
  * @returns A promise that resolves to an array of items.
  */
-export async function getItems(): Promise<Items> {
+export async function getItems(): Promise<Item[]> {
   const data = await apiRequest<ItemsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
@@ -300,13 +302,13 @@ export async function getItems(): Promise<Items> {
  * @param id The delivery record ID.
  * @returns A promise that resolves to the delivery record data.
  */
-export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[]> {
-  const data = await apiRequest<DeliveryResponse>({
+export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecordData[] | null> {
+  const response = await apiRequest<DeliveryRecordResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return response.data ?? [];
 }
 
 /**
@@ -360,7 +362,7 @@ export async function fetchEmployees(): Promise<EmployeeData[]> {
  * @returns A promise that resolves to an array of category objects.
  * @throws {Error} If the API request fails.
  */
-export async function fetchCategories(): Promise<Categories[]> {
+export async function fetchCategories(): Promise<Category[]> {
   const data = await apiRequest<CategoriesResponse>({
     url: env.VITE_CATEGORIES_API_URL,
     action: "fetch",
@@ -425,7 +427,7 @@ export async function getSpecificWastesRecordById(id: number): Promise<WasteReco
  * @returns A promise that resolves to an array of ingredients.
  * @throws {Error} If the API request fails.
  */
-export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
+export async function getIngredientsByCategory(category: string): Promise<Ingredient[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
@@ -459,7 +461,7 @@ export async function getSpecificExpensesRecordById(id: number): Promise<Expense
  *   empty array is returned.
  * @throws An error if the API request fails.
  */
-export async function getItemsBySupplierId(supplier: string): Promise<Items> {
+export async function getItemsBySupplierId(supplier: string): Promise<Item[]> {
   const data = await apiRequest<IngredientsResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
