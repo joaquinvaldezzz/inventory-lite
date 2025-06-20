@@ -237,56 +237,6 @@ export interface DeliveryRecord {
 /** API response for a single delivery record. */
 export type DeliveryRecordResponse = Prettify<APIResponse<DeliveryRecord>>;
 
-/** Represents a supplier. */
-export interface Supplier {
-  /** Unique identifier for the supplier. */
-  id: number;
-
-  /** Name of the supplier. */
-  supplier_name: string;
-
-  /** Last name of the supplier. */
-  lastname: string;
-
-  /** First name of the supplier. */
-  firstname: string;
-
-  /** Middle name of the supplier. */
-  middlename: string;
-
-  /** Address of the supplier. */
-  address: string;
-
-  /** Mobile phone number of the supplier. */
-  mobile: string;
-
-  /** Landline phone number of the supplier. */
-  landline: string;
-
-  /** Email address of the supplier. */
-  email: string;
-
-  /** Tax Identification Number of the supplier. */
-  tin: string;
-
-  /**
-   * VAT type of the supplier.
-   *
-   * @default "NON-VAT"
-   */
-  vat_type: "NON-VAT";
-
-  /**
-   * Currency used by the supplier.
-   *
-   * @default "PHP"
-   */
-  currency: "PHP";
-}
-
-/** API response for a list of suppliers. */
-export type SuppliersResponse = Prettify<APIResponse<Supplier[]>>;
-
 /** Represents a single item. */
 export interface Item {
   id: number;

@@ -27,8 +27,6 @@ import type {
   IngredientsResponse,
   Item,
   ItemsResponse,
-  Supplier,
-  SuppliersResponse,
   WasteData,
   WasteRecordData,
   WasteRecordResponse,
@@ -40,6 +38,7 @@ import type {
   DeliveryRecordResponse,
 } from "./types/delivery";
 import type { LoginResponse } from "./types/login";
+import type { SupplierData, SupplierListResponse } from "./types/supplier";
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error("API URL is not defined");
@@ -274,13 +273,13 @@ export async function fetchDeliveryEntries(): Promise<DeliveryRecordData[]> {
  *
  * @returns A promise that resolves to an array of suppliers.
  */
-export async function getSuppliers(): Promise<Supplier[]> {
-  const data = await apiRequest<SuppliersResponse>({
+export async function getSuppliers(): Promise<SupplierData[] | null> {
+  const response = await apiRequest<SupplierListResponse>({
     url: env.VITE_SUPPLIERS_API_URL,
     action: "fetch",
   });
-  await saveToStorage("suppliers", JSON.stringify(data.data));
-  return Array.isArray(data.data) ? data.data : [];
+  await saveToStorage("suppliers", JSON.stringify(response.data));
+  return response.data ?? [];
 }
 
 /**
