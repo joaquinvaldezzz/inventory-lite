@@ -91,7 +91,7 @@ export const newDailyCountFormSchema = z.object({
   items: z.array(
     z.object({
       item: z.string().min(1, { message: "Please select an item from the list." }).trim(),
-      count: z.coerce.number().min(0, { message: "Count must be greater than or equal to zero." }),
+      count: z.coerce.number().min(0.01, { message: "Count must be greater than zero." }),
       unit: z.string().min(1, { message: "Please select a unit from the list." }).trim(),
     }),
   ),
