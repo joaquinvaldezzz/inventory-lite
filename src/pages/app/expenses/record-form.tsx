@@ -83,13 +83,14 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+  const filteredDebitItems = data.items.filter((item) => item.TotalStatus === "DEBIT");
   const form = useForm<EditExpensesFormSchema>({
     defaultValues: {
       supplier: data.SupplierID.toString(),
       supplier_tin: data.SupplierTIN,
       date: new Date(data.InvoiceDate),
       payment_type: data.PaymentType,
-      items: data.items.map((item) => ({
+      items: filteredDebitItems.map((item) => ({
         item: item.Particulars,
         quantity: item.Quantity,
         unit: item.Unit ?? "",
@@ -412,7 +413,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
             </DivTableHeader>
 
             <DivTableBody>
-              {data.items.map((_, index) => (
+              {filteredDebitItems.map((_, index) => (
                 <DivTableRow key={index}>
                   <DivTableCell>
                     <FormField
