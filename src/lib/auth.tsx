@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useIonRouter } from "@ionic/react";
+import { useQuery } from "@tanstack/react-query";
 
-import { authenticateUser, executeLogout } from "./api";
+import { authenticateUser, checkIfUserTokenIsValid, executeLogout } from "./api";
 import { AuthContext, loginResponseSchema, type LoginResponse } from "./auth-context";
 import { deleteFromStorage, getFromStorage, saveToStorage } from "./storage";
 
@@ -17,13 +18,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isPinSet, setIsPinSet] = useState(false);
   const [user, setUser] = useState<LoginResponse | null>(null);
+  const { data } = useQuery({
+    queryKey: ["token-validity"],
+    queryFn: async () => await checkIfUserTokenIsValid(),
+  });
   const router = useIonRouter();
 
   // Check for token on mount
   useEffect(() => {
     /**
-     * Checks for an existing user token in storage and updates the authentication state
-     * accordingly.
+     * Checks for an existing user token in storage and updates the authentication state accordingly
+     * and if the token is valid. If the token is invalid, the user is logged out and redirected to
+     * the login page.
      */
     async function checkToken() {
       const currentUser = await getFromStorage("currentUser");
@@ -37,7 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const parsedUser = JSON.parse(currentUser);
           const result = loginResponseSchema.safeParse(parsedUser);
-          if (result.success) {
+
+          if ((data ?? false) && result.success) {
             setIsAuthenticated(true);
             setUser(result.data);
           } else {
@@ -54,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     void checkToken();
-  }, []);
+  }, [data]);
 
   /**
    * Logs in a user with the given email and password.
