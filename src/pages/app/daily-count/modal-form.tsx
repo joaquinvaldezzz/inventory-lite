@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Idk */
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -77,7 +77,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     defaultValues: {
       date: new Date(),
       raw_material_type: "",
-      items: [],
+      items: [{ item: "", count: 0, unit: "" }],
     },
     resolver: zodResolver(newDailyCountFormSchema),
   });
@@ -88,15 +88,11 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
 
   /** Adds a new row to the items field array. */
   function handleAdd() {
-    append({
-      item: "",
-      count: 0,
-      unit: "",
-    });
+    append({ item: "", count: 0, unit: "" });
   }
 
   /** Generates a new list of ingredients with their counts set to 0 and replaces the current list. */
-  function handleGenerate() {
+  function generateItems() {
     replace(
       ingredients.map((ingredient) => ({
         item: ingredient.id.toString(),
@@ -140,6 +136,10 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     void getCategoryItems();
   }, []);
 
+  /**
+   * TODO: This is a hack to get the ingredients to update when the category changes. Find a better
+   * way to do this.
+   */
   useEffect(() => {
     /**
      * Fetches ingredient items from the API endpoint based on the selected raw material type from
@@ -148,17 +148,29 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
      * @returns A promise that resolves when the ingredients are fetched and state is updated.
      */
     async function getIngredientItems() {
-      if (form.getValues("raw_material_type").length === 0) {
+      const category = form.getValues("raw_material_type");
+
+      if (category.length === 0) {
+        setIngredients([]);
         return;
       }
 
-      const ingredients = await getIngredientsByCategory(form.getValues("raw_material_type"));
-      setIngredients(ingredients);
-      remove();
+      try {
+        const ingredients = await getIngredientsByCategory(category);
+        setIngredients(ingredients);
+        remove();
+      } catch (error) {
+        setIngredients([]);
+        throw new Error("Failed to fetch ingredients");
+      }
     }
 
     void getIngredientItems();
   }, [form.watch("raw_material_type")]);
+
+  useEffect(() => {
+    generateItems();
+  }, [ingredients]);
 
   /**
    * Handles the form submission event.
@@ -168,7 +180,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    void form.handleSubmit(() => {
+    void form.handleSubmit(async () => {
       const formValues = form.getValues();
       const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
@@ -178,37 +190,26 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
 
       setIsLoading(true);
 
-      /**
-       * Submits the form to create a new daily count entry.
-       *
-       * @returns A promise that resolves when the form submission process is complete.
-       */
-      async function submitForm() {
-        try {
-          await createDailyCountEntry(formValues);
-        } catch (error) {
-          void presentToast({
-            color: "danger",
-            icon: alertCircleOutline,
-            message: "Failed to create daily count entry. Please try again.",
-            swipeGesture: "vertical",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Daily count entry created successfully!",
-            swipeGesture: "vertical",
-          });
-          dismiss(null, "confirm");
-        }
+      try {
+        await createDailyCountEntry(parsedValues.data);
+      } catch (error) {
+        void presentToast({
+          color: "danger",
+          icon: alertCircleOutline,
+          message: "Failed to create daily count entry. Please try again.",
+          swipeGesture: "vertical",
+        });
+        throw new Error("Form submission failed");
+      } finally {
+        setIsLoading(false);
+        void presentToast({
+          duration: 1500,
+          icon: checkmarkCircleOutline,
+          message: "Daily count entry created successfully!",
+          swipeGesture: "vertical",
+        });
+        dismiss(null, "confirm");
       }
-
-      startTransition(() => {
-        void submitForm();
-      });
     })(event);
   }
 
@@ -289,7 +290,10 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                           disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                           mode="single"
                           selected={field.value}
-                          onSelect={field.onChange}
+                          onSelect={(date) => {
+                            field.onChange(date);
+                            setIsDateOpen(false);
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
@@ -378,12 +382,6 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                 </FormItem>
               )}
             />
-
-            <div className="flex flex-col gap-3">
-              <Button type="button" variant="secondary" onClick={handleGenerate}>
-                Generate items
-              </Button>
-            </div>
 
             <DivTable>
               <DivTableHeader>

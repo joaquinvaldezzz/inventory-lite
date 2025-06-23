@@ -83,15 +83,17 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+  const filteredDebitItems = data.items.filter((item) => item.TotalStatus === "DEBIT");
   const form = useForm<EditExpensesFormSchema>({
     defaultValues: {
       supplier: data.SupplierID.toString(),
       supplier_tin: data.SupplierTIN,
       date: new Date(data.InvoiceDate),
       payment_type: data.PaymentType,
-      items: data.items.map((item) => ({
+      items: filteredDebitItems.map((item) => ({
         item: item.Particulars,
         quantity: item.Quantity,
+        unit: item.Unit ?? "",
         price: item.Cost,
         total_amount: item.Amount,
       })),
@@ -403,6 +405,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
               <DivTableRow>
                 <DivTableHead>Item</DivTableHead>
                 <DivTableHead>Quantity</DivTableHead>
+                <DivTableHead>Unit</DivTableHead>
                 <DivTableHead>Unit price</DivTableHead>
                 <DivTableHead>Total amount</DivTableHead>
                 <DivTableHead />
@@ -410,7 +413,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
             </DivTableHeader>
 
             <DivTableBody>
-              {data.items.map((_, index) => (
+              {filteredDebitItems.map((_, index) => (
                 <DivTableRow key={index}>
                   <DivTableCell>
                     <FormField
@@ -515,6 +518,21 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                 field.onChange(event);
                               }}
                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </DivTableCell>
+
+                  <DivTableCell>
+                    <FormField
+                      name={`items.${index}.unit`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

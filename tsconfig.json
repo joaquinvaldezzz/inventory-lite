@@ -17,6 +17,7 @@
     "jsx": "react-jsx",
     "strictNullChecks": true,
     "paths": {
+      "@/root/*": ["./*"],
       "@/*": ["./src/*"]
     }
   },

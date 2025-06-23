@@ -13,6 +13,7 @@ import {
   useIonAlert,
 } from "@ionic/react";
 
+import { version } from "@/root/package.json";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
 import { saveToStorage } from "@/lib/storage";
 import { onChange } from "@/lib/theme-utils";
@@ -115,41 +116,49 @@ export function Settings() {
       </IonHeader>
 
       <IonContent>
-        <IonList>
-          <IonItem>
-            <IonSelect
-              placeholder="Select a branch"
-              value={currentBranch}
-              label="Branch"
-              onIonChange={(event) => {
-                if (typeof event.detail.value === "number") {
-                  void updateBranch(event.detail.value);
-                }
-              }}
-            >
-              {branches.map((branch) => (
-                <IonSelectOption value={branch.id} key={branch.id}>
-                  {branch.branch}
-                </IonSelectOption>
-              ))}
-            </IonSelect>
-          </IonItem>
+        <div className="bg-( flex h-full flex-col justify-between bg-(--ion-item-background,_#fff)">
+          <IonList>
+            <IonItem>
+              <IonSelect
+                placeholder="Select a branch"
+                value={currentBranch}
+                label="Branch"
+                onIonChange={(event) => {
+                  if (typeof event.detail.value === "number") {
+                    void updateBranch(event.detail.value);
+                  }
+                }}
+              >
+                {branches.map((branch) => (
+                  <IonSelectOption value={branch.id} key={branch.id}>
+                    {branch.branch}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
 
-          <IonItem>
-            <IonToggle
-              checked={theme === "dark"}
-              onIonChange={(event) => {
-                onChange(event.detail.checked ? "dark" : "light", setTheme);
-              }}
-            >
-              Dark mode
-            </IonToggle>
-          </IonItem>
+            <IonItem>
+              <IonToggle
+                checked={theme === "dark"}
+                onIonChange={(event) => {
+                  onChange(event.detail.checked ? "dark" : "light", setTheme);
+                }}
+              >
+                Dark mode
+              </IonToggle>
+            </IonItem>
 
-          <IonItem onClick={logoutUser}>
-            <IonLabel color="danger">Logout</IonLabel>
-          </IonItem>
-        </IonList>
+            <IonItem onClick={logoutUser}>
+              <IonLabel color="danger">Logout</IonLabel>
+            </IonItem>
+          </IonList>
+
+          <IonList lines="none">
+            <IonItem>
+              <IonLabel>App version: {version}-alpha</IonLabel>
+            </IonItem>
+          </IonList>
+        </div>
       </IonContent>
     </Fragment>
   );
