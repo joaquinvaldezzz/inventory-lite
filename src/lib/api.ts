@@ -14,10 +14,8 @@ import { saveToStorage } from "./storage";
 import type {
   CategoriesResponse,
   Category,
-  DailyCountData,
   DailyCountRecord,
   DailyCountRecordResponse,
-  DailyCountResponse,
   EmployeeData,
   EmployeesResponse,
   ExpensesRecordData,
@@ -31,7 +29,9 @@ import type {
   WasteRecordResponse,
   WasteResponse,
 } from "./types";
+import type { DailyCountListResponse, DailyCountRecordData } from "./types/daily-count";
 import type {
+  DeliveryFormData,
   DeliveryItem,
   DeliveryItemListResponse,
   DeliveryRecordData,
@@ -300,30 +300,29 @@ export async function getItems(): Promise<DeliveryItem[] | null> {
  * Fetches a specific delivery record by its ID.
  *
  * @param id The delivery record ID.
- * @returns A promise that resolves to the delivery record data.
+ * @returns A promise that resolves to the delivery record data or `null` if the request fails.
  */
-export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecordData[] | null> {
+export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryFormData[] | null> {
   const response = await apiRequest<DeliveryRecordResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return response.data ?? [];
+  return response.data ?? null;
 }
 
 /**
  * Fetches daily count entries for the current user and branch.
  *
- * @returns A promise that resolves to an array of daily count entries.
- * @throws {Error} If the API request fails.
+ * @returns A promise that resolves to an array of daily count entries or `null` if the request
+ *   fails.
  */
-export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
-  const data = await apiRequest<DailyCountResponse>({
+export async function fetchDailyCountEntries(): Promise<DailyCountRecordData[] | null> {
+  const request = await apiRequest<DailyCountListResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: "fetch",
   });
-
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
