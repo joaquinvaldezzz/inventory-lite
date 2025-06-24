@@ -55,13 +55,34 @@ export type DeliveryFormData = DeliveryRecordData & {
   }>;
 };
 
-/** API response type for retrieving a list of delivery records. */
+/** Represents a delivery item. */
+export interface DeliveryItem {
+  id: number;
+  barcode: string;
+  raw_material: string;
+  raw_material_type: number;
+  sku: string;
+  unit: string;
+  packaging: string;
+  raw_material_location: string;
+  delivery_lead_time: string;
+  minimum_stock_level: number;
+  maximum_stock_level: number;
+  initial_stock_level: number;
+  days_stock: null;
+  ChartAccountID: number;
+}
+
+/** Type representing the API response for a list of delivery records. */
 export type DeliveryRecordListResponse = Prettify<APIResponse<DeliveryRecordData[]>>;
 
-/** API response type for retrieving a single delivery record by `id` for use in a form. */
+/** Type representing the API response for a single delivery record by `id` for use in a form. */
 export type DeliveryRecordResponse = Prettify<APIResponse<DeliveryFormData[]>>;
 
-/** API request type for adding a delivery record, used in a form. */
+/** Type representing the API response for a list of deliverable items. */
+export type DeliveryItemListResponse = Prettify<APIResponse<DeliveryItem[]>>;
+
+/** Type representing the API request for adding a delivery record, used in a form. */
 export interface DeliveryFormInput {
   supplier: number;
   date_request: string;

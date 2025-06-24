@@ -26,13 +26,14 @@ import type {
   Ingredient,
   IngredientsResponse,
   Item,
-  ItemsResponse,
   WasteData,
   WasteRecordData,
   WasteRecordResponse,
   WasteResponse,
 } from "./types";
 import type {
+  DeliveryItem,
+  DeliveryItemListResponse,
   DeliveryRecordData,
   DeliveryRecordListResponse,
   DeliveryRecordResponse,
@@ -287,12 +288,12 @@ export async function getSuppliers(): Promise<SupplierData[] | null> {
  *
  * @returns A promise that resolves to an array of items.
  */
-export async function getItems(): Promise<Item[]> {
-  const data = await apiRequest<ItemsResponse>({
+export async function getItems(): Promise<DeliveryItem[] | null> {
+  const request = await apiRequest<DeliveryItemListResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**

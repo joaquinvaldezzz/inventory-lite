@@ -19,7 +19,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Item, Supplier } from "@/lib/types";
+import type { DeliveryItem } from "@/lib/types/delivery";
+import type { SupplierData } from "@/lib/types/supplier";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -74,8 +75,8 @@ interface DeliveryModalActions {
  * @returns The rendered component.
  */
 export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
+  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
+  const [items, setItems] = useState<DeliveryItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
@@ -146,7 +147,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     async function fetchItems() {
       try {
         const request = await getItems();
-        setItems(request);
+        request != null ? setItems(request) : setItems([]);
       } catch (error) {
         throw new Error("Error fetching items");
       }
