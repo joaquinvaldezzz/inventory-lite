@@ -86,7 +86,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const filteredDebitItems = data.items.filter((item) => item.TotalStatus === "DEBIT");
   const form = useForm<EditExpensesFormSchema>({
     defaultValues: {
-      supplier: data.SupplierID.toString(),
+      supplier: data.SupplierID,
       supplier_tin: data.SupplierTIN,
       date: new Date(data.InvoiceDate),
       payment_type: data.PaymentType,
