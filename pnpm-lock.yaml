@@ -156,8 +156,8 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ionicons:
-        specifier: ^8.0.8
-        version: 8.0.8
+        specifier: ^8.0.9
+        version: 8.0.9
       jose:
         specifier: ^6.0.11
         version: 6.0.11
@@ -2658,8 +2658,8 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
 
-  '@stencil/core@4.31.0':
-    resolution: {integrity: sha512-Ei9MFJ6LPD9BMFs+klkHylbVOOYhG10Jv4bvoFf3GMH15kA41rSYkEdr4DiX84ZdErQE2qtFV/2SUyWoXh0AhA==}
+  '@stencil/core@4.35.1':
+    resolution: {integrity: sha512-u65m3TbzOtpn679gUV4Yvi8YpInhRJ62js30a7YtXief9Ej/vzrhwDE22U0w4DMWJOYwAsJl133BUaZkWwnmzg==}
     engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
 
@@ -4838,8 +4838,8 @@ packages:
   ionicons@7.4.0:
     resolution: {integrity: sha512-ZK94MMqgzMCPPMhmk8Ouu6goyVHFIlw/ACP6oe3FrikcI0N7CX0xcwVaEbUc0G/v3W0shI93vo+9ve/KpvcNhQ==}
 
-  ionicons@8.0.8:
-    resolution: {integrity: sha512-CRHhDQA5vsNxC7raeEPqddgO90iR2F13VZS7hB0Vx7JrxJMM2060E3ddgYbpMQNJjzeBsgpkNwdBeK5qQ7RbLA==}
+  ionicons@8.0.9:
+    resolution: {integrity: sha512-qC8xcTVcrmC9e+4KwigtbfKa9J27rFzsjvi1wQBue178Az6u6mFDpL/Q10w534+RD5PkmiXlqy7my7+h2B/zTw==}
 
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
@@ -10028,7 +10028,7 @@ snapshots:
 
   '@stencil/core@4.20.0': {}
 
-  '@stencil/core@4.31.0':
+  '@stencil/core@4.35.1':
     optionalDependencies:
       '@rollup/rollup-darwin-arm64': 4.34.9
       '@rollup/rollup-darwin-x64': 4.34.9
@@ -12607,11 +12607,11 @@ snapshots:
 
   ionicons@7.4.0:
     dependencies:
-      '@stencil/core': 4.31.0
+      '@stencil/core': 4.35.1
 
-  ionicons@8.0.8:
+  ionicons@8.0.9:
     dependencies:
-      '@stencil/core': 4.31.0
+      '@stencil/core': 4.35.1
 
   ipaddr.js@1.9.1: {}
 
