@@ -120,14 +120,14 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
      */
     async function getEmployees() {
       const employees = await fetchEmployees();
-      const data = employees.map((employee) => {
+      const data = employees?.map((employee) => {
         return {
           value: employee.EmployeeID,
           label: employee.FirstName + " " + employee.LastName,
         };
       });
 
-      setEmployees(data);
+      setEmployees(data ?? []);
     }
 
     void getEmployees();

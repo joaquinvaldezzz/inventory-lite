@@ -1,5 +1,3 @@
-/* eslint-disable max-lines -- will separate into multiple files later */
-
 /**
  * Flattens a TypeScript type for improved readability.
  *
@@ -392,91 +390,6 @@ export interface WasteRecordData {
 
 /** API response for waste record data. */
 export type WasteRecordResponse = Prettify<APIResponse<WasteRecordData>>;
-
-/** API response for a successful employee attempt. */
-export interface EmployeeData {
-  EmployeeID: string;
-  CompanyID: string;
-  LastName: string;
-  FirstName: string;
-  MiddleName: string;
-  Picture: string;
-  CityAddress: string;
-  ProvAddress: string;
-  BirthDate: string;
-  BirthPlace: string;
-  Gender: string;
-  ContactNo: string;
-  CivilStatus: string;
-  Dep1: string;
-  Dep2: string;
-  Dep3: string;
-  Dep4: string;
-  Relation1: string;
-  Relation2: string;
-  Relation3: string;
-  Relation4: string;
-  ContactName: string;
-  ContactAddress: string;
-  ContactNumber: string;
-  ContactRelation: string;
-  CompanyBranch: string;
-  DepartmentID: number;
-  CompanyDepartment: string;
-  PositionID: number;
-  CompanyPosition: string;
-  Shift: string;
-  EmployeeStatus: string;
-  RateType: string;
-  DateHired: string;
-  DateResign: string;
-  DateProby: string;
-  DateRegular: string;
-  VacationLeave: string;
-  SickLeave: string;
-  Taxtable: string;
-  Taxcode: string;
-  SSS: string;
-  Philhealth: string;
-  HDMF: string;
-  Pagibig: string;
-  TIN: string;
-  ATMAccount: string;
-  MonthlyRate: number;
-  DailyRate: number;
-  HourlyRate: number;
-  ModeratorFee: number;
-  OccuAllowance: number;
-  HomeAllowance: number;
-  RiceSubsidy: number;
-  MealAllowance: number;
-  Allowance: number;
-  Overload: number;
-  Cola: number;
-  Deminimis: number;
-  TaxOT: number;
-  Classification: string;
-  AccountStatus: string;
-  DateAdded: string;
-  WSSSCont: number;
-  WPhilhealthCont: number;
-  WHDMFCont: number;
-  WPagibigCont: number;
-  WTaxCont: number;
-  TimeLog: string;
-  Teaching: string;
-  PRC: string;
-  PRCExpiration: string;
-  SalaryScaleStep: string;
-  Email: string;
-  FlexiHrs: string;
-  SecondContactNo: string;
-  BasicPay: number;
-  NDPay: string;
-}
-
-/** API response for a list of employees. */
-export type EmployeesResponse = Prettify<APIResponse<EmployeeData[]>>;
 
 /** API response for a successful expenses record attempt. */
 export interface ExpensesRecordData {

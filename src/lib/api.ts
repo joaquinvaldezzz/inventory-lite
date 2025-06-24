@@ -16,8 +16,6 @@ import type {
   Category,
   DailyCountRecord,
   DailyCountRecordResponse,
-  EmployeeData,
-  EmployeesResponse,
   ExpensesRecordData,
   ExpensesRecordsResponse,
   ForgotPasswordResponse,
@@ -33,6 +31,7 @@ import type {
   DeliveryRecordListResponse,
   DeliveryRecordResponse,
 } from "./types/delivery";
+import type { EmployeeData, EmployeeListResponse } from "./types/employee";
 import type { LoginResponse } from "./types/login";
 import type { SupplierData, SupplierListResponse } from "./types/supplier";
 import type {
@@ -348,12 +347,12 @@ export async function fetchWasteEntries(): Promise<WasteTableData[] | null> {
  * @returns A promise that resolves to an array of employees.
  * @throws {Error} If the API request fails.
  */
-export async function fetchEmployees(): Promise<EmployeeData[]> {
-  const data = await apiRequest<EmployeesResponse>({
+export async function fetchEmployees(): Promise<EmployeeData[] | null> {
+  const request = await apiRequest<EmployeeListResponse>({
     url: env.VITE_EMPLOYEES_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
