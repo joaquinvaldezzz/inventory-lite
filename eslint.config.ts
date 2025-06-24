@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { includeIgnoreFile } from "@eslint/compat";
 import jseslint from "@eslint/js";
 import eslintPluginQuery from "@tanstack/eslint-plugin-query";
