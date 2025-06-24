@@ -1,10 +1,10 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import type { WasteData } from "@/lib/types";
+import type { WasteTableData } from "@/lib/types/wastes";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 
-export const columns: Array<ColumnDef<WasteData>> = [
+export const columns: Array<ColumnDef<WasteTableData>> = [
   {
     accessorKey: "date",
     header: ({ column }) => <DataTableColumnHeader title="Date" column={column} />,

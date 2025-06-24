@@ -79,7 +79,7 @@ async function getUserSession(): Promise<UserSession> {
     throw new Error("User not found or branch not selected");
   }
 
-  if (user.value === null || branch.value === null) {
+  if (user.value?.data == null || branch.value == null) {
     throw new Error("User or branch not found");
   }
 

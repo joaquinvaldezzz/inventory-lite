@@ -15,8 +15,7 @@ import {
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { WasteRecordData } from "@/lib/types";
-import type { CategoryData } from "@/lib/types/wastes";
+import type { CategoryData, WasteFormData } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -70,7 +69,7 @@ import {
 import MultiSelect from "./multiselect";
 
 interface WastesRecordFormProps {
-  data: WasteRecordData;
+  data: WasteFormData;
 }
 
 /**

@@ -52,7 +52,7 @@ export default function BranchSelector() {
     const userBranches = await fetchUserBranches();
 
     if (username != null) {
-      setUsername(username.data.user.name);
+      setUsername(username.data?.user.name ?? "");
     }
 
     setBranches(userBranches);

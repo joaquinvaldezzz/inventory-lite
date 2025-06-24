@@ -1,5 +1,5 @@
 import { getFromStorage } from "./storage";
-import type { Branch, LoginResponse } from "./types";
+import type { Branch, LoginResponse } from "./types/login";
 
 /**
  * Retrieves the current user from storage.
@@ -43,7 +43,7 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
  */
 export async function fetchUserBranches(): Promise<Branch[]> {
   const currentUser = await getCurrentUser();
-  return currentUser?.data.user.branches ?? [];
+  return currentUser?.data?.user.branches ?? [];
 }
 
 /**
