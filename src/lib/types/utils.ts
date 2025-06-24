@@ -15,7 +15,7 @@ export type Prettify<T> = {
  *
  * @template T - The type of the `data` property in the response.
  */
-interface APIResponse<T> {
+export interface APIResponse<T> {
   /** Indicates whether the API request was successful. */
   success: boolean;
 
@@ -23,8 +23,5 @@ interface APIResponse<T> {
   message: string;
 
   /** The actual data returned by the API. */
-  data: T;
+  data: T | null;
 }
-
-/** API response for a successful forgot password attempt. */
-export type ForgotPasswordResponse = Prettify<APIResponse<string>>;

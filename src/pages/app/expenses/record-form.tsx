@@ -11,7 +11,8 @@ import { useForm } from "react-hook-form";
 import { deleteExpensesRecordById, getItems, getSuppliers, updateExpensesRecord } from "@/lib/api";
 import { editExpensesFormSchema, type EditExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { ExpensesRecordData, Items, Supplier } from "@/lib/types";
+import type { ExpensesItemData, ExpensesRecordFormData } from "@/lib/types/expenses";
+import type { SupplierData } from "@/lib/types/supplier";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import {
   AlertDialog,
@@ -63,7 +64,7 @@ import {
 } from "@/components/ui/select";
 
 interface ExpenseRecordFormProps {
-  data: ExpensesRecordData;
+  data: ExpensesRecordFormData;
 }
 
 /**
@@ -77,8 +78,8 @@ interface ExpenseRecordFormProps {
  */
 export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [suppliers, setSuppliers] = useState<Supplier>([]);
-  const [items, setItems] = useState<Items>([]);
+  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
+  const [items, setItems] = useState<ExpensesItemData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
@@ -149,7 +150,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
     async function fetchItems() {
       try {
         const items = await getItems();
-        setItems(items);
+        setItems(items ?? []);
       } catch (error) {
         throw new Error("Failed to fetch items");
       }

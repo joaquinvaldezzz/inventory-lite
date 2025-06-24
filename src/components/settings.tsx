@@ -17,7 +17,7 @@ import { version } from "@/root/package.json";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
 import { saveToStorage } from "@/lib/storage";
 import { onChange } from "@/lib/theme-utils";
-import type { Branch } from "@/lib/types";
+import type { Branch } from "@/lib/types/login";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 

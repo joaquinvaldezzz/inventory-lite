@@ -11,7 +11,8 @@ import { useForm } from "react-hook-form";
 import { deleteDeliveryRecord, getSuppliers, updateDeliveryRecord } from "@/lib/api";
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { DeliveryRecord, Supplier } from "@/lib/types";
+import type { DeliveryFormData } from "@/lib/types/delivery";
+import type { SupplierData } from "@/lib/types/supplier";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import {
   AlertDialog,
@@ -64,7 +65,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 interface DeliveryRecordFormProps {
-  data: DeliveryRecord;
+  data: DeliveryFormData;
 }
 
 /**
@@ -80,7 +81,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [suppliers, setSuppliers] = useState<Supplier>([]);
+  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const form = useForm<EditDeliveryFormSchema>({
     defaultValues: {

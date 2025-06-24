@@ -23,7 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchExpenses } from "@/lib/api";
-import type { ExpensesRecordData } from "@/lib/types";
+import type { ExpensesTableData } from "@/lib/types/expenses";
 import { Settings } from "@/components/settings";
 
 import { columns } from "./columns";
@@ -51,7 +51,7 @@ export default function Expenses() {
     void refetch();
   });
 
-  let sortedData: ExpensesRecordData[] = [];
+  let sortedData: ExpensesTableData[] = [];
 
   if (data != null) {
     sortedData = data.slice().sort((a, b) => {

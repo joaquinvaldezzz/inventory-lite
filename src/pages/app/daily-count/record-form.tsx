@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { deleteDailyCountRecordById, fetchCategories, updateDailyCountRecord } from "@/lib/api";
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Categories, DailyCountRecord } from "@/lib/types";
+import type { CategoryData, DailyCountFormData } from "@/lib/types/daily-count";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -53,7 +53,7 @@ import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DailyCountRecordFormProps {
-  data: DailyCountRecord;
+  data: DailyCountFormData;
 }
 
 /**
@@ -64,7 +64,7 @@ interface DailyCountRecordFormProps {
  * @returns The rendered component.
  */
 export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
-  const [categories, setCategories] = useState<Categories[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);

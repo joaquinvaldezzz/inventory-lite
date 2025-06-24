@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { fetchUserBranches, getCurrentUser } from "@/lib/dal";
 import { branchSelectorFormSchema, type BranchSelectorFormSchema } from "@/lib/form-schema";
 import { saveToStorage } from "@/lib/storage";
-import type { Branch } from "@/lib/types";
+import type { Branch } from "@/lib/types/login";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -52,7 +52,7 @@ export default function BranchSelector() {
     const userBranches = await fetchUserBranches();
 
     if (username != null) {
-      setUsername(username.data.user.name);
+      setUsername(username.data?.user.name ?? "");
     }
 
     setBranches(userBranches);

@@ -15,7 +15,7 @@ import {
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Categories, WasteRecordData } from "@/lib/types";
+import type { CategoryData, WasteFormData } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -69,7 +69,7 @@ import {
 import MultiSelect from "./multiselect";
 
 interface WastesRecordFormProps {
-  data: WasteRecordData;
+  data: WasteFormData;
 }
 
 /**
@@ -80,7 +80,7 @@ interface WastesRecordFormProps {
  * @returns The rendered form component.
  */
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
-  const [categories, setCategories] = useState<Categories[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
   const [employees, setEmployees] = useState<Option[]>([]);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
@@ -119,14 +119,14 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
      */
     async function getEmployees() {
       const employees = await fetchEmployees();
-      const data = employees.map((employee) => {
+      const data = employees?.map((employee) => {
         return {
           value: employee.EmployeeID,
           label: employee.FirstName + " " + employee.LastName,
         };
       });
 
-      setEmployees(data);
+      setEmployees(data ?? []);
     }
 
     void getEmployees();

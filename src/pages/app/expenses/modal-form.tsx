@@ -19,7 +19,8 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { createExpensesEntry, getItemsBySupplierId, getSuppliers } from "@/lib/api";
 import { newExpensesFormSchema, type NewExpensesFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Items, Supplier } from "@/lib/types";
+import type { ExpensesItemData } from "@/lib/types/expenses";
+import type { SupplierData } from "@/lib/types/supplier";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -72,8 +73,8 @@ interface ExpensesModalActions {
  * @returns The rendered component.
  */
 export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
-  const [suppliers, setSuppliers] = useState<Supplier>([]);
-  const [items, setItems] = useState<Items>([]);
+  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
+  const [items, setItems] = useState<ExpensesItemData[]>([]);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
@@ -150,7 +151,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
 
         if (supplierId.length > 0) {
           const request = await getItemsBySupplierId(supplierId);
-          setItems(request);
+          setItems(request ?? []);
         }
       } catch (error) {
         throw new Error("Error fetching items");

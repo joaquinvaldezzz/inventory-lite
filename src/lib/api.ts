@@ -11,33 +11,42 @@ import type {
   NewWasteFormSchema,
 } from "./form-schema";
 import { saveToStorage } from "./storage";
+import type { ForgotPasswordResponse } from "./types";
 import type {
-  Categories,
-  CategoriesResponse,
-  DailyCountData,
-  DailyCountRecord,
+  CategoryData,
+  CategoryListResponse,
+  DailyCountFormData,
+  DailyCountListResponse,
+  DailyCountRecordData,
   DailyCountRecordResponse,
-  DailyCountResponse,
+} from "./types/daily-count";
+import type {
+  DeliveryFormData,
   DeliveryItem,
-  DeliveryRecord,
-  DeliveryResponse,
-  EmployeeData,
-  EmployeesResponse,
-  ExpensesRecordData,
-  ExpensesRecordsResponse,
-  ForgotPasswordResponse,
-  Ingredients,
-  IngredientsResponse,
-  Items,
-  ItemsResponse,
-  LoginResponse,
-  Supplier,
-  SupplierResponse,
-  WasteData,
-  WasteRecordData,
+  DeliveryItemListResponse,
+  DeliveryRecordData,
+  DeliveryRecordListResponse,
+  DeliveryRecordResponse,
+} from "./types/delivery";
+import type { EmployeeData, EmployeeListResponse } from "./types/employee";
+import type {
+  ExpensesItemData,
+  ExpensesItemListResponse,
+  ExpensesRecordFormData,
+  ExpensesRecordListResponse,
+  ExpensesRecordResponse,
+  ExpensesTableData,
+} from "./types/expenses";
+import type { LoginResponse } from "./types/login";
+import type { SupplierData, SupplierListResponse } from "./types/supplier";
+import type {
+  WasteFormData,
+  WasteItem,
+  WasteItemListResponse,
+  WasteRecordListResponse,
   WasteRecordResponse,
-  WasteResponse,
-} from "./types";
+  WasteTableData,
+} from "./types/wastes";
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error("API URL is not defined");
@@ -70,7 +79,7 @@ async function getUserSession(): Promise<UserSession> {
     throw new Error("User not found or branch not selected");
   }
 
-  if (user.value === null || branch.value === null) {
+  if (user.value?.data == null || branch.value == null) {
     throw new Error("User or branch not found");
   }
 
@@ -139,7 +148,7 @@ export async function authenticateUser(email: string, password: string): Promise
  */
 export async function checkIfUserTokenIsValid(): Promise<boolean> {
   try {
-    const request = await apiRequest<DeliveryResponse>({
+    const request = await apiRequest<DeliveryRecordResponse>({
       url: env.VITE_DELIVERY_API_URL,
       action: "fetch",
     });
@@ -259,12 +268,12 @@ export async function createExpensesEntry(expenses: NewExpensesFormSchema): Prom
  *
  * @returns A promise that resolves to an array of delivery items.
  */
-export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
-  const data = await apiRequest<DeliveryResponse>({
+export async function fetchDeliveryEntries(): Promise<DeliveryRecordData[] | null> {
+  const response = await apiRequest<DeliveryRecordListResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return response.data;
 }
 
 /**
@@ -272,13 +281,13 @@ export async function fetchDeliveryEntries(): Promise<DeliveryItem[]> {
  *
  * @returns A promise that resolves to an array of suppliers.
  */
-export async function getSuppliers(): Promise<Supplier> {
-  const data = await apiRequest<SupplierResponse>({
+export async function getSuppliers(): Promise<SupplierData[] | null> {
+  const response = await apiRequest<SupplierListResponse>({
     url: env.VITE_SUPPLIERS_API_URL,
     action: "fetch",
   });
-  await saveToStorage("suppliers", JSON.stringify(data.data));
-  return Array.isArray(data.data) ? data.data : [];
+  await saveToStorage("suppliers", JSON.stringify(response.data));
+  return response.data ?? [];
 }
 
 /**
@@ -286,56 +295,55 @@ export async function getSuppliers(): Promise<Supplier> {
  *
  * @returns A promise that resolves to an array of items.
  */
-export async function getItems(): Promise<Items> {
-  const data = await apiRequest<ItemsResponse>({
+export async function getItems(): Promise<DeliveryItem[] | null> {
+  const request = await apiRequest<DeliveryItemListResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
  * Fetches a specific delivery record by its ID.
  *
  * @param id The delivery record ID.
- * @returns A promise that resolves to the delivery record data.
+ * @returns A promise that resolves to the delivery record data or `null` if the request fails.
  */
-export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryRecord[]> {
-  const data = await apiRequest<DeliveryResponse>({
+export async function getSpecificDeliveryRecord(id: number): Promise<DeliveryFormData[] | null> {
+  const response = await apiRequest<DeliveryRecordResponse>({
     url: env.VITE_DELIVERY_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return response.data ?? null;
 }
 
 /**
  * Fetches daily count entries for the current user and branch.
  *
- * @returns A promise that resolves to an array of daily count entries.
- * @throws {Error} If the API request fails.
+ * @returns A promise that resolves to an array of daily count entries or `null` if the request
+ *   fails.
  */
-export async function fetchDailyCountEntries(): Promise<DailyCountData[]> {
-  const data = await apiRequest<DailyCountResponse>({
+export async function fetchDailyCountEntries(): Promise<DailyCountRecordData[] | null> {
+  const request = await apiRequest<DailyCountListResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: "fetch",
   });
-
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
  * Fetches waste data entries for the current user and branch.
  *
- * @returns A promise that resolves to an array of waste data entries.
- * @throws {Error} If the API request fails.
+ * @returns A promise that resolves to an array of waste data entries or `null` if the request
+ *   fails.
  */
-export async function fetchWasteEntries(): Promise<WasteData[]> {
-  const data = await apiRequest<WasteResponse>({
+export async function fetchWasteEntries(): Promise<WasteTableData[] | null> {
+  const request = await apiRequest<WasteRecordListResponse>({
     url: env.VITE_WASTE_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -344,12 +352,12 @@ export async function fetchWasteEntries(): Promise<WasteData[]> {
  * @returns A promise that resolves to an array of employees.
  * @throws {Error} If the API request fails.
  */
-export async function fetchEmployees(): Promise<EmployeeData[]> {
-  const data = await apiRequest<EmployeesResponse>({
+export async function fetchEmployees(): Promise<EmployeeData[] | null> {
+  const request = await apiRequest<EmployeeListResponse>({
     url: env.VITE_EMPLOYEES_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -360,13 +368,13 @@ export async function fetchEmployees(): Promise<EmployeeData[]> {
  * @returns A promise that resolves to an array of category objects.
  * @throws {Error} If the API request fails.
  */
-export async function fetchCategories(): Promise<Categories[]> {
-  const data = await apiRequest<CategoriesResponse>({
+export async function fetchCategories(): Promise<CategoryData[] | null> {
+  const data = await apiRequest<CategoryListResponse>({
     url: env.VITE_CATEGORIES_API_URL,
     action: "fetch",
   });
   await saveToStorage("categories", JSON.stringify(data.data));
-  return Array.isArray(data.data) ? data.data : [];
+  return data.data ?? [];
 }
 
 /**
@@ -380,12 +388,12 @@ export async function fetchCategories(): Promise<Categories[]> {
  *   array, an empty array is returned.
  * @throws {Error} If the API request fails or encounters an error.
  */
-export async function fetchExpenses(): Promise<ExpensesRecordData[]> {
-  const data = await apiRequest<ExpensesRecordsResponse>({
+export async function fetchExpenses(): Promise<ExpensesTableData[] | null> {
+  const request = await apiRequest<ExpensesRecordListResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -394,46 +402,47 @@ export async function fetchExpenses(): Promise<ExpensesRecordData[]> {
  * @param id The daily count record ID.
  * @returns A promise that resolves to the daily count record data.
  */
-export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
+export async function getSpecificDailyCountRecordById(
+  id: number,
+): Promise<DailyCountFormData[] | null> {
   const data = await apiRequest<DailyCountRecordResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return data.data ?? null;
 }
 
 /**
  * Fetches a specific waste record by its ID.
  *
  * @param id The waste record ID.
- * @returns A promise that resolves to the waste record data.
+ * @returns A promise that resolves to the waste record data or `null` if the request fails.
  */
-export async function getSpecificWastesRecordById(id: number): Promise<WasteRecordData[]> {
-  const data = await apiRequest<WasteRecordResponse>({
+export async function getSpecificWastesRecordById(id: number): Promise<WasteFormData[] | null> {
+  const request = await apiRequest<WasteRecordResponse>({
     url: env.VITE_WASTE_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
  * Fetches a list of ingredients filtered by category.
  *
  * @param category The category of ingredients to fetch.
- * @returns A promise that resolves to an array of ingredients.
- * @throws {Error} If the API request fails.
+ * @returns A promise that resolves to an array of ingredients or `null` if the request fails.
  */
-export async function getIngredientsByCategory(category: string): Promise<Ingredients[]> {
-  const data = await apiRequest<IngredientsResponse>({
+export async function getIngredientsByCategory(category: string): Promise<WasteItem[] | null> {
+  const request = await apiRequest<WasteItemListResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
     additionalData: {
       category,
     },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -442,13 +451,15 @@ export async function getIngredientsByCategory(category: string): Promise<Ingred
  * @param id The waste record ID.
  * @returns A promise that resolves to the waste record data.
  */
-export async function getSpecificExpensesRecordById(id: number): Promise<ExpensesRecordData[]> {
-  const data = await apiRequest<ExpensesRecordsResponse>({
+export async function getSpecificExpensesRecordById(
+  id: number,
+): Promise<ExpensesRecordFormData[] | null> {
+  const request = await apiRequest<ExpensesRecordResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -459,13 +470,13 @@ export async function getSpecificExpensesRecordById(id: number): Promise<Expense
  *   empty array is returned.
  * @throws An error if the API request fails.
  */
-export async function getItemsBySupplierId(supplier: string): Promise<Items> {
-  const data = await apiRequest<IngredientsResponse>({
+export async function getItemsBySupplierId(supplier: string): Promise<ExpensesItemData[] | null> {
+  const request = await apiRequest<ExpensesItemListResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
     additionalData: { supplier: Number(supplier) },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
