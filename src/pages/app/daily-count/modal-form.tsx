@@ -18,7 +18,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { createDailyCountEntry, fetchCategories, getIngredientsByCategory } from "@/lib/api";
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Categories, Ingredients } from "@/lib/types";
+import type { CategoryData, DailyCountItemData } from "@/lib/types/daily-count";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -64,8 +64,8 @@ interface DailyCountModalActions {
  * @returns The rendered component.
  */
 export function DailyCountModal({ dismiss }: DailyCountModalActions) {
-  const [categories, setCategories] = useState<Categories[]>([]);
-  const [ingredients, setIngredients] = useState<Ingredients[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [ingredients, setIngredients] = useState<DailyCountItemData[]>([]);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
@@ -157,7 +157,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
 
       try {
         const ingredients = await getIngredientsByCategory(category);
-        setIngredients(ingredients);
+        setIngredients(ingredients ?? []);
         remove();
       } catch (error) {
         setIngredients([]);

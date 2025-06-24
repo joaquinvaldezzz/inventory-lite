@@ -1,6 +1,8 @@
 import { createContext } from "react";
 import { z } from "zod";
 
+import type { LoginResponse } from "./types/login";
+
 const loginResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
@@ -29,8 +31,6 @@ const loginResponseSchema = z.object({
     }),
   }),
 });
-
-type LoginResponse = z.infer<typeof loginResponseSchema>;
 
 interface AuthContextType {
   isAuthenticated: boolean;

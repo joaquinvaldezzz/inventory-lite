@@ -38,6 +38,9 @@ export interface CategoryData {
   raw_material_type: string;
 }
 
+/** Represents an item used in a daily count. */
+export type DailyCountItemData = DeliveryItem;
+
 /** Represents the API response for a list of daily counts. */
 export type DailyCountListResponse = Prettify<APIResponse<DailyCountRecordData[]>>;
 
@@ -48,4 +51,4 @@ export type DailyCountRecordResponse = Prettify<APIResponse<DailyCountFormData[]
 export type CategoryListResponse = Prettify<APIResponse<CategoryData[]>>;
 
 /** Represents the API response for a list of items. */
-export type ItemListResponse = Prettify<APIResponse<DeliveryItem[]>>;
+export type ItemListResponse = Prettify<APIResponse<DailyCountItemData[]>>;

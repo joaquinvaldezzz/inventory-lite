@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, password: string): Promise<LoginResponse | null> => {
       const authenticatedUser = await authenticateUser(email, password);
 
-      if (authenticatedUser.success) {
+      if (authenticatedUser.data != null) {
         await saveToStorage("currentUser", JSON.stringify(authenticatedUser));
         setIsAuthenticated(true);
         setUser(authenticatedUser);
