@@ -11,14 +11,15 @@ import type {
   NewWasteFormSchema,
 } from "./form-schema";
 import { saveToStorage } from "./storage";
+import type { ForgotPasswordResponse } from "./types";
 import type {
-  CategoriesResponse,
-  Category,
-  DailyCountRecord,
+  CategoryData,
+  CategoryListResponse,
+  DailyCountFormData,
+  DailyCountListResponse,
+  DailyCountRecordData,
   DailyCountRecordResponse,
-  ForgotPasswordResponse,
-} from "./types";
-import type { DailyCountListResponse, DailyCountRecordData } from "./types/daily-count";
+} from "./types/daily-count";
 import type {
   DeliveryFormData,
   DeliveryItem,
@@ -367,13 +368,13 @@ export async function fetchEmployees(): Promise<EmployeeData[] | null> {
  * @returns A promise that resolves to an array of category objects.
  * @throws {Error} If the API request fails.
  */
-export async function fetchCategories(): Promise<Category[]> {
-  const data = await apiRequest<CategoriesResponse>({
+export async function fetchCategories(): Promise<CategoryData[] | null> {
+  const data = await apiRequest<CategoryListResponse>({
     url: env.VITE_CATEGORIES_API_URL,
     action: "fetch",
   });
   await saveToStorage("categories", JSON.stringify(data.data));
-  return Array.isArray(data.data) ? data.data : [];
+  return data.data ?? [];
 }
 
 /**
@@ -401,13 +402,15 @@ export async function fetchExpenses(): Promise<ExpensesTableData[] | null> {
  * @param id The daily count record ID.
  * @returns A promise that resolves to the daily count record data.
  */
-export async function getSpecificDailyCountRecordById(id: number): Promise<DailyCountRecord[]> {
+export async function getSpecificDailyCountRecordById(
+  id: number,
+): Promise<DailyCountFormData[] | null> {
   const data = await apiRequest<DailyCountRecordResponse>({
     url: env.VITE_DAILY_COUNT_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return data.data ?? null;
 }
 
 /**
