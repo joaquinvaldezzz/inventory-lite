@@ -15,7 +15,8 @@ import {
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Categories, WasteRecordData } from "@/lib/types";
+import type { WasteRecordData } from "@/lib/types";
+import type { CategoryData } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -80,7 +81,7 @@ interface WastesRecordFormProps {
  * @returns The rendered form component.
  */
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
-  const [categories, setCategories] = useState<Categories[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
   const [employees, setEmployees] = useState<Option[]>([]);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);

@@ -31,7 +31,7 @@ import {
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
-import type { Categories, Ingredients } from "@/lib/types";
+import type { CategoryData, WasteItem } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -85,8 +85,8 @@ interface WastesModalActions {
  * @returns The rendered component.
  */
 export function WastesFormModal({ dismiss }: WastesModalActions) {
-  const [categories, setCategories] = useState<Categories[]>([]);
-  const [ingredients, setIngredients] = useState<Ingredients[]>([]);
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [ingredients, setIngredients] = useState<WasteItem[]>([]);
   const [employees, setEmployees] = useState<Option[]>([]);
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -155,7 +155,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
       }
 
       const ingredients = await getIngredientsByCategory(form.getValues("raw_material_type"));
-      setIngredients(ingredients);
+      setIngredients(ingredients ?? []);
       remove();
     }
 

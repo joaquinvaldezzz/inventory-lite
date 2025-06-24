@@ -21,13 +21,8 @@ import type {
   ExpensesRecordData,
   ExpensesRecordsResponse,
   ForgotPasswordResponse,
-  Ingredient,
   IngredientsResponse,
   Item,
-  WasteData,
-  WasteRecordData,
-  WasteRecordResponse,
-  WasteResponse,
 } from "./types";
 import type { DailyCountListResponse, DailyCountRecordData } from "./types/daily-count";
 import type {
@@ -40,6 +35,14 @@ import type {
 } from "./types/delivery";
 import type { LoginResponse } from "./types/login";
 import type { SupplierData, SupplierListResponse } from "./types/supplier";
+import type {
+  WasteFormData,
+  WasteItem,
+  WasteItemListResponse,
+  WasteRecordListResponse,
+  WasteRecordResponse,
+  WasteTableData,
+} from "./types/wastes";
 
 if (env.VITE_DELIVERY_API_URL.length === 0) {
   throw new Error("API URL is not defined");
@@ -328,15 +331,15 @@ export async function fetchDailyCountEntries(): Promise<DailyCountRecordData[] |
 /**
  * Fetches waste data entries for the current user and branch.
  *
- * @returns A promise that resolves to an array of waste data entries.
- * @throws {Error} If the API request fails.
+ * @returns A promise that resolves to an array of waste data entries or `null` if the request
+ *   fails.
  */
-export async function fetchWasteEntries(): Promise<WasteData[]> {
-  const data = await apiRequest<WasteResponse>({
+export async function fetchWasteEntries(): Promise<WasteTableData[] | null> {
+  const request = await apiRequest<WasteRecordListResponse>({
     url: env.VITE_WASTE_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -408,33 +411,32 @@ export async function getSpecificDailyCountRecordById(id: number): Promise<Daily
  * Fetches a specific waste record by its ID.
  *
  * @param id The waste record ID.
- * @returns A promise that resolves to the waste record data.
+ * @returns A promise that resolves to the waste record data or `null` if the request fails.
  */
-export async function getSpecificWastesRecordById(id: number): Promise<WasteRecordData[]> {
-  const data = await apiRequest<WasteRecordResponse>({
+export async function getSpecificWastesRecordById(id: number): Promise<WasteFormData[] | null> {
+  const request = await apiRequest<WasteRecordResponse>({
     url: env.VITE_WASTE_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
  * Fetches a list of ingredients filtered by category.
  *
  * @param category The category of ingredients to fetch.
- * @returns A promise that resolves to an array of ingredients.
- * @throws {Error} If the API request fails.
+ * @returns A promise that resolves to an array of ingredients or `null` if the request fails.
  */
-export async function getIngredientsByCategory(category: string): Promise<Ingredient[]> {
-  const data = await apiRequest<IngredientsResponse>({
+export async function getIngredientsByCategory(category: string): Promise<WasteItem[] | null> {
+  const request = await apiRequest<WasteItemListResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
     additionalData: {
       category,
     },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
