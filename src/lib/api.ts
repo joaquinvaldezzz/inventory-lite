@@ -16,11 +16,7 @@ import type {
   Category,
   DailyCountRecord,
   DailyCountRecordResponse,
-  ExpensesRecordData,
-  ExpensesRecordsResponse,
   ForgotPasswordResponse,
-  IngredientsResponse,
-  Item,
 } from "./types";
 import type { DailyCountListResponse, DailyCountRecordData } from "./types/daily-count";
 import type {
@@ -32,6 +28,14 @@ import type {
   DeliveryRecordResponse,
 } from "./types/delivery";
 import type { EmployeeData, EmployeeListResponse } from "./types/employee";
+import type {
+  ExpensesItemData,
+  ExpensesItemListResponse,
+  ExpensesRecordFormData,
+  ExpensesRecordListResponse,
+  ExpensesRecordResponse,
+  ExpensesTableData,
+} from "./types/expenses";
 import type { LoginResponse } from "./types/login";
 import type { SupplierData, SupplierListResponse } from "./types/supplier";
 import type {
@@ -383,12 +387,12 @@ export async function fetchCategories(): Promise<Category[]> {
  *   array, an empty array is returned.
  * @throws {Error} If the API request fails or encounters an error.
  */
-export async function fetchExpenses(): Promise<ExpensesRecordData[]> {
-  const data = await apiRequest<ExpensesRecordsResponse>({
+export async function fetchExpenses(): Promise<ExpensesTableData[] | null> {
+  const request = await apiRequest<ExpensesRecordListResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -444,13 +448,15 @@ export async function getIngredientsByCategory(category: string): Promise<WasteI
  * @param id The waste record ID.
  * @returns A promise that resolves to the waste record data.
  */
-export async function getSpecificExpensesRecordById(id: number): Promise<ExpensesRecordData[]> {
-  const data = await apiRequest<ExpensesRecordsResponse>({
+export async function getSpecificExpensesRecordById(
+  id: number,
+): Promise<ExpensesRecordFormData[] | null> {
+  const request = await apiRequest<ExpensesRecordResponse>({
     url: env.VITE_EXPENSES_API_URL,
     action: "fetch",
     additionalData: { id },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**
@@ -461,13 +467,13 @@ export async function getSpecificExpensesRecordById(id: number): Promise<Expense
  *   empty array is returned.
  * @throws An error if the API request fails.
  */
-export async function getItemsBySupplierId(supplier: string): Promise<Item[]> {
-  const data = await apiRequest<IngredientsResponse>({
+export async function getItemsBySupplierId(supplier: string): Promise<ExpensesItemData[] | null> {
+  const request = await apiRequest<ExpensesItemListResponse>({
     url: env.VITE_INGREDIENTS_API_URL,
     action: "fetch",
     additionalData: { supplier: Number(supplier) },
   });
-  return Array.isArray(data.data) ? data.data : [];
+  return request.data ?? null;
 }
 
 /**

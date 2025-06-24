@@ -1,11 +1,11 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
-import type { ExpensesRecordData } from "@/lib/types";
+import type { ExpensesTableData } from "@/lib/types/expenses";
 import { formatAsCurrency } from "@/lib/utils";
 import { DataTableColumnHeader } from "@/components/ui/data-table/column-header";
 
-export const columns: Array<ColumnDef<ExpensesRecordData>> = [
+export const columns: Array<ColumnDef<ExpensesTableData>> = [
   {
     accessorKey: "PONo",
     header: ({ column }) => <DataTableColumnHeader title="REF no." column={column} />,
