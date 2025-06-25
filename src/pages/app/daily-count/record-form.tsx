@@ -327,7 +327,10 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
           <DivTableBody>
             {data.items.map((item, index) => (
               <DivTableRow key={index}>
-                <DivTableCell>{item.item}</DivTableCell>
+                <DivTableCell>
+                  <div className="flex h-9 w-full items-center">{item.item}</div>
+                </DivTableCell>
+
                 <DivTableCell>
                   <FormField
                     name={`items.${index}.count`}
