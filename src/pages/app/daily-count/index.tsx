@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import {
   IonButtons,
   IonContent,
@@ -41,9 +41,16 @@ export default function DailyCount() {
   const { isPending, data, refetch } = useQuery({
     queryKey: ["daily-count-entries"],
     queryFn: async () => await fetchDailyCountEntries(),
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 1000 * 60 * 5,
   });
 
-  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
+  const sortedData = useMemo(() => {
+    if (data == null) return [];
+
+    return data.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [data]);
 
   const [present, dismiss] = useIonModal(DailyCountModal, {
     dismiss: (data: string, role: string) => {
@@ -52,7 +59,7 @@ export default function DailyCount() {
   });
 
   /** Displays a modal and handles its dismissal event. */
-  function presentModal() {
+  const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
@@ -60,22 +67,25 @@ export default function DailyCount() {
         }
       },
     });
-  }
+  }, [present, refetch]);
 
   /**
    * Handles the refresh event for the delivery page.
    *
    * @param event The refresh event containing the refresher details.
    */
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    try {
-      void refetch();
-    } catch (error) {
-      throw new Error("Error fetching delivery entries");
-    } finally {
-      event.detail.complete();
-    }
-  }
+  const handleRefresh = useCallback(
+    (event: CustomEvent<RefresherEventDetail>) => {
+      try {
+        void refetch();
+      } catch (error) {
+        throw new Error("Error fetching delivery entries");
+      } finally {
+        event.detail.complete();
+      }
+    },
+    [refetch],
+  );
 
   useIonViewDidEnter(() => {
     void refetch();

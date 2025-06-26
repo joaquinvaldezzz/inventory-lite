@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import {
   IonButtons,
   IonContent,
@@ -23,7 +23,6 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchDeliveryEntries } from "@/lib/api";
-import type { DeliveryRecordData } from "@/lib/types/delivery";
 import { DataTable } from "@/components/ui/data-table";
 import { Loading } from "@/components/loading";
 import { Settings } from "@/components/settings";
@@ -45,17 +44,16 @@ export default function Delivery() {
   const { isFetching, isPending, data, refetch } = useQuery({
     queryKey: ["delivery-entries"],
     queryFn: async () => await fetchDeliveryEntries(),
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 1000 * 60 * 5,
   });
 
   /** Initializes an empty array to store sorted delivery data of type `DeliveryRecordData`. */
-  let sortedData: DeliveryRecordData[] = [];
+  const sortedData = useMemo(() => {
+    if (data == null) return [];
 
-  /**
-   * Sorts delivery data by delivery date (newest first) and DR number (descending), then stores the
-   * result in `sortedData`.
-   */
-  if (data != null) {
-    sortedData = data.slice().sort((a, b) => {
+    return data.slice().sort((a, b) => {
       /** Sort by date delivered (newest first) */
       const dateComparison =
         new Date(b.date_delivered).getTime() - new Date(a.date_delivered).getTime();
@@ -71,7 +69,7 @@ export default function Delivery() {
 
       return 0;
     });
-  }
+  }, [data]);
 
   /** Initializes the `useIonModal` hook with the `NewDeliveryModal` component. */
   const [present, dismiss] = useIonModal(DeliveryFormModal, {
@@ -86,7 +84,7 @@ export default function Delivery() {
    * This function presents a modal using the `present` function and sets up an event listener for
    * its dismissal. If dismissed with the role of 'confirm', it triggers a refetch operation.
    */
-  function presentModal() {
+  const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
@@ -94,22 +92,25 @@ export default function Delivery() {
         }
       },
     });
-  }
+  }, [present, refetch]);
 
   /**
    * Handles the refresh event for the delivery page.
    *
    * @param event The refresh event containing the refresher details.
    */
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    try {
-      void refetch();
-    } catch (error) {
-      throw new Error("Error fetching delivery entries");
-    } finally {
-      event.detail.complete();
-    }
-  }
+  const handleRefresh = useCallback(
+    (event: CustomEvent<RefresherEventDetail>) => {
+      try {
+        void refetch();
+      } catch (error) {
+        throw new Error("Error fetching delivery entries");
+      } finally {
+        event.detail.complete();
+      }
+    },
+    [refetch],
+  );
 
   useIonViewDidEnter(() => {
     void refetch();

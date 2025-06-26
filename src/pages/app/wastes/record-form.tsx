@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This is a large file */
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { startTransition, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
 import { getFromStorage } from "@/lib/storage";
+import type { EmployeeData } from "@/lib/types/employee";
 import type { CategoryData, WasteFormData } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import {
@@ -55,7 +56,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { Option } from "@/components/ui/multiselect";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -81,12 +81,21 @@ interface WastesRecordFormProps {
  */
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
   const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [employees, setEmployees] = useState<Option[]>([]);
+  const [rawEmployees, setRawEmployees] = useState<EmployeeData[]>([]);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- This is a valid type assertion
-  const employeeArray = JSON.parse(data.items.map((item) => item.employee)[0]) as string[];
+  const employeeArray = useMemo(() => {
+    const employeeStr = data.items.map((item) => item.employee)[0];
+    const parsed = JSON.parse(employeeStr);
+    if (
+      !Array.isArray(parsed) ||
+      !parsed.every((item): item is string => typeof item === "string")
+    ) {
+      throw new Error("Invalid employee data format");
+    }
+    return parsed;
+  }, [data.items]);
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(data.date),
@@ -109,6 +118,15 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
   const router = useIonRouter();
   const [presentToast] = useIonToast();
 
+  const employees = useMemo(
+    () =>
+      rawEmployees.map((employee) => ({
+        value: employee.EmployeeID,
+        label: employee.FirstName + " " + employee.LastName,
+      })),
+    [rawEmployees],
+  );
+
   useEffect(() => {
     /**
      * Fetches the list of employees, maps the data to a specific format, and updates the state with
@@ -119,14 +137,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
      */
     async function getEmployees() {
       const employees = await fetchEmployees();
-      const data = employees?.map((employee) => {
-        return {
-          value: employee.EmployeeID,
-          label: employee.FirstName + " " + employee.LastName,
-        };
-      });
-
-      setEmployees(data ?? []);
+      setRawEmployees(employees ?? []);
     }
 
     void getEmployees();

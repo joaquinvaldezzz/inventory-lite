@@ -1,5 +1,14 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
-import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  Fragment,
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -84,9 +93,12 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
-  const filteredDebitItems = data.items.filter((item) => item.TotalStatus === "DEBIT");
-  const form = useForm<EditExpensesFormSchema>({
-    defaultValues: {
+  const filteredDebitItems = useMemo(
+    () => data.items.filter((item) => item.TotalStatus === "DEBIT"),
+    [data.items],
+  );
+  const defaultValues = useMemo(
+    () => ({
       supplier: data.SupplierID,
       supplier_tin: data.SupplierTIN,
       date: new Date(data.InvoiceDate),
@@ -98,7 +110,11 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
         price: item.Cost,
         total_amount: item.Amount,
       })),
-    },
+    }),
+    [data],
+  );
+  const form = useForm<EditExpensesFormSchema>({
+    defaultValues,
     resolver: zodResolver(editExpensesFormSchema),
   });
   const router = useIonRouter();
@@ -159,29 +175,24 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
     void fetchItems();
   }, []);
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = editExpensesFormSchema.safeParse(formValues);
+      void form.handleSubmit(async () => {
+        const formValues = form.getValues();
+        const parsedValues = editExpensesFormSchema.safeParse(formValues);
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid");
-      }
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid");
+        }
 
-      setIsLoading(true);
+        setIsLoading(true);
 
-      /** Submits the form data to update the delivery record. */
-      async function submitForm() {
+        /** Submits the form data to update the delivery record. */
+
         try {
-          if (parsedValues.data != null)
-            await updateExpensesRecord(data.PurchaseID, parsedValues.data);
+          await updateExpensesRecord(data.PurchaseID, parsedValues.data);
         } catch (error) {
           void presentToast({
             duration: 1500,
@@ -199,13 +210,10 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
           });
           router.goBack();
         }
-      }
-
-      startTransition(() => {
-        void submitForm();
-      });
-    })(event);
-  }
+      })(event);
+    },
+    [form, presentToast, router, data.PurchaseID],
+  );
 
   /** Handles the deletion of a expenses record. */
   async function handleDelete() {

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import {
   IonButtons,
   IonContent,
@@ -23,7 +23,6 @@ import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchExpenses } from "@/lib/api";
-import type { ExpensesTableData } from "@/lib/types/expenses";
 import { Settings } from "@/components/settings";
 
 import { columns } from "./columns";
@@ -40,6 +39,9 @@ export default function Expenses() {
   const { isFetching, isPending, data, refetch } = useQuery({
     queryKey: ["expenses-entries"],
     queryFn: async () => await fetchExpenses(),
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 1000 * 60 * 5,
   });
   const [present, dismiss] = useIonModal(NewExpensesModal, {
     dismiss: (data: string, role: string) => {
@@ -51,10 +53,10 @@ export default function Expenses() {
     void refetch();
   });
 
-  let sortedData: ExpensesTableData[] = [];
+  const sortedData = useMemo(() => {
+    if (data == null) return [];
 
-  if (data != null) {
-    sortedData = data.slice().sort((a, b) => {
+    return data.slice().sort((a, b) => {
       const dateComparison = new Date(b.InvoiceDate).getTime() - new Date(a.InvoiceDate).getTime();
 
       if (dateComparison !== 0) {
@@ -63,7 +65,7 @@ export default function Expenses() {
 
       return b.PONo.localeCompare(a.PONo);
     });
-  }
+  }, [data]);
 
   /**
    * Displays a modal and handles its dismissal event.
@@ -71,7 +73,7 @@ export default function Expenses() {
    * This function presents a modal using the `present` function and sets up an event listener for
    * its dismissal. If dismissed with the role of 'confirm', it triggers a refetch operation.
    */
-  function presentModal() {
+  const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
@@ -79,22 +81,25 @@ export default function Expenses() {
         }
       },
     });
-  }
+  }, [present, refetch]);
 
   /**
    * Handles the refresh event for the delivery page.
    *
    * @param event The refresh event containing the refresher details.
    */
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    try {
-      void refetch();
-    } catch (error) {
-      throw new Error("Error fetching delivery entries");
-    } finally {
-      event.detail.complete();
-    }
-  }
+  const handleRefresh = useCallback(
+    (event: CustomEvent<RefresherEventDetail>) => {
+      try {
+        void refetch();
+      } catch (error) {
+        throw new Error("Error fetching delivery entries");
+      } finally {
+        event.detail.complete();
+      }
+    },
+    [refetch],
+  );
 
   return (
     <Fragment>

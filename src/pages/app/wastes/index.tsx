@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import {
   IonButtons,
   IonContent,
@@ -40,9 +40,19 @@ export default function Wastes() {
   const { isPending, data, refetch } = useQuery({
     queryKey: ["wastes"],
     queryFn: async () => await fetchWasteEntries(),
+    retry: 3,
+    retryDelay: 1000,
+    staleTime: 1000 * 60 * 5,
   });
 
-  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
+  const sortedData = useMemo(() => {
+    if (data == null) return [];
+
+    return data.slice().sort((a, b) => {
+      const dateComparison = new Date(b.date).getTime() - new Date(a.date).getTime();
+      return dateComparison;
+    });
+  }, [data]);
 
   const [present, dismiss] = useIonModal(WastesFormModal, {
     dismiss: (data: string, role: string) => {
@@ -57,7 +67,7 @@ export default function Wastes() {
    * an event listener for the modal's dismissal event (`onWillDismiss`). If the modal is dismissed
    * with the role of 'confirm', it triggers a refetch operation.
    */
-  function presentModal() {
+  const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
@@ -65,7 +75,7 @@ export default function Wastes() {
         }
       },
     });
-  }
+  }, [present, refetch]);
 
   /**
    * Handles the refresh event for the waste entries page.
@@ -76,15 +86,18 @@ export default function Wastes() {
    *   occurs during the refetch, it logs the error to the console. Regardless of the outcome, it
    *   signals the completion of the refresh event.
    */
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    try {
-      void refetch();
-    } catch (error) {
-      throw new Error("Error fetching delivery entries");
-    } finally {
-      event.detail.complete();
-    }
-  }
+  const handleRefresh = useCallback(
+    (event: CustomEvent<RefresherEventDetail>) => {
+      try {
+        void refetch();
+      } catch (error) {
+        throw new Error("Error fetching delivery entries");
+      } finally {
+        event.detail.complete();
+      }
+    },
+    [refetch],
+  );
 
   useIonViewDidEnter(() => {
     void refetch();
