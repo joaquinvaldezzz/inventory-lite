@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -10,6 +10,7 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueries } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -18,9 +19,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { DeliveryItem } from "@/lib/types/delivery";
-import type { SupplierData } from "@/lib/types/supplier";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -75,15 +73,51 @@ interface DeliveryModalActions {
  * @returns The rendered component.
  */
 export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
-  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
-  const [items, setItems] = useState<DeliveryItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [suppliersQuery, itemsQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["suppliers"],
+        queryFn: getSuppliers,
+      },
+      {
+        queryKey: ["items"],
+        queryFn: getItems,
+      },
+    ],
+  });
+  const createDeliveryEntryMutation = useMutation({
+    mutationFn: async (formData: NewDeliveryFormSchema) => {
+      await createDeliveryEntry(formData);
+    },
+    onError: () => {
+      void presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to create delivery entry. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: () => {
+      void presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Delivery entry created successfully",
+        swipeGesture: "vertical",
+      });
+      dismiss(null, "confirm");
+    },
+  });
+
+  const suppliers = suppliersQuery.data ?? [];
+  const items = itemsQuery.data ?? [];
+
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
+
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: "",
@@ -107,55 +141,6 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     control: form.control,
   });
 
-  useEffect(() => {
-    /**
-     * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
-     *
-     * @throws Will log an error message if there is an issue fetching suppliers or parsing the
-     *   data.
-     * @todo Implement local storage caching for suppliers.
-     */
-    async function fetchSuppliers() {
-      try {
-        await getSuppliers();
-
-        const savedSuppliers = await getFromStorage("suppliers");
-
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers);
-
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers);
-          } else {
-            throw new Error("Suppliers data is invalid");
-          }
-        } else {
-          throw new Error("No suppliers found in storage");
-        }
-      } catch (error) {
-        throw new Error("Error fetching suppliers");
-      }
-    }
-
-    void fetchSuppliers();
-  }, []);
-
-  useEffect(() => {
-    // TODO: Save these items locally
-
-    /** Fetches items from the API endpoint and updates the state with the retrieved items. */
-    async function fetchItems() {
-      try {
-        const request = await getItems();
-        request != null ? setItems(request) : setItems([]);
-      } catch (error) {
-        throw new Error("Error fetching items");
-      }
-    }
-
-    void fetchItems();
-  }, []);
-
   /** Adds a new row to the list of delivery items. */
   function handleAdd() {
     append({
@@ -168,56 +153,27 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
   }
 
   /**
-   * Handles the removal of a row from the list of delivery items by removing the item at the
-   * specified index.
-   *
-   * @param index The index of the item to be removed.
-   */
-  function handleRemove(index: number) {
-    remove(index);
-  }
-
-  /**
    * Handles the form submission event.
    *
    * @param event The form submission event.
    */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    /** Submits the form data to create a new delivery entry. */
-    void form.handleSubmit(async () => {
-      const formValues = form.getValues();
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues);
+      /** Submits the form data to create a new delivery entry. */
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
+        }
 
-      setIsLoading(true);
-
-      try {
-        await createDeliveryEntry(parsedValues.data);
-      } catch (error) {
-        void presentToast({
-          color: "danger",
-          icon: alertCircleOutline,
-          message: "Failed to create delivery entry. Please try again.",
-          swipeGesture: "vertical",
-        });
-        throw new Error("Form submission failed");
-      } finally {
-        setIsLoading(false);
-        void presentToast({
-          duration: 1500,
-          icon: checkmarkCircleOutline,
-          message: "Delivery entry created successfully",
-          swipeGesture: "vertical",
-        });
-        dismiss(null, "confirm");
-      }
-    })(event);
-  }
+        await createDeliveryEntryMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [form],
+  );
 
   useEffect(() => {
     if (form.formState.isDirty) {
@@ -657,7 +613,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                         size="icon"
                         variant="ghost"
                         onClick={() => {
-                          handleRemove(index);
+                          remove(index);
                         }}
                       >
                         <Trash2 size={16} />
@@ -674,12 +630,12 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit"}
+              <Button type="submit" disabled={createDeliveryEntryMutation.isPending}>
+                {createDeliveryEntryMutation.isPending ? "Submitting..." : "Submit"}
               </Button>
               <Button
                 type="button"
-                disabled={isLoading}
+                disabled={createDeliveryEntryMutation.isPending}
                 variant="ghost"
                 onClick={handleDismissConfirmation}
               >

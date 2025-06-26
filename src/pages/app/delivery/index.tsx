@@ -15,11 +15,10 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
-  useIonViewDidEnter,
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchDeliveryEntries } from "@/lib/api";
@@ -37,21 +36,16 @@ import { DeliveryFormModal } from "./modal-form";
  * @returns The rendered component.
  */
 export default function Delivery() {
-  /**
-   * The `useQuery` hook fetches delivery entries from the API, providing loading states, data, and
-   * a refetch function. The entries are then sorted by date and DR number.
-   */
-  const { isFetching, isPending, data, refetch } = useQuery({
+  const queryClient = useQueryClient();
+  const { data, isFetching, isPending, refetch } = useQuery({
     queryKey: ["delivery-entries"],
     queryFn: async () => await fetchDeliveryEntries(),
   });
 
-  /** Initializes an empty array to store sorted delivery data of type `DeliveryRecordData`. */
   const sortedData = useMemo(() => {
     if (data == null) return [];
 
     return data.slice().sort((a, b) => {
-      /** Sort by date delivered (newest first) */
       const dateComparison =
         new Date(b.date_delivered).getTime() - new Date(a.date_delivered).getTime();
 
@@ -59,7 +53,6 @@ export default function Delivery() {
         return dateComparison;
       }
 
-      /** If dates are equal, sort by DR number (descending) */
       if (b.dr_no != null && a.dr_no != null) {
         return b.dr_no.localeCompare(a.dr_no);
       }
@@ -68,34 +61,22 @@ export default function Delivery() {
     });
   }, [data]);
 
-  /** Initializes the `useIonModal` hook with the `NewDeliveryModal` component. */
   const [present, dismiss] = useIonModal(DeliveryFormModal, {
     dismiss: (data: string, role: string) => {
       dismiss(data, role);
     },
   });
 
-  /**
-   * Displays a modal and handles its dismissal event.
-   *
-   * This function presents a modal using the `present` function and sets up an event listener for
-   * its dismissal. If dismissed with the role of 'confirm', it triggers a refetch operation.
-   */
   const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
-          void refetch();
+          void queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
         }
       },
     });
-  }, [present, refetch]);
+  }, [present, queryClient]);
 
-  /**
-   * Handles the refresh event for the delivery page.
-   *
-   * @param event The refresh event containing the refresher details.
-   */
   const handleRefresh = useCallback(
     (event: CustomEvent<RefresherEventDetail>) => {
       try {
@@ -108,10 +89,6 @@ export default function Delivery() {
     },
     [refetch],
   );
-
-  useIonViewDidEnter(() => {
-    void refetch();
-  });
 
   return (
     <Fragment>
