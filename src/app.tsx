@@ -17,7 +17,9 @@ import ResetPassword from "@/pages/reset-password";
 
 import "@/styles/main.css";
 
-setupIonicReact();
+setupIonicReact({
+  toastDuration: 3000,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
