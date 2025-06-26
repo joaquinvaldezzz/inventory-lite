@@ -19,7 +19,15 @@ import "@/styles/main.css";
 
 setupIonicReact();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      retryDelay: 1000,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 /**
  * A component that redirects to the app if the user is authenticated.

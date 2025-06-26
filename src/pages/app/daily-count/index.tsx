@@ -41,9 +41,6 @@ export default function DailyCount() {
   const { isPending, data, refetch } = useQuery({
     queryKey: ["daily-count-entries"],
     queryFn: async () => await fetchDailyCountEntries(),
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: 1000 * 60 * 5,
   });
 
   const sortedData = useMemo(() => {

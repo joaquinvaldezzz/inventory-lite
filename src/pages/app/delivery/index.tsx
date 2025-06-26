@@ -44,9 +44,6 @@ export default function Delivery() {
   const { isFetching, isPending, data, refetch } = useQuery({
     queryKey: ["delivery-entries"],
     queryFn: async () => await fetchDeliveryEntries(),
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: 1000 * 60 * 5,
   });
 
   /** Initializes an empty array to store sorted delivery data of type `DeliveryRecordData`. */

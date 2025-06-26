@@ -40,9 +40,6 @@ export default function Wastes() {
   const { isPending, data, refetch } = useQuery({
     queryKey: ["wastes"],
     queryFn: async () => await fetchWasteEntries(),
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: 1000 * 60 * 5,
   });
 
   const sortedData = useMemo(() => {

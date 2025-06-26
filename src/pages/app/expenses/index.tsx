@@ -39,9 +39,6 @@ export default function Expenses() {
   const { isFetching, isPending, data, refetch } = useQuery({
     queryKey: ["expenses-entries"],
     queryFn: async () => await fetchExpenses(),
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: 1000 * 60 * 5,
   });
   const [present, dismiss] = useIonModal(NewExpensesModal, {
     dismiss: (data: string, role: string) => {
