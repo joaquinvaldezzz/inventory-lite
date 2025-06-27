@@ -15,11 +15,10 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
-  useIonViewDidEnter,
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchExpenses } from "@/lib/api";
@@ -30,13 +29,26 @@ import { DataTable } from "./data-table";
 import { NewExpensesModal } from "./modal-form";
 
 /**
- * The `Expenses` component renders a page that displays a list of expenses. It includes a header
- * with a title and a floating action button to add new expenses.
+ * Expenses component displays a comprehensive expense management interface.
  *
- * @returns The rendered component.
+ * This component provides:
+ *
+ * - A data table showing expense entries with detailed information
+ * - Pull-to-refresh functionality to update the expense data
+ * - A floating action button to add new expense entries via modal
+ * - A collapsible header with progress indicator during data loading
+ * - A side menu with settings accessible via hamburger menu
+ * - Search functionality for filtering expense entries
+ *
+ * The component automatically refreshes data when the modal is dismissed with confirmation or when
+ * the settings menu is closed. It handles the complete lifecycle of expense entry management
+ * including create, read, update, and delete operations.
+ *
+ * @returns JSX element representing the expense management page interface
  */
 export default function Expenses() {
-  const { isFetching, isPending, data, refetch } = useQuery({
+  const queryClient = useQueryClient();
+  const { data, isFetching, isPending, refetch } = useQuery({
     queryKey: ["expenses-entries"],
     queryFn: async () => await fetchExpenses(),
   });
@@ -44,10 +56,6 @@ export default function Expenses() {
     dismiss: (data: string, role: string) => {
       dismiss(data, role);
     },
-  });
-
-  useIonViewDidEnter(() => {
-    void refetch();
   });
 
   const sortedData = useMemo(() => {
@@ -100,7 +108,12 @@ export default function Expenses() {
 
   return (
     <Fragment>
-      <IonMenu contentId="expenses-content">
+      <IonMenu
+        onIonDidClose={() => {
+          void queryClient.invalidateQueries({ queryKey: ["expenses-entries"] });
+        }}
+        contentId="expenses-content"
+      >
         <Settings />
       </IonMenu>
 

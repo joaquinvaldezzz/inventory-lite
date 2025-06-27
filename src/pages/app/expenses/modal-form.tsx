@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -10,6 +10,7 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -18,9 +19,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { createExpensesEntry, getItemsBySupplierId, getSuppliers } from "@/lib/api";
 import { newExpensesFormSchema, type NewExpensesFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { ExpensesItemData } from "@/lib/types/expenses";
-import type { SupplierData } from "@/lib/types/supplier";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -65,23 +63,78 @@ interface ExpensesModalActions {
 }
 
 /**
- * The `NewExpensesModal` renders a modal for creating a new expenses entry. It includes a form with
- * various fields such as supplier, date, payment type, and items.
+ * NewExpensesModal component renders a modal form for creating new expense entries.
  *
- * @param props The props for the component.
- * @param props.dismiss Function to dismiss the modal.
- * @returns The rendered component.
+ * This modal provides a comprehensive form interface that includes:
+ *
+ * - Supplier selection for identifying the expense source
+ * - Date picker for setting the expense date
+ * - Payment type selection (cash, card, transfer, etc.)
+ * - Dynamic item management with add/remove functionality
+ * - Form validation to ensure data integrity
+ * - Submit handling to create new expense records
+ *
+ * The component integrates with the parent component through a dismiss callback that handles modal
+ * closure and triggers data refresh when a new expense entry is created.
+ *
+ * @param props Component configuration and callbacks
+ * @param props.dismiss Function called to close the modal and handle form submission
+ * @returns JSX element representing the expense creation modal
  */
 export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
-  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
-  const [items, setItems] = useState<ExpensesItemData[]>([]);
+  const suppliersQuery = useQuery({
+    queryKey: ["suppliers"],
+    queryFn: getSuppliers,
+  });
+
+  const itemsMutation = useMutation({
+    mutationFn: async (supplierId: string) => {
+      return await getItemsBySupplierId(supplierId);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to fetch items. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+  });
+
+  const createExpensesEntryMutation = useMutation({
+    mutationFn: async (data: NewExpensesFormSchema) => {
+      await createExpensesEntry(data);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to create expenses entry. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Expenses entry created successfully",
+        swipeGesture: "vertical",
+      });
+      dismiss(null, "confirm");
+    },
+  });
+
+  const suppliers = suppliersQuery.data ?? [];
+  const items = itemsMutation.data ?? [];
+
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
+
   const form = useForm<NewExpensesFormSchema>({
     defaultValues: {
       supplier: "",
@@ -105,64 +158,14 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
   });
 
   useEffect(() => {
-    // TODO: Save these suppliers locally
+    const supplierId = form.getValues("supplier");
 
-    /**
-     * Fetches suppliers from an external source and updates the state with the retrieved suppliers.
-     *
-     * @throws An error message if there is an issue fetching suppliers or parsing the data.
-     */
-    async function fetchSuppliers() {
-      try {
-        await getSuppliers();
-
-        const savedSuppliers = await getFromStorage("suppliers");
-
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers);
-
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers);
-          } else {
-            throw new Error("Invalid suppliers data");
-          }
-        } else {
-          throw new Error("No suppliers found in storage");
-        }
-      } catch (error) {
-        throw new Error("Error fetching suppliers");
-      }
+    if (supplierId.length > 0) {
+      void itemsMutation.mutateAsync(supplierId);
     }
+  }, [form.watch("supplier"), itemsMutation.mutateAsync]);
 
-    startTransition(() => {
-      void fetchSuppliers();
-    });
-  }, []);
-
-  useEffect(() => {
-    /**
-     * Fetches items from the server and updates the state with the retrieved items.
-     *
-     * @todo Save these items locally
-     */
-    async function fetchItems() {
-      try {
-        const supplierId = form.getValues("supplier");
-
-        if (supplierId.length > 0) {
-          const request = await getItemsBySupplierId(supplierId);
-          setItems(request ?? []);
-        }
-      } catch (error) {
-        throw new Error("Error fetching items");
-      }
-    }
-
-    void fetchItems();
-  }, [form.watch("supplier")]);
-
-  /** Adds a new row to the list of delivery items. */
-  function handleAdd() {
+  const handleAdd = () => {
     append({
       item: "",
       quantity: 0,
@@ -170,67 +173,26 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
       price: 0,
       total_amount: 0,
     });
-  }
+  };
 
-  /**
-   * Handles the removal of a row from the list of delivery items by removing the item at the
-   * specified index.
-   *
-   * @param index The index of the item to be removed.
-   */
-  function handleRemove(index: number) {
+  const handleRemove = (index: number) => {
     remove(index);
-  }
+  };
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    /** Prevents the default form submission behavior. */
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    /** Submits the form data to create a new delivery entry. */
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = newExpensesFormSchema.safeParse(formValues);
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = newExpensesFormSchema.safeParse(formValues);
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid");
-      }
+        if (!parsedValues.success) throw new Error("Form data is invalid");
 
-      setIsLoading(true);
-
-      /** Submits the delivery form by creating a new delivery entry. */
-      async function submitForm() {
-        try {
-          await createExpensesEntry(formValues);
-        } catch (error) {
-          void presentToast({
-            color: "danger",
-            icon: alertCircleOutline,
-            message: "Failed to create expenses entry. Please try again.",
-            swipeGesture: "vertical",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Expenses entry created successfully",
-            swipeGesture: "vertical",
-          });
-          dismiss(null, "confirm");
-        }
-      }
-
-      startTransition(() => {
-        void submitForm();
-      });
-    })(event);
-  }
+        await createExpensesEntryMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [form.handleSubmit, createExpensesEntryMutation.mutateAsync],
+  );
 
   useEffect(() => {
     if (form.formState.isDirty) {
@@ -240,13 +202,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     }
   }, [form.formState.isDirty]);
 
-  /**
-   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
-   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
-   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
-   * action.
-   */
-  function handleDismissConfirmation() {
+  const handleDismissConfirmation = useCallback(() => {
     if (isFormDirty) {
       void presentAlert({
         header: "Discard changes?",
@@ -266,7 +222,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     } else {
       dismiss(null, "cancel");
     }
-  }
+  }, [isFormDirty, presentAlert, dismiss]);
 
   return (
     <IonPage>
@@ -668,12 +624,12 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit"}
+              <Button type="submit" disabled={createExpensesEntryMutation.isPending}>
+                {createExpensesEntryMutation.isPending ? "Submitting..." : "Submit"}
               </Button>
               <Button
                 type="button"
-                disabled={isLoading}
+                disabled={createExpensesEntryMutation.isPending}
                 variant="ghost"
                 onClick={handleDismissConfirmation}
               >
