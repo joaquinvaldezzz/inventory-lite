@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Idk */
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -10,6 +10,7 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -17,8 +18,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { createDailyCountEntry, fetchCategories, getIngredientsByCategory } from "@/lib/api";
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { CategoryData, DailyCountItemData } from "@/lib/types/daily-count";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -54,25 +53,75 @@ interface DailyCountModalActions {
 }
 
 /**
- * The `NewDailyCountModal` component renders a modal for creating a new daily count entry. It
- * provides a form with fields for date, category, and items, allowing users to dynamically add,
- * generate, and remove items. The form data is validated and submitted to create a new daily count
- * entry.
+ * DailyCountModal component renders a modal form for creating new daily count entries.
  *
- * @param props The component props.
- * @param props.dismiss The function to dismiss the modal.
- * @returns The rendered component.
+ * This modal provides a comprehensive form interface that includes:
+ *
+ * - Date selection for the daily count entry
+ * - Category selection for organizing entries
+ * - Dynamic item management with add/generate/remove functionality
+ * - Form validation to ensure data integrity
+ * - Submit handling to create new daily count records
+ *
+ * The component integrates with the parent component through a dismiss callback that handles modal
+ * closure and data refresh.
+ *
+ * @param props Component configuration and callbacks
+ * @param props.dismiss Function called to close the modal and handle form submission
+ * @returns JSX element representing the daily count creation modal
  */
 export function DailyCountModal({ dismiss }: DailyCountModalActions) {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [ingredients, setIngredients] = useState<DailyCountItemData[]>([]);
+  const categoriesQuery = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+  const ingredientsMutation = useMutation({
+    mutationFn: async (category: string) => {
+      return await getIngredientsByCategory(category);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to fetch ingredients. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+  });
+  const createDailyCountEntryMutation = useMutation({
+    mutationFn: async (data: NewDailyCountFormSchema) => {
+      await createDailyCountEntry(data);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to create daily count entry. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Daily count entry created successfully!",
+        swipeGesture: "vertical",
+      });
+      dismiss(null, "confirm");
+    },
+  });
+
+  const categories = categoriesQuery.data ?? [];
+  const ingredients = ingredientsMutation.data ?? [];
+
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
+
   const form = useForm<NewDailyCountFormSchema>({
     defaultValues: {
       date: new Date(),
@@ -86,13 +135,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     control: form.control,
   });
 
-  /** Adds a new row to the items field array. */
-  function handleAdd() {
-    append({ item: "", count: 0, unit: "" });
-  }
-
-  /** Generates a new list of ingredients with their counts set to 0 and replaces the current list. */
-  function generateItems() {
+  const generateItems = useCallback(() => {
     replace(
       ingredients.map((ingredient) => ({
         item: ingredient.id.toString(),
@@ -100,118 +143,38 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
         unit: ingredient.unit,
       })),
     );
-  }
-
-  /**
-   * Handles the removal of a row at the specified index.
-   *
-   * @param index The index of the item to be removed.
-   */
-  function handleRemove(index: number) {
-    remove(index);
-  }
+  }, [ingredientsMutation.isSuccess, replace]);
 
   useEffect(() => {
-    /**
-     * Fetches categories from the API endpoint and retrieves saved categories from storage.
-     *
-     * @returns A promise that resolves when the categories are fetched and set.
-     */
-    async function getCategoryItems() {
-      await fetchCategories();
+    const category = form.getValues("raw_material_type");
 
-      const savedCategories = await getFromStorage("categories");
-
-      if (savedCategories != null) {
-        const parsedCategories = JSON.parse(savedCategories);
-
-        if (Array.isArray(parsedCategories)) {
-          setCategories(parsedCategories);
-        } else {
-          throw new Error("Categories data is invalid");
-        }
-      }
+    if (category.length === 0) {
+      return;
     }
 
-    void getCategoryItems();
-  }, []);
-
-  /**
-   * TODO: This is a hack to get the ingredients to update when the category changes. Find a better
-   * way to do this.
-   */
-  useEffect(() => {
-    /**
-     * Fetches ingredient items from the API endpoint based on the selected raw material type from
-     * the form. If no raw material type is selected, the function returns early.
-     *
-     * @returns A promise that resolves when the ingredients are fetched and state is updated.
-     */
-    async function getIngredientItems() {
-      const category = form.getValues("raw_material_type");
-
-      if (category.length === 0) {
-        setIngredients([]);
-        return;
-      }
-
-      try {
-        const ingredients = await getIngredientsByCategory(category);
-        setIngredients(ingredients ?? []);
-        remove();
-      } catch (error) {
-        setIngredients([]);
-        throw new Error("Failed to fetch ingredients");
-      }
-    }
-
-    void getIngredientItems();
+    void ingredientsMutation.mutateAsync(category);
   }, [form.watch("raw_material_type")]);
 
   useEffect(() => {
     generateItems();
-  }, [ingredients]);
+  }, [ingredientsMutation.isSuccess, generateItems]);
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(async () => {
-      const formValues = form.getValues();
-      const parsedValues = newDailyCountFormSchema.safeParse(formValues);
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
+        }
 
-      setIsLoading(true);
-
-      try {
-        await createDailyCountEntry(parsedValues.data);
-      } catch (error) {
-        void presentToast({
-          color: "danger",
-          icon: alertCircleOutline,
-          message: "Failed to create daily count entry. Please try again.",
-          swipeGesture: "vertical",
-        });
-        throw new Error("Form submission failed");
-      } finally {
-        setIsLoading(false);
-        void presentToast({
-          duration: 1500,
-          icon: checkmarkCircleOutline,
-          message: "Daily count entry created successfully!",
-          swipeGesture: "vertical",
-        });
-        dismiss(null, "confirm");
-      }
-    })(event);
-  }
+        await createDailyCountEntryMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [createDailyCountEntryMutation.mutateAsync, form.handleSubmit],
+  );
 
   useEffect(() => {
     if (form.formState.isDirty) {
@@ -221,13 +184,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     }
   }, [form.formState.isDirty]);
 
-  /**
-   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
-   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
-   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
-   * action.
-   */
-  function handleDismissConfirmation() {
+  const handleDismissConfirmation = useCallback(() => {
     if (isFormDirty) {
       void presentAlert({
         header: "Discard changes?",
@@ -247,7 +204,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     } else {
       dismiss(null, "cancel");
     }
-  }
+  }, [dismiss, isFormDirty, presentAlert]);
 
   return (
     <IonPage>
@@ -513,7 +470,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                         size="icon"
                         variant="ghost"
                         onClick={() => {
-                          handleRemove(index);
+                          remove(index);
                         }}
                       >
                         <Trash2 size={16} />
@@ -525,14 +482,26 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
             </DivTable>
 
             <div className="mt-1 flex flex-col gap-4">
-              <Button type="button" variant="ghost" onClick={handleAdd}>
+              <Button
+                type="button"
+                disabled={createDailyCountEntryMutation.isPending}
+                variant="ghost"
+                onClick={() => {
+                  append({ item: "", count: 0, unit: "" });
+                }}
+              >
                 <span>Add another product</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={createDailyCountEntryMutation.isPending}>
                 Submit
               </Button>
-              <Button type="button" variant="ghost" onClick={handleDismissConfirmation}>
+              <Button
+                type="button"
+                disabled={createDailyCountEntryMutation.isPending}
+                variant="ghost"
+                onClick={handleDismissConfirmation}
+              >
                 Cancel
               </Button>
             </div>
