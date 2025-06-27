@@ -1,7 +1,8 @@
 /* eslint-disable max-lines -- This is a large file */
-import { startTransition, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useMemo, useState, type FormEvent } from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Trash2 } from "lucide-react";
@@ -14,9 +15,7 @@ import {
   updateWasteRecord,
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { EmployeeData } from "@/lib/types/employee";
-import type { CategoryData, WasteFormData } from "@/lib/types/wastes";
+import type { WasteFormData } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -73,31 +72,112 @@ interface WastesRecordFormProps {
 }
 
 /**
- * Component for rendering a form to record waste data.
+ * WastesRecordForm component renders a form for viewing and editing waste records.
  *
- * @param props The properties for the WastesRecordForm component.
- * @param props.data The data for the form.
- * @returns The rendered form component.
+ * This component displays a comprehensive form that shows:
+ *
+ * - Date and category information for the waste entry
+ * - A detailed list of waste items with quantities and units
+ * - Employee assignment for tracking responsibility
+ * - Form validation to ensure data accuracy
+ * - Submit handling for updating existing waste records
+ * - Delete functionality for removing waste entries
+ *
+ * The form is pre-populated with existing waste data and allows users to modify dates, categories,
+ * item quantities, and employee assignments as needed.
+ *
+ * @param props Component configuration and data
+ * @param props.data The waste record data to display and edit
+ * @returns JSX element representing the waste record editing form
  */
 export function WastesRecordForm({ data }: WastesRecordFormProps) {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [rawEmployees, setRawEmployees] = useState<EmployeeData[]>([]);
+  const queryClient = useQueryClient();
+  const [categoriesQuery, employeesQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
+      },
+      {
+        queryKey: ["employees"],
+        queryFn: fetchEmployees,
+      },
+    ],
+  });
+
+  const router = useIonRouter();
+  const [presentToast] = useIonToast();
+
+  const updateWasteRecordMutation = useMutation({
+    mutationFn: async (formData: NewWasteFormSchema) => {
+      await updateWasteRecord(data.id, formData);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "An error occurred while updating the waste record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Waste record updated!",
+        swipeGesture: "vertical",
+      });
+      await queryClient.invalidateQueries({ queryKey: ["waste-entry", data.id.toString()] });
+      await queryClient.invalidateQueries({ queryKey: ["wastes-entries"] });
+      router.goBack();
+    },
+  });
+  const deleteWasteRecordMutation = useMutation({
+    mutationFn: async () => {
+      await deleteWasteRecordById(data.id);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "An error occurred while deleting the waste record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Waste record deleted!",
+        swipeGesture: "vertical",
+      });
+      await queryClient.invalidateQueries({ queryKey: ["wastes-entries"] });
+      router.goBack();
+    },
+  });
+
+  const categories = categoriesQuery.data ?? [];
+  const employees = useMemo(() => {
+    if (employeesQuery.data == null) return [];
+    return employeesQuery.data.map((employee) => ({
+      value: employee.EmployeeID,
+      label: employee.FirstName + " " + employee.LastName,
+    }));
+  }, [employeesQuery.data]);
+
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const employeeArray = useMemo(() => {
-    const employeeStr = data.items.map((item) => item.employee)[0];
-    const parsed = JSON.parse(employeeStr);
+
+  const defaultValues = useMemo(() => {
+    const employeeString = data.items.map((item) => item.employee)[0];
+    const parsed = JSON.parse(employeeString);
     if (
       !Array.isArray(parsed) ||
       !parsed.every((item): item is string => typeof item === "string")
     ) {
       throw new Error("Invalid employee data format");
     }
-    return parsed;
-  }, [data.items]);
-  const form = useForm<NewWasteFormSchema>({
-    defaultValues: {
+    const employeeArray = parsed;
+
+    return {
       date: new Date(data.date),
       raw_material_type: data.raw_material_type_id.toString(),
       waste_type: data.waste_type,
@@ -108,155 +188,41 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         reason: item.reason,
         employee: employeeArray,
       })),
-    },
+    };
+  }, [data]);
+
+  const form = useForm<NewWasteFormSchema>({
+    defaultValues,
     resolver: zodResolver(newWasteFormSchema),
   });
   const { fields, remove } = useFieldArray({
     name: "items",
     control: form.control,
   });
-  const router = useIonRouter();
-  const [presentToast] = useIonToast();
 
-  const employees = useMemo(
-    () =>
-      rawEmployees.map((employee) => ({
-        value: employee.EmployeeID,
-        label: employee.FirstName + " " + employee.LastName,
-      })),
-    [rawEmployees],
+  const handleRemove = useCallback(
+    (index: number) => {
+      remove(index);
+    },
+    [remove],
   );
 
-  useEffect(() => {
-    /**
-     * Fetches the list of employees, maps the data to a specific format, and updates the state with
-     * the formatted data.
-     *
-     * @returns A promise that resolves when the employees have been fetched and the state has been
-     *   updated.
-     */
-    async function getEmployees() {
-      const employees = await fetchEmployees();
-      setRawEmployees(employees ?? []);
-    }
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void getEmployees();
-  }, []);
+      void form.handleSubmit(async (formData) => {
+        const parsedValues = newWasteFormSchema.safeParse(formData);
 
-  /**
-   * Handles the removal of a row at the specified index.
-   *
-   * @param index The index of the item to be removed.
-   */
-  function handleRemove(index: number) {
-    remove(index);
-  }
-
-  useEffect(() => {
-    /**
-     * Fetches categories from storage and updates the state with the retrieved categories.
-     *
-     * @returns A promise that resolves when the categories have been fetched and the state has been
-     *   updated.
-     * @throws Will log an error message to the console if there is an issue fetching the
-     *   categories.
-     */
-    async function getCategories() {
-      await fetchCategories();
-
-      try {
-        const savedCategories = await getFromStorage("categories");
-
-        if (savedCategories != null) {
-          const parsedCategories = JSON.parse(savedCategories);
-
-          if (Array.isArray(parsedCategories)) {
-            setCategories(parsedCategories);
-          } else {
-            throw new Error("Categories data is invalid");
-          }
-        } else {
-          throw new Error("No categories found in storage");
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
         }
-      } catch (error) {
-        throw new Error("Error fetching categories");
-      }
-    }
 
-    startTransition(() => {
-      void getCategories();
-    });
-  }, []);
-
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    void form.handleSubmit(async (formData) => {
-      const parsedValues = newWasteFormSchema.safeParse(formData);
-
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
-
-      setIsLoading(true);
-
-      /**
-       * Submits the form data to update the waste record.
-       *
-       * @returns A promise that resolves when the form submission is complete.
-       * @throws Will log an error message to the console if the form submission fails.
-       */
-
-      try {
-        await updateWasteRecord(data.id, parsedValues.data);
-      } catch (error) {
-        void presentToast({
-          color: "danger",
-          icon: alertCircleOutline,
-          message: "An error occurred while updating the waste record. Please try again.",
-          swipeGesture: "vertical",
-        });
-        throw new Error("Form submission failed");
-      } finally {
-        setIsLoading(false);
-        void presentToast({
-          duration: 1500,
-          icon: checkmarkCircleOutline,
-          message: "Waste record updated",
-          swipeGesture: "vertical",
-        });
-        router.goBack();
-      }
-    })(event);
-  }
-
-  /** Handles the deletion of a waste record. */
-  async function handleDelete() {
-    try {
-      await deleteWasteRecordById(data.id);
-    } catch (error) {
-      void presentToast({
-        color: "danger",
-        icon: alertCircleOutline,
-        message: "An error occurred while deleting the waste record. Please try again.",
-        swipeGesture: "vertical",
-      });
-      throw new Error("Error deleting waste record");
-    } finally {
-      void presentToast({
-        duration: 1500,
-        icon: checkmarkCircleOutline,
-        message: "Waste record deleted",
-        swipeGesture: "vertical",
-      });
-      router.goBack();
-    }
-  }
+        await updateWasteRecordMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [form.handleSubmit, updateWasteRecordMutation.mutateAsync],
+  );
 
   return (
     <Form {...form}>
@@ -526,8 +492,8 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
         </DivTable>
 
         <div className="mt-1 flex flex-col gap-3">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save"}
+          <Button type="submit" disabled={updateWasteRecordMutation.isPending}>
+            {updateWasteRecordMutation.isPending ? "Saving..." : "Save"}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -546,7 +512,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    void handleDelete();
+                    void deleteWasteRecordMutation.mutateAsync();
                   }}
                   asChild
                 >

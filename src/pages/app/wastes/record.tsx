@@ -40,7 +40,9 @@ export default function WastesRecord({ match }: WastesPageProps) {
           <IonButtons slot="start">
             <IonBackButton defaultHref="/app/wastes" />
           </IonButtons>
-          <IonTitle>{isPending ? "Loading wastes record..." : `Wastes #${data?.[0].id}`}</IonTitle>
+          <IonTitle>
+            {isPending || data == null ? "Loading wastes record..." : `Wastes #${data[0].id}`}
+          </IonTitle>
           <IonButtons slot="end">
             <IonButton>
               <IonIcon icon={print} />
@@ -50,7 +52,7 @@ export default function WastesRecord({ match }: WastesPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {data == null ? <Loading /> : <WastesRecordForm data={data[0]} />}
+        {isPending || data == null ? <Loading /> : <WastesRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );
