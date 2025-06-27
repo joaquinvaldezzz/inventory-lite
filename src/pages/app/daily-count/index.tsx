@@ -69,7 +69,7 @@ export default function DailyCount() {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
-          void queryClient.invalidateQueries({ queryKey: ["daily-count-entries"] });
+          void refetch();
         }
       },
     });
