@@ -131,6 +131,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
       router.goBack();
     },
   });
+
   const deleteWasteRecordMutation = useMutation({
     mutationFn: async () => {
       await deleteWasteRecordById(data.id);
