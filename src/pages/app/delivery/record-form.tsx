@@ -184,7 +184,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
         await updateDeliveryRecordMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [updateDeliveryRecordMutation.mutateAsync, form.handleSubmit],
+    [form.handleSubmit, updateDeliveryRecordMutation.mutateAsync],
   );
 
   return (

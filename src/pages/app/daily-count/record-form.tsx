@@ -104,6 +104,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
       router.goBack();
     },
   });
+
   const deleteDailyCountRecordMutation = useMutation({
     mutationFn: async () => {
       await deleteDailyCountRecordById(data.id);
@@ -168,7 +169,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         await updateDailyCountRecordMutation.mutateAsync(formValues);
       })(event);
     },
-    [form, updateDailyCountRecordMutation.mutateAsync],
+    [form.handleSubmit, updateDailyCountRecordMutation.mutateAsync],
   );
 
   return (
