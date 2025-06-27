@@ -153,7 +153,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     }
 
     void ingredientsMutation.mutateAsync(category);
-  }, [form.watch("raw_material_type")]);
+  }, [form.watch("raw_material_type"), ingredientsMutation.mutateAsync]);
 
   useEffect(() => {
     generateItems();
