@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
-import { Fragment, useMemo, useState, type FormEvent } from "react";
+import { Fragment, useCallback, useMemo, useState, type FormEvent } from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -68,12 +68,23 @@ interface DeliveryRecordFormProps {
 }
 
 /**
- * This component renders a form for editing or deleting a delivery record. It initializes the form
- * with default values from the provided data and handles form submission and deletion.
+ * DeliveryRecordForm component renders a form for viewing and editing delivery records.
  *
- * @param props The props for the `DeliveryRecordForm` component.
- * @param props.data The data for the delivery record.
- * @returns The rendered `DeliveryRecordForm` component.
+ * This component displays a comprehensive form that shows:
+ *
+ * - Supplier information and delivery date
+ * - Remarks and additional delivery notes
+ * - A detailed list of delivered items with quantities and units
+ * - Form validation to ensure data accuracy
+ * - Submit handling for updating existing delivery records
+ * - Delete functionality for removing delivery entries
+ *
+ * The form is pre-populated with existing delivery data and allows users to modify supplier
+ * details, dates, remarks, and individual item quantities as needed.
+ *
+ * @param props Component configuration and data
+ * @param props.data The delivery record data to display and edit
+ * @returns JSX element representing the delivery record editing form
  */
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
   const queryClient = useQueryClient();
@@ -89,21 +100,22 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     mutationFn: async (formData: EditDeliveryFormSchema) => {
       await updateDeliveryRecord(data.id, formData);
     },
-    onError: () => {
-      void presentToast({
+    onError: async () => {
+      await presentToast({
         color: "danger",
         icon: alertCircleOutline,
         message: "Failed to update delivery record. Please try again.",
         swipeGesture: "vertical",
       });
     },
-    onSuccess: () => {
-      void presentToast({
+    onSuccess: async () => {
+      await presentToast({
         icon: checkmarkCircleOutline,
         message: "Delivery record updated!",
         swipeGesture: "vertical",
       });
-      void queryClient.invalidateQueries({ queryKey: ["delivery-entry"] });
+      await queryClient.invalidateQueries({ queryKey: ["delivery-record", data.id.toString()] });
+      await queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
       router.goBack();
     },
   });
@@ -112,21 +124,21 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     mutationFn: async () => {
       await deleteDeliveryRecord(data.id);
     },
-    onError: () => {
-      void presentToast({
+    onError: async () => {
+      await presentToast({
         color: "danger",
         icon: alertCircleOutline,
         message: "Failed to delete delivery record. Please try again.",
         swipeGesture: "vertical",
       });
     },
-    onSuccess: () => {
-      void presentToast({
+    onSuccess: async () => {
+      await presentToast({
         icon: checkmarkCircleOutline,
         message: "Delivery record deleted!",
         swipeGesture: "vertical",
       });
-      void queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
+      await queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
       router.goBack();
     },
   });
@@ -158,24 +170,22 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
     resolver: zodResolver(editDeliveryFormSchema),
   });
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(async (formValues) => {
-      const parsedValues = editDeliveryFormSchema.safeParse(formValues);
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = editDeliveryFormSchema.safeParse(formValues);
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
+        }
 
-      await updateDeliveryRecordMutation.mutateAsync(parsedValues.data);
-    })(event);
-  }
+        await updateDeliveryRecordMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [updateDeliveryRecordMutation.mutateAsync, form.handleSubmit],
+  );
 
   return (
     <Fragment>

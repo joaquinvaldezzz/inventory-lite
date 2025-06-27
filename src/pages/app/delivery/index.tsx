@@ -30,16 +30,28 @@ import { columns } from "./columns";
 import { DeliveryFormModal } from "./modal-form";
 
 /**
- * The `Delivery` component handles displaying and managing delivery entries. It fetches delivery
- * data, sorts it by date, and allows users to add, update, delete, and refresh deliveries.
+ * Delivery component displays a comprehensive delivery management interface.
  *
- * @returns The rendered component.
+ * This component provides:
+ *
+ * - A data table showing delivery entries sorted by date (newest first)
+ * - Pull-to-refresh functionality to update the delivery data
+ * - A floating action button to add new delivery entries via modal
+ * - A collapsible header with progress indicator during data loading
+ * - A side menu with settings accessible via hamburger menu
+ * - Search functionality for filtering delivery entries
+ *
+ * The component automatically refreshes data when the modal is dismissed with confirmation or when
+ * the settings menu is closed. It handles the complete lifecycle of delivery entry management
+ * including create, read, update, and delete operations.
+ *
+ * @returns JSX element representing the delivery management page interface
  */
 export default function Delivery() {
   const queryClient = useQueryClient();
   const { data, isFetching, isPending, refetch } = useQuery({
     queryKey: ["delivery-entries"],
-    queryFn: async () => await fetchDeliveryEntries(),
+    queryFn: fetchDeliveryEntries,
   });
 
   const sortedData = useMemo(() => {
@@ -94,7 +106,7 @@ export default function Delivery() {
     <Fragment>
       <IonMenu
         onIonDidClose={() => {
-          void refetch();
+          void queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
         }}
         contentId="delivery-content"
       >

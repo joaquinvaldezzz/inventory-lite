@@ -64,13 +64,23 @@ interface DeliveryModalActions {
 }
 
 /**
- * The `NewDeliveryModal` renders a modal for creating a new delivery entry. It includes a form with
- * fields for supplier, date, remarks, and a list of items. The form data is validated with a Zod
- * schema and submitted to create a new entry.
+ * NewDeliveryModal component renders a modal form for creating new delivery entries.
  *
- * @param props The props for the component.
- * @param props.dismiss Function to dismiss the modal.
- * @returns The rendered component.
+ * This modal provides a comprehensive form interface that includes:
+ *
+ * - Supplier selection for identifying the delivery source
+ * - Date picker for setting the delivery date
+ * - Remarks field for additional delivery notes
+ * - Dynamic item management with add/remove functionality
+ * - Form validation using Zod schema to ensure data integrity
+ * - Submit handling to create new delivery records
+ *
+ * The component integrates with the parent component through a dismiss callback that handles modal
+ * closure and triggers data refresh when a new entry is created.
+ *
+ * @param props Component configuration and callbacks
+ * @param props.dismiss Function called to close the modal and handle form submission
+ * @returns JSX element representing the delivery creation modal
  */
 export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
   const [suppliersQuery, itemsQuery] = useQueries({
@@ -89,16 +99,16 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     mutationFn: async (formData: NewDeliveryFormSchema) => {
       await createDeliveryEntry(formData);
     },
-    onError: () => {
-      void presentToast({
+    onError: async () => {
+      await presentToast({
         color: "danger",
         icon: alertCircleOutline,
         message: "Failed to create delivery entry. Please try again.",
         swipeGesture: "vertical",
       });
     },
-    onSuccess: () => {
-      void presentToast({
+    onSuccess: async () => {
+      await presentToast({
         icon: checkmarkCircleOutline,
         message: "Delivery entry created successfully",
         swipeGesture: "vertical",
@@ -141,8 +151,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     control: form.control,
   });
 
-  /** Adds a new row to the list of delivery items. */
-  function handleAdd() {
+  const handleAdd = useCallback(() => {
     append({
       item: "",
       quantity_dr: 0,
@@ -150,18 +159,12 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       price: 0,
       total_amount: 0,
     });
-  }
+  }, [append]);
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      /** Submits the form data to create a new delivery entry. */
       void form.handleSubmit(async (formValues) => {
         const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
@@ -172,7 +175,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
         await createDeliveryEntryMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [form],
+    [createDeliveryEntryMutation.mutateAsync, form.handleSubmit],
   );
 
   useEffect(() => {
@@ -183,13 +186,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     }
   }, [form.formState.isDirty]);
 
-  /**
-   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
-   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
-   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
-   * action.
-   */
-  function handleDismissConfirmation() {
+  const handleDismissConfirmation = useCallback(() => {
     if (isFormDirty) {
       void presentAlert({
         header: "Discard changes?",
@@ -209,7 +206,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     } else {
       dismiss(null, "cancel");
     }
-  }
+  }, [dismiss, isFormDirty, presentAlert]);
 
   return (
     <IonPage>
