@@ -172,6 +172,16 @@
     "tailwindFunctions": [
       "cva",
       "cn"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.mdc"
+        ],
+        "options": {
+          "parser": "markdown"
+        }
+      }
     ]
   },
   "pnpm": {
