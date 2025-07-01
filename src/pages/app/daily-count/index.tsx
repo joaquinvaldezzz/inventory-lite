@@ -73,7 +73,7 @@ export default function DailyCount() {
         }
       },
     });
-  }, [present, queryClient]);
+  }, [present, refetch]);
 
   const handleRefresh = useCallback(
     (event: CustomEvent<RefresherEventDetail>) => {
