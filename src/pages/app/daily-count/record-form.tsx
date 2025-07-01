@@ -226,7 +226,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                         field.onChange(date);
                         setIsDateOpen(false);
                       }}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>

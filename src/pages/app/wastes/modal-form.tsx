@@ -326,7 +326,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                             field.onChange(date);
                             setIsDateOpen(false);
                           }}
-                          initialFocus
+                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>

@@ -358,7 +358,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        initialFocus
+                        autoFocus
                       />
                     </PopoverContent>
                   </Popover>

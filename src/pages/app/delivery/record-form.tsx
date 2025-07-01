@@ -348,7 +348,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                           field.onChange(date);
                           setIsDateOpen(false);
                         }}
-                        initialFocus
+                        autoFocus
                       />
                     </PopoverContent>
                   </Popover>

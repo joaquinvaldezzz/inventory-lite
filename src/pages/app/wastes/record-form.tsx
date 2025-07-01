@@ -284,7 +284,7 @@ export function WastesRecordForm({ data }: WastesRecordFormProps) {
                         field.onChange(date);
                         setIsDateOpen(false);
                       }}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
