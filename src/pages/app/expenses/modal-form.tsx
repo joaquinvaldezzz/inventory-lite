@@ -264,7 +264,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                   ? (suppliers.find(
                                       (supplier) => supplier.id.toString() === field.value,
                                     )?.supplier_name ?? "Select a supplier")
-                                  : "Select a supplier"}
+                                  : "No supplier is available"}
                               </span>
                               <ChevronDownIcon
                                 className="shrink-0 text-muted-foreground/80"
@@ -405,7 +405,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                         name={`items.${index}.item`}
                         control={form.control}
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="flex flex-col gap-2 space-y-0">
                             <Popover
                               open={isItemPopoverOpen[index] || false}
                               onOpenChange={(open) => {
@@ -450,7 +450,11 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                 <Command>
                                   <CommandInput placeholder="Search item..." />
                                   <CommandList>
-                                    <CommandEmpty>No item found.</CommandEmpty>
+                                    <CommandEmpty>
+                                      {items.length > 0
+                                        ? "No item found."
+                                        : "Select a supplier first."}
+                                    </CommandEmpty>
                                     <CommandGroup>
                                       {items.map((item) => (
                                         <CommandItem
@@ -471,7 +475,9 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                                             }));
                                           }}
                                         >
-                                          {item.raw_material}
+                                          <span className="truncate">
+                                            {item.raw_material.trim()}
+                                          </span>
                                           {item.id.toString() === field.value && (
                                             <CheckIcon className="ml-auto" size={16} />
                                           )}
@@ -624,7 +630,10 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 
-              <Button type="submit" disabled={createExpensesEntryMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={createExpensesEntryMutation.isPending || !isFormDirty}
+              >
                 {createExpensesEntryMutation.isPending ? "Submitting..." : "Submit"}
               </Button>
               <Button

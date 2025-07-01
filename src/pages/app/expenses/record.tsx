@@ -40,7 +40,7 @@ type ExpensesPageProps = RouteComponentProps<{ PurchaseID: string }>;
  * @returns JSX element representing the expense record page with loading states and form
  */
 export default function ExpensesRecord({ match }: ExpensesPageProps) {
-  const { isPending, data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["expenses-entry", match.params.PurchaseID],
     queryFn: async () => await getSpecificExpensesRecordById(Number(match.params.PurchaseID)),
   });
@@ -53,7 +53,7 @@ export default function ExpensesRecord({ match }: ExpensesPageProps) {
             <IonBackButton defaultHref="/app/expenses" />
           </IonButtons>
           <IonTitle>
-            {isPending || data == null
+            {isFetching || data == null
               ? "Loading expenses record..."
               : `Expenses #${data[0].PurchaseID}`}
           </IonTitle>
@@ -66,7 +66,7 @@ export default function ExpensesRecord({ match }: ExpensesPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {isPending || data == null ? <Loading /> : <ExpensesRecordForm data={data[0]} />}
+        {isFetching || data == null ? <Loading /> : <ExpensesRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

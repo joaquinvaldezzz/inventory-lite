@@ -122,9 +122,11 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
         message: "Expenses record updated!",
         swipeGesture: "vertical",
       });
-      await queryClient.invalidateQueries({
-        queryKey: ["expenses-entry", data.PurchaseID],
-      });
+      setTimeout(() => {
+        void queryClient.invalidateQueries({
+          queryKey: ["expenses-entry", data.PurchaseID.toString()],
+        });
+      }, 1000);
       await queryClient.invalidateQueries({ queryKey: ["expenses-entries"] });
       router.goBack();
     },
@@ -172,9 +174,9 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
       date: new Date(data.InvoiceDate),
       payment_type: data.PaymentType,
       items: filteredDebitItems.map((item) => ({
-        item: item.Particulars,
+        item: item.ItemID,
         quantity: item.Quantity,
-        unit: item.Unit ?? "",
+        unit: item.Unit,
         price: item.Cost,
         total_amount: item.Amount,
       })),
@@ -259,10 +261,11 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                   value={supplier.supplier_name}
                                   key={supplier.id}
                                   onSelect={(value) => {
-                                    const selectedSupplier = suppliers.find(
-                                      (supplier) => supplier.supplier_name === value,
-                                    );
-                                    field.onChange(selectedSupplier?.id.toString());
+                                    const selectedSupplierId = suppliers
+                                      .find((supplier) => supplier.supplier_name === value)
+                                      ?.id.toString();
+                                    field.onChange(selectedSupplierId);
+                                    setIsSupplierOpen(false);
                                   }}
                                 >
                                   <span className="truncate"> {supplier.supplier_name}</span>
@@ -391,7 +394,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.item`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <Popover
                               open={isItemPopoverOpen[index] || false}
@@ -417,10 +420,8 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                       )}
                                     >
                                       {items.length > 0
-                                        ? (items.find(
-                                            (supplier) =>
-                                              supplier.raw_material.trim() === field.value.trim(),
-                                          )?.raw_material ?? "Select an item")
+                                        ? (items.find((item) => item.id.toString() === field.value)
+                                            ?.raw_material ?? "Select an item")
                                         : "Select an item"}
                                     </span>
                                     <ChevronDownIcon
@@ -443,13 +444,15 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                     <CommandGroup>
                                       {items.map((item) => (
                                         <CommandItem
-                                          value={item.raw_material}
+                                          value={item.raw_material.trim()}
                                           key={item.id}
                                           onSelect={(value) => {
                                             const selectedItem = items.find(
-                                              (item) => item.raw_material.trim() === value,
+                                              (item) => item.raw_material.trim() === value.trim(),
                                             );
-                                            field.onChange(selectedItem?.id.toString());
+                                            if (selectedItem == null) return;
+                                            field.onChange(selectedItem.id.toString());
+                                            form.setValue(`items.${index}.unit`, selectedItem.unit);
                                             setIsItemPopoverOpen((prev) => ({
                                               ...prev,
                                               [index]: false,
@@ -479,7 +482,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.quantity`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <NumberInput
                               className="min-w-32"
@@ -501,7 +504,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.unit`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem className="space-y-0">
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
                           </FormControl>
@@ -516,7 +519,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.price`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <ReactNumberField
                               formatOptions={{
@@ -546,7 +549,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.total_amount`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <ReactNumberField
                               formatOptions={{
