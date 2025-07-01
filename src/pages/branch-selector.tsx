@@ -1,6 +1,7 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useCallback, type FormEvent } from "react";
 import { IonContent, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueries } from "@tanstack/react-query";
 import { checkmarkCircleOutline } from "ionicons/icons";
 import { Store } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { fetchUserBranches, getCurrentUser } from "@/lib/dal";
 import { branchSelectorFormSchema, type BranchSelectorFormSchema } from "@/lib/form-schema";
 import { saveToStorage } from "@/lib/storage";
-import type { Branch } from "@/lib/types/login";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -27,82 +27,87 @@ import {
 } from "@/components/ui/select";
 
 /**
- * The `BranchSelector` component allows the user to select a branch from a list of branches. It
- * fetches the current user's name and branches associated with the user on component mount. The
- * user can select a branch from a dropdown and submit the form to proceed.
+ * BranchSelector component displays a form for selecting a branch from a list of available
+ * branches.
  *
- * @returns The rendered branch selector component.
+ * This component:
+ *
+ * - Fetches the current user's name and associated branches on mount
+ * - Displays a dropdown menu for branch selection
+ * - Handles form submission to proceed with the selected branch
+ * - Provides feedback for loading and error states
+ *
+ * The component ensures that only branches associated with the current user are shown, and updates
+ * the application state based on the user's selection.
+ *
+ * @returns JSX element representing the branch selector form
  */
 export default function BranchSelector() {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [username, setUsername] = useState<string>("");
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [presentToast] = useIonToast();
+  const router = useIonRouter();
+  const [usernameQuery, branchesQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["username"],
+        queryFn: getCurrentUser,
+      },
+      {
+        queryKey: ["branches"],
+        queryFn: fetchUserBranches,
+      },
+    ],
+  });
+
+  const username = usernameQuery.data?.data?.user.name ?? "user";
+  const branches = branchesQuery.data ?? [];
+
+  const saveBranchMutation = useMutation({
+    mutationFn: async (branch: BranchSelectorFormSchema) => {
+      await saveToStorage("currentBranch", JSON.stringify(branch));
+    },
+    onError: () => {
+      form.setError("branch", {
+        message: "Failed to select branch. Please try again.",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Branch selected successfully!",
+        swipeGesture: "vertical",
+      });
+      router.push("/app/delivery", "forward", "pop");
+    },
+  });
+
   const form = useForm<BranchSelectorFormSchema>({
     defaultValues: {
       branch: "",
     },
     resolver: zodResolver(branchSelectorFormSchema),
   });
-  const router = useIonRouter();
-  const [presentToast] = useIonToast();
-
-  void (async () => {
-    const username = await getCurrentUser();
-    const userBranches = await fetchUserBranches();
-
-    if (username != null) {
-      setUsername(username.data?.user.name ?? "");
-    }
-
-    setBranches(userBranches);
-  })();
 
   /**
    * Handles the form submission event.
    *
    * @param event The form submission event.
    */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    try {
-      void form.handleSubmit(async () => {
-        if (formRef.current == null) {
-          throw new Error("Form reference is not available");
-        }
-
-        const formData = Object.fromEntries(new FormData(formRef.current));
-        const parsedData = branchSelectorFormSchema.safeParse(formData);
+      void form.handleSubmit(async (formValues) => {
+        const parsedData = branchSelectorFormSchema.safeParse(formValues);
 
         if (!parsedData.success) {
           throw new Error("Form data is invalid:", parsedData.error);
         }
 
-        setIsLoading(true);
-
-        try {
-          await saveToStorage("currentBranch", JSON.stringify(formData));
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Branch selected successfully!",
-            swipeGesture: "vertical",
-          });
-          router.push("/app/delivery", "forward", "pop");
-        } catch (error) {
-          form.setError("branch", {
-            message: "Failed to select branch. Please try again.",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-        }
+        await saveBranchMutation.mutateAsync(parsedData.data);
       })(event);
-    } catch (error) {
-      throw new Error("Form submission failed");
-    }
-  }
+    },
+    [form.handleSubmit, saveBranchMutation.mutateAsync],
+  );
 
   return (
     <IonPage>
@@ -122,7 +127,7 @@ export default function BranchSelector() {
             </div>
 
             <Form {...form}>
-              <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 <FormField
                   name="branch"
                   control={form.control}
@@ -137,7 +142,7 @@ export default function BranchSelector() {
                           <Select
                             name="branch"
                             defaultValue={field.value}
-                            disabled={isLoading}
+                            disabled={saveBranchMutation.isPending}
                             onValueChange={field.onChange}
                           >
                             <SelectTrigger className="ps-9" id={field.name}>
@@ -169,7 +174,12 @@ export default function BranchSelector() {
                 />
 
                 <div className="flex flex-col pt-1">
-                  <Button type="submit">{isLoading ? "Proceeding..." : "Proceed"}</Button>
+                  <Button
+                    type="submit"
+                    disabled={saveBranchMutation.isPending || !form.formState.isDirty}
+                  >
+                    {saveBranchMutation.isPending ? "Proceeding..." : "Proceed"}
+                  </Button>
                 </div>
               </form>
             </Form>
