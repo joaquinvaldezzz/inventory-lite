@@ -1,6 +1,7 @@
-import { startTransition, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useMemo, useState, type FormEvent } from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
@@ -8,8 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { deleteDailyCountRecordById, fetchCategories, updateDailyCountRecord } from "@/lib/api";
 import { newDailyCountFormSchema, type NewDailyCountFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { CategoryData, DailyCountFormData } from "@/lib/types/daily-count";
+import type { DailyCountFormData } from "@/lib/types/daily-count";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -57,19 +57,88 @@ interface DailyCountRecordFormProps {
 }
 
 /**
- * Component for rendering and managing the daily count record form.
+ * DailyCountRecordForm component renders a form for viewing and editing daily count records.
  *
- * @param props The props for the component.
- * @param props.data The data for the daily count record.
- * @returns The rendered component.
+ * This component displays a comprehensive form that shows:
+ *
+ * - Date and category information for the daily count entry
+ * - A detailed list of items with their counts and units
+ * - Form validation to ensure data accuracy
+ * - Submit handling for updating existing daily count records
+ *
+ * The form is pre-populated with existing data and allows users to modify individual item counts
+ * and add new items as needed.
+ *
+ * @param props Component configuration and data
+ * @param props.data The daily count record data to display and edit
+ * @returns JSX element representing the daily count record editing form
  */
 export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const queryClient = useQueryClient();
+  const categoriesQuery = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+  const updateDailyCountRecordMutation = useMutation({
+    mutationFn: async (formData: NewDailyCountFormSchema) => {
+      await updateDailyCountRecord(data.id, formData);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to update daily count record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Daily count record updated!",
+        swipeGesture: "vertical",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["daily-count-record", data.id.toString()],
+      });
+      await queryClient.invalidateQueries({ queryKey: ["daily-count-entries"] });
+      router.goBack();
+    },
+  });
+
+  const deleteDailyCountRecordMutation = useMutation({
+    mutationFn: async () => {
+      await deleteDailyCountRecordById(data.id);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to delete daily count record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Daily count record deleted!",
+        swipeGesture: "vertical",
+      });
+      await queryClient.invalidateQueries({ queryKey: ["daily-count-entries"] });
+      router.goBack();
+    },
+  });
+
+  const router = useIonRouter();
+  const [presentToast] = useIonToast();
+
+  const categories = categoriesQuery.data ?? [];
+
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const form = useForm<NewDailyCountFormSchema>({
-    defaultValues: {
+
+  const defaultValues = useMemo(
+    () => ({
       date: new Date(data.date),
       raw_material_type: data.raw_material_type_id.toString(),
       items: data.items.map((item) => ({
@@ -77,117 +146,31 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         count: item.count,
         unit: item.unit,
       })),
-    },
+    }),
+    [data],
+  );
+  const form = useForm<NewDailyCountFormSchema>({
+    defaultValues,
     resolver: zodResolver(newDailyCountFormSchema),
   });
-  const router = useIonRouter();
-  const [presentToast] = useIonToast();
 
-  useEffect(() => {
-    /**
-     * Fetches the list of suppliers from storage and updates the state.
-     *
-     * @returns A promise that resolves when the suppliers have been fetched and the state has been
-     *   updated.
-     * @throws Will log an error message to the console if there is an issue fetching the suppliers.
-     */
-    async function getCategories() {
-      await fetchCategories();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-      try {
-        const savedCategories = await getFromStorage("categories");
+      void form.handleSubmit(async () => {
+        const formValues = form.getValues();
+        const parsedValues = newDailyCountFormSchema.safeParse(formValues);
 
-        if (savedCategories != null) {
-          const parsedCategories = JSON.parse(savedCategories);
-
-          if (Array.isArray(parsedCategories)) {
-            setCategories(parsedCategories);
-          } else {
-            throw new Error("Categories data is invalid");
-          }
-        } else {
-          throw new Error("No categories found in storage");
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
         }
-      } catch (error) {
-        throw new Error("Error fetching categories");
-      }
-    }
 
-    startTransition(() => {
-      void getCategories();
-    });
-  }, []);
-
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = newDailyCountFormSchema.safeParse(formValues);
-
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
-
-      setIsLoading(true);
-
-      /** Submits the form data to update the delivery record. */
-      async function submitForm() {
-        try {
-          await updateDailyCountRecord(data.id, formValues);
-        } catch (error) {
-          void presentToast({
-            color: "danger",
-            icon: alertCircleOutline,
-            message: "Failed to update daily count record. Please try again.",
-            swipeGesture: "vertical",
-          });
-          throw new Error("Form submission failed");
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Daily count record updated!",
-            swipeGesture: "vertical",
-          });
-          router.goBack();
-        }
-      }
-
-      startTransition(() => {
-        void submitForm();
-      });
-    })(event);
-  }
-
-  /** Handles the deletion of a delivery record. */
-  async function handleDelete() {
-    try {
-      await deleteDailyCountRecordById(data.id);
-    } catch (error) {
-      void presentToast({
-        color: "danger",
-        icon: alertCircleOutline,
-        message: "Failed to delete daily count record. Please try again.",
-        swipeGesture: "vertical",
-      });
-      throw new Error("Error deleting daily count record");
-    } finally {
-      void presentToast({
-        duration: 1500,
-        icon: checkmarkCircleOutline,
-        message: "Daily count record deleted!",
-        swipeGesture: "vertical",
-      });
-      router.goBack();
-    }
-  }
+        await updateDailyCountRecordMutation.mutateAsync(formValues);
+      })(event);
+    },
+    [form.handleSubmit, updateDailyCountRecordMutation.mutateAsync],
+  );
 
   return (
     <Form {...form}>
@@ -226,7 +209,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                         field.onChange(date);
                         setIsDateOpen(false);
                       }}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
@@ -372,8 +355,8 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         </DivTable>
 
         <div className="mt-1 flex flex-col gap-3">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save"}
+          <Button type="submit" disabled={updateDailyCountRecordMutation.isPending}>
+            {updateDailyCountRecordMutation.isPending ? "Saving..." : "Save"}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -392,7 +375,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    void handleDelete();
+                    void deleteDailyCountRecordMutation.mutateAsync();
                   }}
                   asChild
                 >
