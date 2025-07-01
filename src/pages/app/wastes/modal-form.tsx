@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -10,6 +10,7 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueries } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import {
@@ -30,8 +31,6 @@ import {
   getIngredientsByCategory,
 } from "@/lib/api";
 import { newWasteFormSchema, type NewWasteFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { CategoryData, WasteItem } from "@/lib/types/wastes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -60,7 +59,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import type { Option } from "@/components/ui/multiselect";
 import { NumberInput } from "@/components/ui/number-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -78,23 +76,90 @@ interface WastesModalActions {
 }
 
 /**
- * A modal for creating new waste entries.
+ * WasteModal component renders a modal form for creating new waste entries.
  *
- * @param actions Actions to be performed when the modal is dismissed
- * @param actions.dismiss Function to dismiss the modal
- * @returns The rendered component.
+ * This modal provides a comprehensive form interface that includes:
+ *
+ * - Date selection for the waste entry
+ * - Category selection for organizing waste types
+ * - Dynamic item management with add/remove functionality
+ * - Form validation to ensure data integrity
+ * - Submit handling to create new waste records
+ *
+ * The component integrates with the parent component through a dismiss callback that handles modal
+ * closure and triggers data refresh when a new waste entry is created.
+ *
+ * @param actions Component actions and callbacks
+ * @param actions.dismiss Function called to close the modal and handle form submission
+ * @returns JSX element representing the waste creation modal
  */
 export function WastesFormModal({ dismiss }: WastesModalActions) {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [ingredients, setIngredients] = useState<WasteItem[]>([]);
-  const [employees, setEmployees] = useState<Option[]>([]);
+  const [categoriesQuery, employeesQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["categories"],
+        queryFn: fetchCategories,
+      },
+      {
+        queryKey: ["employees"],
+        queryFn: fetchEmployees,
+      },
+    ],
+  });
+  const ingredientsMutation = useMutation({
+    mutationFn: async (category: string) => {
+      return await getIngredientsByCategory(category);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to fetch ingredients. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+  });
+  const createWasteEntryMutation = useMutation({
+    mutationFn: async (data: NewWasteFormSchema) => {
+      await createWasteEntry(data);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to create waste entry. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Wastes entry created successfully",
+        swipeGesture: "vertical",
+      });
+      dismiss(null, "confirm");
+    },
+  });
+
+  const categories = categoriesQuery.data ?? [];
+  const ingredients = ingredientsMutation.data ?? [];
+  const employees = useMemo(() => {
+    if (employeesQuery.data == null) return [];
+    return employeesQuery.data.map((employee) => ({
+      value: employee.EmployeeID,
+      label: employee.FirstName + " " + employee.LastName,
+    }));
+  }, [employeesQuery.data]);
+
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
+
   const form = useForm<NewWasteFormSchema>({
     defaultValues: {
       date: new Date(),
@@ -118,52 +183,15 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
   });
 
   useEffect(() => {
-    /**
-     * Fetches categories and retrieves saved categories from storage.
-     *
-     * @returns A promise that resolves when the operation is complete.
-     */
-    async function getCategoryItems() {
-      await fetchCategories();
+    const category = form.getValues("raw_material_type");
 
-      const savedCategories = await getFromStorage("categories");
+    if (category.length === 0) return;
 
-      if (savedCategories != null) {
-        const parsedCategories = JSON.parse(savedCategories);
+    void ingredientsMutation.mutateAsync(category);
+    remove();
+  }, [form.getValues("raw_material_type")]);
 
-        if (Array.isArray(parsedCategories)) {
-          setCategories(parsedCategories);
-        } else {
-          throw new Error("Categories data is invalid");
-        }
-      }
-    }
-
-    void getCategoryItems();
-  }, []);
-
-  useEffect(() => {
-    /**
-     * Fetches ingredient items based on the selected raw material type from the form. If no raw
-     * material type is selected, the function returns early.
-     *
-     * @returns A promise that resolves when the ingredients are fetched and state is updated.
-     */
-    async function getIngredientItems() {
-      if (form.getValues("raw_material_type").length === 0) {
-        return;
-      }
-
-      const ingredients = await getIngredientsByCategory(form.getValues("raw_material_type"));
-      setIngredients(ingredients ?? []);
-      remove();
-    }
-
-    void getIngredientItems();
-  }, [form.watch("raw_material_type")]);
-
-  /** Adds a new row to the form */
-  function handleAdd() {
+  const handleAdd = useCallback(() => {
     append({
       item: "",
       waste: 0,
@@ -171,79 +199,31 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
       reason: "",
       employee: [],
     });
-  }
+  }, [append]);
 
-  /**
-   * Removes a row from the form
-   *
-   * @param index The index of the row to be removed
-   */
-  function handleRemove(index: number) {
-    remove(index);
-  }
+  const handleRemove = useCallback(
+    (index: number) => {
+      remove(index);
+    },
+    [remove],
+  );
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(async (data) => {
-      const parsedValues = newWasteFormSchema.safeParse(data);
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = newWasteFormSchema.safeParse(formValues);
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
+        }
 
-      setIsLoading(true);
-
-      try {
-        await createWasteEntry(parsedValues.data);
-      } catch (error) {
-        void presentToast({
-          color: "danger",
-          icon: alertCircleOutline,
-          message: "Failed to create wastes entry. Please try again.",
-          swipeGesture: "vertical",
-        });
-        throw new Error("Form submission failed");
-      } finally {
-        setIsLoading(false);
-        void presentToast({
-          duration: 1500,
-          icon: checkmarkCircleOutline,
-          message: "Wastes entry created successfully",
-          swipeGesture: "vertical",
-        });
-        dismiss(null, "confirm");
-      }
-    })(event);
-  }
-
-  useEffect(() => {
-    /**
-     * Fetches the list of employees, maps the data to a specific format, and updates the state with
-     * the formatted data.
-     *
-     * @returns A promise that resolves when the employees have been fetched and the state has been
-     *   updated.
-     */
-    async function getEmployees() {
-      const employees = await fetchEmployees();
-      const data = employees?.map((employee) => {
-        return {
-          value: employee.EmployeeID,
-          label: employee.FirstName + " " + employee.LastName,
-        };
-      });
-
-      setEmployees(data ?? []);
-    }
-
-    void getEmployees();
-  }, []);
+        await createWasteEntryMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [createWasteEntryMutation.mutateAsync, form.handleSubmit],
+  );
 
   useEffect(() => {
     if (form.formState.isDirty) {
@@ -253,13 +233,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
     }
   }, [form.formState.isDirty]);
 
-  /**
-   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
-   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
-   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
-   * action.
-   */
-  function handleDismissConfirmation() {
+  const handleDismissConfirmation = useCallback(() => {
     if (isFormDirty) {
       void presentAlert({
         header: "Discard changes?",
@@ -279,7 +253,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
     } else {
       dismiss(null, "cancel");
     }
-  }
+  }, [dismiss, isFormDirty, presentAlert]);
 
   return (
     <IonPage>
@@ -654,12 +628,12 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
                 <span>Add more items</span>
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit"}
+              <Button type="submit" disabled={createWasteEntryMutation.isPending}>
+                {createWasteEntryMutation.isPending ? "Submitting..." : "Submit"}
               </Button>
               <Button
                 type="button"
-                disabled={isLoading}
+                disabled={createWasteEntryMutation.isPending}
                 variant="ghost"
                 onClick={handleDismissConfirmation}
               >

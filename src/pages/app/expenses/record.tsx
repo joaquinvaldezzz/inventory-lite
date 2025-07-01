@@ -21,14 +21,26 @@ import ExpensesRecordForm from "./record-form";
 type ExpensesPageProps = RouteComponentProps<{ PurchaseID: string }>;
 
 /**
- * Component for displaying and editing a specific expenses record.
+ * ExpensesRecord component displays and manages a specific expense record page.
  *
- * @param props The properties passed to the component.
- * @param props.match The match object containing route parameters.
- * @returns The rendered component.
+ * This component handles the complete lifecycle of viewing and editing an expense record:
+ *
+ * - Fetches the expense record data based on the route parameter ID
+ * - Displays loading states while data is being retrieved
+ * - Shows error messages if the record cannot be found or loaded
+ * - Renders the expense record form for editing when data is available
+ * - Handles navigation back to the expenses list
+ *
+ * The component uses React Router's match object to extract the record ID from the URL parameters
+ * and manages the data fetching process for expense entries.
+ *
+ * @param props Component configuration and routing information
+ * @param props.match React Router match object containing route parameters including the expense
+ *   record ID
+ * @returns JSX element representing the expense record page with loading states and form
  */
 export default function ExpensesRecord({ match }: ExpensesPageProps) {
-  const { isPending, data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["expenses-entry", match.params.PurchaseID],
     queryFn: async () => await getSpecificExpensesRecordById(Number(match.params.PurchaseID)),
   });
@@ -41,7 +53,9 @@ export default function ExpensesRecord({ match }: ExpensesPageProps) {
             <IonBackButton defaultHref="/app/expenses" />
           </IonButtons>
           <IonTitle>
-            {isPending ? "Loading expenses record..." : `Expenses #${data?.[0].PurchaseID}`}
+            {isFetching || data == null
+              ? "Loading expenses record..."
+              : `Expenses #${data[0].PurchaseID}`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton>
@@ -52,7 +66,7 @@ export default function ExpensesRecord({ match }: ExpensesPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {data == null ? <Loading /> : <ExpensesRecordForm data={data[0]} />}
+        {isFetching || data == null ? <Loading /> : <ExpensesRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

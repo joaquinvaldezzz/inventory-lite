@@ -1,7 +1,8 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import { IonContent, IonImg, IonPage, useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { checkmarkCircleOutline } from "ionicons/icons";
+import { useMutation } from "@tanstack/react-query";
+import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { AlertCircle, Eye, EyeOff, KeyRound, User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -27,9 +28,39 @@ import { Input } from "@/components/ui/input";
  * @returns The rendered login form component.
  */
 export default function Login() {
-  const formRef = useRef<HTMLFormElement>(null);
+  const [presentToast] = useIonToast();
+  const router = useIonRouter();
+  const { login } = useAuth();
+
+  const loginMutation = useMutation({
+    mutationFn: async (formValues: LoginFormSchema) =>
+      await login(formValues.email, formValues.password),
+    onError: async (error) => {
+      await presentToast({
+        icon: alertCircleOutline,
+        message: error.message,
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async (data) => {
+      if (!(data?.success ?? false)) {
+        form.setError("root", {
+          message:
+            "Hmm, something went wrong. Please double-check your username and password. If you're still having trouble, you can reset your password.",
+        });
+      } else {
+        await presentToast({
+          icon: checkmarkCircleOutline,
+          message: "Login successful!",
+          swipeGesture: "vertical",
+        });
+        router.push("/create-pin");
+      }
+    },
+  });
+
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const form = useForm<LoginFormSchema>({
     defaultValues: {
       email: "",
@@ -37,50 +68,23 @@ export default function Login() {
     },
     resolver: zodResolver(loginFormSchema),
   });
-  const { login } = useAuth();
-  const [presentToast] = useIonToast();
-  const router = useIonRouter();
 
-  /**
-   * Handles the form submission event for the login form.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(async (formData) => {
-      const parsedData = loginFormSchema.safeParse(formData);
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = loginFormSchema.safeParse(formValues);
 
-      if (!parsedData.success) {
-        throw new Error("Form data is invalid:", parsedData.error);
-      }
-
-      try {
-        setIsLoading(true);
-        const response = await login(formData.email, formData.password);
-
-        if (!(response?.success ?? false)) {
-          form.setError("root", {
-            message:
-              "Hmm, something went wrong. Please double-check your username and password. If you're still having trouble, you can reset your password.",
-          });
-        } else {
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Login successful!",
-            swipeGesture: "vertical",
-          });
-          router.push("/create-pin");
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
         }
-      } catch (error) {
-        throw new Error("Failed to login");
-      } finally {
-        setIsLoading(false);
-      }
-    })(event);
-  }
+
+        await loginMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [form.handleSubmit, loginMutation.mutateAsync],
+  );
 
   return (
     <IonPage>
@@ -110,7 +114,7 @@ export default function Login() {
             )}
 
             <Form {...form}>
-              <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 <FormField
                   name="email"
                   control={form.control}
@@ -127,7 +131,7 @@ export default function Login() {
                             type="email"
                             placeholder="Enter your email address"
                             autoComplete="email"
-                            disabled={isLoading}
+                            disabled={loginMutation.isPending}
                             {...field}
                           />
                         </FormControl>
@@ -152,7 +156,7 @@ export default function Login() {
                             className="ps-9 pe-9"
                             type={isVisible ? "text" : "password"}
                             placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-                            disabled={isLoading}
+                            disabled={loginMutation.isPending}
                             {...field}
                           />
                         </FormControl>
@@ -179,8 +183,8 @@ export default function Login() {
                 />
 
                 <div className="flex flex-col pt-1">
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Logging in..." : "Log in"}
+                  <Button type="submit" disabled={loginMutation.isPending}>
+                    {loginMutation.isPending ? "Logging in..." : "Log in"}
                   </Button>
                 </div>
               </form>

@@ -21,15 +21,27 @@ import DeliveryRecordForm from "./record-form";
 type DeliveryPageProps = RouteComponentProps<{ id: string }>;
 
 /**
- * Component for displaying and editing a specific delivery record.
+ * DeliveryRecord component displays and manages a specific delivery record page.
  *
- * @param props The properties passed to the component.
- * @param props.match The match object containing route parameters.
- * @returns The rendered component.
+ * This component handles the complete lifecycle of viewing and editing a delivery record:
+ *
+ * - Fetches the delivery record data based on the route parameter ID
+ * - Displays loading states while data is being retrieved
+ * - Shows error messages if the record cannot be found or loaded
+ * - Renders the delivery record form for editing when data is available
+ * - Handles navigation back to the delivery list
+ *
+ * The component uses React Router's match object to extract the record ID from the URL parameters
+ * and manages the data fetching process for delivery entries.
+ *
+ * @param props Component configuration and routing information
+ * @param props.match React Router match object containing route parameters including the delivery
+ *   record ID
+ * @returns JSX element representing the delivery record page with loading states and form
  */
 export default function DeliveryRecord({ match }: DeliveryPageProps) {
   const { isPending, data } = useQuery({
-    queryKey: ["delivery-entry", match.params.id],
+    queryKey: ["delivery-record", match.params.id],
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   });
 
@@ -41,7 +53,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
             <IonBackButton defaultHref="/app/delivery" />
           </IonButtons>
           <IonTitle>
-            {isPending ? "Loading delivery record..." : `Delivery #${data?.[0].id}`}
+            {isPending || data == null ? "Loading delivery record..." : `Delivery #${data[0].id}`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton>

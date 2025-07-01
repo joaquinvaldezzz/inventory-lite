@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- This page has complex logic that is necessary for its functionality */
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -10,6 +10,7 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueries } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Plus, Trash2 } from "lucide-react";
@@ -18,9 +19,6 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { createDeliveryEntry, getItems, getSuppliers } from "@/lib/api";
 import { newDeliveryFormSchema, type NewDeliveryFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { DeliveryItem } from "@/lib/types/delivery";
-import type { SupplierData } from "@/lib/types/supplier";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -66,24 +64,70 @@ interface DeliveryModalActions {
 }
 
 /**
- * The `NewDeliveryModal` renders a modal for creating a new delivery entry. It includes a form with
- * fields for supplier, date, remarks, and a list of items. The form data is validated with a Zod
- * schema and submitted to create a new entry.
+ * NewDeliveryModal component renders a modal form for creating new delivery entries.
  *
- * @param props The props for the component.
- * @param props.dismiss Function to dismiss the modal.
- * @returns The rendered component.
+ * This modal provides a comprehensive form interface that includes:
+ *
+ * - Supplier selection for identifying the delivery source
+ * - Date picker for setting the delivery date
+ * - Remarks field for additional delivery notes
+ * - Dynamic item management with add/remove functionality
+ * - Form validation using Zod schema to ensure data integrity
+ * - Submit handling to create new delivery records
+ *
+ * The component integrates with the parent component through a dismiss callback that handles modal
+ * closure and triggers data refresh when a new entry is created.
+ *
+ * @param props Component configuration and callbacks
+ * @param props.dismiss Function called to close the modal and handle form submission
+ * @returns JSX element representing the delivery creation modal
  */
 export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
-  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
-  const [items, setItems] = useState<DeliveryItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [suppliersQuery, itemsQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["suppliers"],
+        queryFn: getSuppliers,
+      },
+      {
+        queryKey: ["items"],
+        queryFn: getItems,
+      },
+    ],
+  });
+  const createDeliveryEntryMutation = useMutation({
+    mutationFn: async (formData: NewDeliveryFormSchema) => {
+      await createDeliveryEntry(formData);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to create delivery entry. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Delivery entry created successfully",
+        swipeGesture: "vertical",
+      });
+      dismiss(null, "confirm");
+    },
+  });
+
+  const suppliers = suppliersQuery.data ?? [];
+  const items = itemsQuery.data ?? [];
+
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
   const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+
   const [presentAlert] = useIonAlert();
   const [presentToast] = useIonToast();
+
   const form = useForm<NewDeliveryFormSchema>({
     defaultValues: {
       supplier: "",
@@ -107,57 +151,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     control: form.control,
   });
 
-  useEffect(() => {
-    /**
-     * Fetches suppliers from the API endpoint and updates the state with the retrieved suppliers.
-     *
-     * @throws Will log an error message if there is an issue fetching suppliers or parsing the
-     *   data.
-     * @todo Implement local storage caching for suppliers.
-     */
-    async function fetchSuppliers() {
-      try {
-        await getSuppliers();
-
-        const savedSuppliers = await getFromStorage("suppliers");
-
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers);
-
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers);
-          } else {
-            throw new Error("Suppliers data is invalid");
-          }
-        } else {
-          throw new Error("No suppliers found in storage");
-        }
-      } catch (error) {
-        throw new Error("Error fetching suppliers");
-      }
-    }
-
-    void fetchSuppliers();
-  }, []);
-
-  useEffect(() => {
-    // TODO: Save these items locally
-
-    /** Fetches items from the API endpoint and updates the state with the retrieved items. */
-    async function fetchItems() {
-      try {
-        const request = await getItems();
-        request != null ? setItems(request) : setItems([]);
-      } catch (error) {
-        throw new Error("Error fetching items");
-      }
-    }
-
-    void fetchItems();
-  }, []);
-
-  /** Adds a new row to the list of delivery items. */
-  function handleAdd() {
+  const handleAdd = useCallback(() => {
     append({
       item: "",
       quantity_dr: 0,
@@ -165,59 +159,24 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
       price: 0,
       total_amount: 0,
     });
-  }
+  }, [append]);
 
-  /**
-   * Handles the removal of a row from the list of delivery items by removing the item at the
-   * specified index.
-   *
-   * @param index The index of the item to be removed.
-   */
-  function handleRemove(index: number) {
-    remove(index);
-  }
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = newDeliveryFormSchema.safeParse(formValues);
 
-    /** Submits the form data to create a new delivery entry. */
-    void form.handleSubmit(async () => {
-      const formValues = form.getValues();
-      const parsedValues = newDeliveryFormSchema.safeParse(formValues);
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
+        }
 
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
-
-      setIsLoading(true);
-
-      try {
-        await createDeliveryEntry(parsedValues.data);
-      } catch (error) {
-        void presentToast({
-          color: "danger",
-          icon: alertCircleOutline,
-          message: "Failed to create delivery entry. Please try again.",
-          swipeGesture: "vertical",
-        });
-        throw new Error("Form submission failed");
-      } finally {
-        setIsLoading(false);
-        void presentToast({
-          duration: 1500,
-          icon: checkmarkCircleOutline,
-          message: "Delivery entry created successfully",
-          swipeGesture: "vertical",
-        });
-        dismiss(null, "confirm");
-      }
-    })(event);
-  }
+        await createDeliveryEntryMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [createDeliveryEntryMutation.mutateAsync, form.handleSubmit],
+  );
 
   useEffect(() => {
     if (form.formState.isDirty) {
@@ -227,13 +186,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     }
   }, [form.formState.isDirty]);
 
-  /**
-   * Handles the dismissal of a confirmation dialog. If the form is dirty, it presents an alert
-   * asking the user if they want to discard changes. If the user confirms, it dismisses the form
-   * with a "confirm" action. If the form is not dirty, it dismisses the form with a "cancel"
-   * action.
-   */
-  function handleDismissConfirmation() {
+  const handleDismissConfirmation = useCallback(() => {
     if (isFormDirty) {
       void presentAlert({
         header: "Discard changes?",
@@ -253,7 +206,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
     } else {
       dismiss(null, "cancel");
     }
-  }
+  }, [dismiss, isFormDirty, presentAlert]);
 
   return (
     <IonPage>
@@ -657,7 +610,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                         size="icon"
                         variant="ghost"
                         onClick={() => {
-                          handleRemove(index);
+                          remove(index);
                         }}
                       >
                         <Trash2 size={16} />
@@ -674,12 +627,12 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                 <Plus aria-hidden="true" strokeWidth={2} size={16} />
               </Button>
 
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit"}
+              <Button type="submit" disabled={createDeliveryEntryMutation.isPending}>
+                {createDeliveryEntryMutation.isPending ? "Submitting..." : "Submit"}
               </Button>
               <Button
                 type="button"
-                disabled={isLoading}
+                disabled={createDeliveryEntryMutation.isPending}
                 variant="ghost"
                 onClick={handleDismissConfirmation}
               >
