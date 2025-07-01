@@ -1,7 +1,8 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
-import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from "react";
+import { Fragment, useCallback, useMemo, useState, type FormEvent } from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container } from "lucide-react";
@@ -10,9 +11,7 @@ import { useForm } from "react-hook-form";
 
 import { deleteDeliveryRecord, getSuppliers, updateDeliveryRecord } from "@/lib/api";
 import { editDeliveryFormSchema, type EditDeliveryFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
 import type { DeliveryFormData } from "@/lib/types/delivery";
-import type { SupplierData } from "@/lib/types/supplier";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import {
   AlertDialog,
@@ -69,22 +68,88 @@ interface DeliveryRecordFormProps {
 }
 
 /**
- * DeliveryRecordForm component renders a form for editing or deleting a delivery record. It
- * initializes the form with default values from the provided data and handles form submission and
- * deletion.
+ * DeliveryRecordForm component renders a form for viewing and editing delivery records.
  *
- * @param props The props for the DeliveryRecordForm component.
- * @param props.data The data for the delivery record.
- * @returns The rendered DeliveryRecordForm component.
+ * This component displays a comprehensive form that shows:
+ *
+ * - Supplier information and delivery date
+ * - Remarks and additional delivery notes
+ * - A detailed list of delivered items with quantities and units
+ * - Form validation to ensure data accuracy
+ * - Submit handling for updating existing delivery records
+ * - Delete functionality for removing delivery entries
+ *
+ * The form is pre-populated with existing delivery data and allows users to modify supplier
+ * details, dates, remarks, and individual item quantities as needed.
+ *
+ * @param props Component configuration and data
+ * @param props.data The delivery record data to display and edit
+ * @returns JSX element representing the delivery record editing form
  */
 export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
-  const formRef = useRef<HTMLFormElement>(null);
+  const queryClient = useQueryClient();
+  const suppliersQuery = useQuery({
+    queryKey: ["suppliers"],
+    queryFn: getSuppliers,
+  });
+
+  const router = useIonRouter();
+  const [presentToast] = useIonToast();
+
+  const updateDeliveryRecordMutation = useMutation({
+    mutationFn: async (formData: EditDeliveryFormSchema) => {
+      await updateDeliveryRecord(data.id, formData);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to update delivery record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Delivery record updated!",
+        swipeGesture: "vertical",
+      });
+      await queryClient.invalidateQueries({ queryKey: ["delivery-record", data.id.toString()] });
+      await queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
+      router.goBack();
+    },
+  });
+
+  const deleteDeliveryRecordMutation = useMutation({
+    mutationFn: async () => {
+      await deleteDeliveryRecord(data.id);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to delete delivery record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
+        icon: checkmarkCircleOutline,
+        message: "Delivery record deleted!",
+        swipeGesture: "vertical",
+      });
+      await queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
+      router.goBack();
+    },
+  });
+
+  const suppliers = suppliersQuery.data ?? [];
+
   const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
   const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const form = useForm<EditDeliveryFormSchema>({
-    defaultValues: {
+
+  const defaultValues = useMemo(() => {
+    return {
       supplier: data.supplier_id.toString(),
       po_number: data.po_no,
       date_request: new Date(data.date_request),
@@ -92,129 +157,40 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
       remarks: data.remarks,
       items: data.items.map((item) => ({
         item: item.item_id,
-        quantity_actual: item.quantity,
+        quantity_actual: item.quantity_actual,
         quantity_dr: item.quantity_dr,
         unit_dr: item.unit,
         price: item.price,
         total_amount: item.total_amount,
       })),
-    },
+    };
+  }, [data]);
+  const form = useForm<EditDeliveryFormSchema>({
+    defaultValues,
     resolver: zodResolver(editDeliveryFormSchema),
   });
-  const router = useIonRouter();
-  const [presentToast] = useIonToast();
 
-  useEffect(() => {
-    // TODO: Save these suppliers locally
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    /**
-     * Fetches the list of suppliers from storage and updates the state.
-     *
-     * @returns A promise that resolves when the suppliers have been fetched and the state has been
-     *   updated.
-     * @throws An error message to the console if there is an issue fetching the suppliers.
-     */
-    async function fetchSuppliers() {
-      await getSuppliers();
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = editDeliveryFormSchema.safeParse(formValues);
 
-      try {
-        const savedSuppliers = await getFromStorage("suppliers");
-
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers);
-
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers);
-          } else {
-            throw new Error("Suppliers data is invalid");
-          }
-        } else {
-          throw new Error("No suppliers found in storage");
+        if (!parsedValues.success) {
+          throw new Error("Form data is invalid:", parsedValues.error);
         }
-      } catch (error) {
-        throw new Error("Error fetching suppliers");
-      }
-    }
 
-    startTransition(() => {
-      void fetchSuppliers();
-    });
-  }, []);
-
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = editDeliveryFormSchema.safeParse(formValues);
-
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid:", parsedValues.error);
-      }
-
-      setIsLoading(true);
-
-      /** Submits the form data to update the delivery record. */
-      async function submitForm() {
-        try {
-          if (parsedValues.data != null) await updateDeliveryRecord(data.id, parsedValues.data);
-        } catch (error) {
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "An error occurred while saving changes. Please try again.",
-            swipeGesture: "vertical",
-          });
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Delivery record updated!",
-            swipeGesture: "vertical",
-          });
-          router.goBack();
-        }
-      }
-
-      startTransition(() => {
-        void submitForm();
-      });
-    })(event);
-  }
-
-  /** Handles the deletion of a delivery record. */
-  async function handleDelete() {
-    try {
-      await deleteDeliveryRecord(data.id);
-    } catch (error) {
-      void presentToast({
-        color: "danger",
-        icon: alertCircleOutline,
-        message: "An error occurred while deleting the delivery record. Please try again.",
-        swipeGesture: "vertical",
-      });
-      throw new Error("Error deleting delivery record");
-    } finally {
-      void presentToast({
-        duration: 1500,
-        icon: checkmarkCircleOutline,
-        message: "Delivery record deleted!",
-        swipeGesture: "vertical",
-      });
-      router.goBack();
-    }
-  }
+        await updateDeliveryRecordMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [form.handleSubmit, updateDeliveryRecordMutation.mutateAsync],
+  );
 
   return (
     <Fragment>
       <Form {...form}>
-        <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <FormField
             name="supplier"
             control={form.control}
@@ -550,8 +526,8 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save"}
+              <Button type="submit" disabled={updateDeliveryRecordMutation.isPending}>
+                {updateDeliveryRecordMutation.isPending ? "Saving..." : "Save"}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -571,7 +547,7 @@ export default function DeliveryRecordForm({ data }: DeliveryRecordFormProps) {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        void handleDelete();
+                        void deleteDeliveryRecordMutation.mutateAsync();
                       }}
                       asChild
                     >

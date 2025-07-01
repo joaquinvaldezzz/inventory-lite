@@ -21,15 +21,26 @@ import { DailyCountRecordForm } from "./record-form";
 type DailyCountPageProps = RouteComponentProps<{ id: string }>;
 
 /**
- * Component for displaying and editing a specific daily count record.
+ * DailyCountRecord component displays and manages a specific daily count record page.
  *
- * @param props The properties passed to the component.
- * @param props.match The match object containing route parameters.
- * @returns The rendered component.
+ * This component handles the complete lifecycle of viewing and editing a daily count record:
+ *
+ * - Fetches the record data based on the route parameter ID
+ * - Displays loading states while data is being retrieved
+ * - Shows error messages if the record cannot be found or loaded
+ * - Renders the record form for editing when data is available
+ * - Handles navigation back to the daily count list
+ *
+ * The component uses React Router's match object to extract the record ID from the URL parameters
+ * and manages the data fetching process.
+ *
+ * @param props Component configuration and routing information
+ * @param props.match React Router match object containing route parameters including the record ID
+ * @returns JSX element representing the daily count record page with loading states and form
  */
 export default function DailyCountRecord({ match }: DailyCountPageProps) {
   const { isPending, data } = useQuery({
-    queryKey: ["daily-count-entry", match.params.id],
+    queryKey: ["daily-count-record", match.params.id],
     queryFn: async () => await getSpecificDailyCountRecordById(Number(match.params.id)),
   });
 
@@ -41,7 +52,9 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
             <IonBackButton defaultHref="/app/daily-count" />
           </IonButtons>
           <IonTitle>
-            {isPending ? "Loading daily count record..." : `Daily Count #${data?.[0].id}`}
+            {isPending || data == null
+              ? "Loading daily count record..."
+              : `Daily Count #${data[0].id}`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton>
@@ -52,7 +65,7 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {data == null ? <Loading /> : <DailyCountRecordForm data={data[0]} />}
+        {isPending || data == null ? <Loading /> : <DailyCountRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

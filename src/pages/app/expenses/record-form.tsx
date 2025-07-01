@@ -1,7 +1,8 @@
 /* eslint-disable max-lines -- Safe to disable for this file */
-import { Fragment, startTransition, useEffect, useRef, useState, type FormEvent } from "react";
+import { Fragment, useCallback, useMemo, useState, type FormEvent } from "react";
 import { useIonRouter, useIonToast } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { alertCircleOutline, checkmarkCircleOutline } from "ionicons/icons";
 import { CalendarIcon, CheckIcon, ChevronDownIcon, Container, Wallet } from "lucide-react";
@@ -10,9 +11,7 @@ import { useForm } from "react-hook-form";
 
 import { deleteExpensesRecordById, getItems, getSuppliers, updateExpensesRecord } from "@/lib/api";
 import { editExpensesFormSchema, type EditExpensesFormSchema } from "@/lib/form-schema";
-import { getFromStorage } from "@/lib/storage";
-import type { ExpensesItemData, ExpensesRecordFormData } from "@/lib/types/expenses";
-import type { SupplierData } from "@/lib/types/supplier";
+import type { ExpensesRecordFormData } from "@/lib/types/expenses";
 import { cn, formatAsCurrency } from "@/lib/utils";
 import {
   AlertDialog,
@@ -68,172 +67,145 @@ interface ExpenseRecordFormProps {
 }
 
 /**
- * DeliveryRecordForm component renders a form for editing or deleting a delivery record. It
- * initializes the form with default values from the provided data and handles form submission and
- * deletion.
+ * ExpensesRecordForm component renders a form for viewing and editing expense records.
  *
- * @param props The props for the DeliveryRecordForm component.
- * @param props.data The data for the delivery record.
- * @returns The rendered DeliveryRecordForm component.
+ * This component displays a comprehensive form that shows:
+ *
+ * - Supplier information and expense date
+ * - Payment type and method details
+ * - A detailed list of expense items with amounts and descriptions
+ * - Form validation to ensure data accuracy
+ * - Submit handling for updating existing expense records
+ * - Delete functionality for removing expense entries
+ *
+ * The form is pre-populated with existing expense data and allows users to modify supplier details,
+ * dates, payment information, and individual expense items as needed.
+ *
+ * @param props Component configuration and data
+ * @param props.data The expense record data to display and edit
+ * @returns JSX element representing the expense record editing form
  */
 export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [suppliers, setSuppliers] = useState<SupplierData[]>([]);
-  const [items, setItems] = useState<ExpensesItemData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
-  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
-  const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
-  const filteredDebitItems = data.items.filter((item) => item.TotalStatus === "DEBIT");
-  const form = useForm<EditExpensesFormSchema>({
-    defaultValues: {
-      supplier: data.SupplierID,
-      supplier_tin: data.SupplierTIN,
-      date: new Date(data.InvoiceDate),
-      payment_type: data.PaymentType,
-      items: filteredDebitItems.map((item) => ({
-        item: item.Particulars,
-        quantity: item.Quantity,
-        unit: item.Unit ?? "",
-        price: item.Cost,
-        total_amount: item.Amount,
-      })),
-    },
-    resolver: zodResolver(editExpensesFormSchema),
-  });
+  const queryClient = useQueryClient();
   const router = useIonRouter();
   const [presentToast] = useIonToast();
 
-  useEffect(() => {
-    // TODO: Save these suppliers locally
+  const [suppliersQuery, itemsQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["suppliers"],
+        queryFn: getSuppliers,
+      },
+      {
+        queryKey: ["items"],
+        queryFn: getItems,
+      },
+    ],
+  });
 
-    /**
-     * Fetches the list of suppliers from storage and updates the state.
-     *
-     * @returns A promise that resolves when the suppliers have been fetched and the state has been
-     *   updated.
-     * @throws An error message to the console if there is an issue fetching the suppliers.
-     */
-    async function fetchSuppliers() {
-      await getSuppliers();
-
-      try {
-        const savedSuppliers = await getFromStorage("suppliers");
-
-        if (savedSuppliers != null) {
-          const parsedSuppliers = JSON.parse(savedSuppliers);
-
-          if (Array.isArray(parsedSuppliers)) {
-            setSuppliers(parsedSuppliers);
-          } else {
-            throw new Error("Suppliers data is invalid");
-          }
-        } else {
-          throw new Error("No suppliers found in storage");
-        }
-      } catch (error) {
-        throw new Error("Failed to fetch suppliers");
-      }
-    }
-
-    startTransition(() => {
-      void fetchSuppliers();
-    });
-  }, []);
-
-  useEffect(() => {
-    /**
-     * Fetches a list of items asynchronously and updates the state with the retrieved items.
-     *
-     * @throws An error message if the items cannot be fetched.
-     */
-    async function fetchItems() {
-      try {
-        const items = await getItems();
-        setItems(items ?? []);
-      } catch (error) {
-        throw new Error("Failed to fetch items");
-      }
-    }
-
-    void fetchItems();
-  }, []);
-
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedValues = editExpensesFormSchema.safeParse(formValues);
-
-      if (!parsedValues.success) {
-        throw new Error("Form data is invalid");
-      }
-
-      setIsLoading(true);
-
-      /** Submits the form data to update the delivery record. */
-      async function submitForm() {
-        try {
-          if (parsedValues.data != null)
-            await updateExpensesRecord(data.PurchaseID, parsedValues.data);
-        } catch (error) {
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "An error occurred while saving changes. Please try again.",
-            swipeGesture: "vertical",
-          });
-        } finally {
-          setIsLoading(false);
-          void presentToast({
-            duration: 1500,
-            icon: checkmarkCircleOutline,
-            message: "Expenses record updated!",
-            swipeGesture: "vertical",
-          });
-          router.goBack();
-        }
-      }
-
-      startTransition(() => {
-        void submitForm();
-      });
-    })(event);
-  }
-
-  /** Handles the deletion of a expenses record. */
-  async function handleDelete() {
-    try {
-      await deleteExpensesRecordById(data.PurchaseID);
-    } catch (error) {
-      void presentToast({
+  const updateExpensesRecordMutation = useMutation({
+    mutationFn: async (formData: EditExpensesFormSchema) => {
+      await updateExpensesRecord(data.PurchaseID, formData);
+    },
+    onError: async () => {
+      await presentToast({
         color: "danger",
         icon: alertCircleOutline,
-        message: "An error occurred while deleting the expenses record. Please try again.",
+        message: "Failed to update expenses record. Please try again.",
         swipeGesture: "vertical",
       });
-      throw new Error("Failed to delete expenses record");
-    } finally {
-      void presentToast({
+    },
+    onSuccess: async () => {
+      await presentToast({
+        duration: 1500,
+        icon: checkmarkCircleOutline,
+        message: "Expenses record updated!",
+        swipeGesture: "vertical",
+      });
+      setTimeout(() => {
+        void queryClient.invalidateQueries({
+          queryKey: ["expenses-entry", data.PurchaseID.toString()],
+        });
+      }, 1000);
+      await queryClient.invalidateQueries({ queryKey: ["expenses-entries"] });
+      router.goBack();
+    },
+  });
+
+  const deleteExpensesRecordMutation = useMutation({
+    mutationFn: async () => {
+      await deleteExpensesRecordById(data.PurchaseID);
+    },
+    onError: async () => {
+      await presentToast({
+        color: "danger",
+        icon: alertCircleOutline,
+        message: "Failed to delete expenses record. Please try again.",
+        swipeGesture: "vertical",
+      });
+    },
+    onSuccess: async () => {
+      await presentToast({
         duration: 1500,
         icon: checkmarkCircleOutline,
         message: "Expenses record deleted!",
         swipeGesture: "vertical",
       });
+      await queryClient.invalidateQueries({ queryKey: ["expenses-entries"] });
       router.goBack();
-    }
-  }
+    },
+  });
+
+  const suppliers = suppliersQuery.data ?? [];
+  const items = itemsQuery.data ?? [];
+
+  const [isSupplierOpen, setIsSupplierOpen] = useState<boolean>(false);
+  const [isDateOpen, setIsDateOpen] = useState<boolean>(false);
+  const [isItemPopoverOpen, setIsItemPopoverOpen] = useState<Record<number, boolean>>({});
+
+  const filteredDebitItems = useMemo(
+    () => data.items.filter((item) => item.TotalStatus === "DEBIT"),
+    [data.items],
+  );
+  const defaultValues = useMemo(() => {
+    return {
+      supplier: data.SupplierID,
+      supplier_tin: data.SupplierTIN,
+      date: new Date(data.InvoiceDate),
+      payment_type: data.PaymentType,
+      items: filteredDebitItems.map((item) => ({
+        item: item.ItemID,
+        quantity: item.Quantity,
+        unit: item.Unit,
+        price: item.Cost,
+        total_amount: item.Amount,
+      })),
+    };
+  }, [data, filteredDebitItems]);
+  const form = useForm<EditExpensesFormSchema>({
+    defaultValues,
+    resolver: zodResolver(editExpensesFormSchema),
+  });
+
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      void form.handleSubmit(async (formValues) => {
+        const parsedValues = editExpensesFormSchema.safeParse(formValues);
+
+        if (!parsedValues.success) throw new Error("Form data is invalid");
+
+        await updateExpensesRecordMutation.mutateAsync(parsedValues.data);
+      })(event);
+    },
+    [form.handleSubmit, updateExpensesRecordMutation.mutateAsync],
+  );
 
   return (
     <Fragment>
       <Form {...form}>
-        <form className="space-y-5" ref={formRef} onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <FormField
             name="supplier"
             control={form.control}
@@ -289,10 +261,11 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                   value={supplier.supplier_name}
                                   key={supplier.id}
                                   onSelect={(value) => {
-                                    const selectedSupplier = suppliers.find(
-                                      (supplier) => supplier.supplier_name === value,
-                                    );
-                                    field.onChange(selectedSupplier?.id.toString());
+                                    const selectedSupplierId = suppliers
+                                      .find((supplier) => supplier.supplier_name === value)
+                                      ?.id.toString();
+                                    field.onChange(selectedSupplierId);
+                                    setIsSupplierOpen(false);
                                   }}
                                 >
                                   <span className="truncate"> {supplier.supplier_name}</span>
@@ -421,7 +394,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.item`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <Popover
                               open={isItemPopoverOpen[index] || false}
@@ -447,10 +420,8 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                       )}
                                     >
                                       {items.length > 0
-                                        ? (items.find(
-                                            (supplier) =>
-                                              supplier.raw_material.trim() === field.value.trim(),
-                                          )?.raw_material ?? "Select an item")
+                                        ? (items.find((item) => item.id.toString() === field.value)
+                                            ?.raw_material ?? "Select an item")
                                         : "Select an item"}
                                     </span>
                                     <ChevronDownIcon
@@ -473,13 +444,15 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                                     <CommandGroup>
                                       {items.map((item) => (
                                         <CommandItem
-                                          value={item.raw_material}
+                                          value={item.raw_material.trim()}
                                           key={item.id}
                                           onSelect={(value) => {
-                                            const selectedSupplier = items.find(
-                                              (item) => item.raw_material.trim() === value,
+                                            const selectedItem = items.find(
+                                              (item) => item.raw_material.trim() === value.trim(),
                                             );
-                                            field.onChange(selectedSupplier?.id.toString());
+                                            if (selectedItem == null) return;
+                                            field.onChange(selectedItem.id.toString());
+                                            form.setValue(`items.${index}.unit`, selectedItem.unit);
                                             setIsItemPopoverOpen((prev) => ({
                                               ...prev,
                                               [index]: false,
@@ -509,7 +482,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.quantity`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <NumberInput
                               className="min-w-32"
@@ -531,7 +504,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.unit`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem className="space-y-0">
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <Input className="min-w-40 read-only:bg-muted" readOnly {...field} />
                           </FormControl>
@@ -546,7 +519,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.price`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <ReactNumberField
                               formatOptions={{
@@ -576,7 +549,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                       name={`items.${index}.total_amount`}
                       control={form.control}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2 space-y-0">
                           <FormControl>
                             <ReactNumberField
                               formatOptions={{
@@ -613,8 +586,8 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save"}
+              <Button type="submit" disabled={updateExpensesRecordMutation.isPending}>
+                {updateExpensesRecordMutation.isPending ? "Saving..." : "Save"}
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -634,7 +607,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        void handleDelete();
+                        void deleteExpensesRecordMutation.mutateAsync();
                       }}
                       asChild
                     >
