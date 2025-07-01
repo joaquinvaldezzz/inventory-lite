@@ -251,7 +251,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                             field.onChange(date);
                             setIsDateOpen(false);
                           }}
-                          initialFocus
+                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>

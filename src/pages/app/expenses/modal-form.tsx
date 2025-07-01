@@ -348,7 +348,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                             field.onChange(date);
                             setIsDateOpen(false);
                           }}
-                          initialFocus
+                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>

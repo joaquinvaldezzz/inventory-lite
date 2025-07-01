@@ -332,7 +332,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
                             field.onChange(date);
                             setIsDateOpen(false);
                           }}
-                          initialFocus
+                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>
