@@ -5,8 +5,7 @@ import {
   type ElementRef,
   type HTMLAttributes,
 } from "react";
-import { type Root, Slot as SlotPrimitive } from "radix-ui";
-
+import { Slot as SlotPrimitive, type Root } from "radix-ui";
 import {
   Controller,
   FormProvider,
@@ -64,23 +63,22 @@ const FormLabel = forwardRef<ElementRef<typeof Root>, ComponentPropsWithoutRef<t
 );
 FormLabel.displayName = "FormLabel";
 
-const FormControl = forwardRef<ElementRef<typeof SlotPrimitive.Slot>, ComponentPropsWithoutRef<typeof SlotPrimitive.Slot>>(
-  ({ ...props }, ref) => {
-    const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
+const FormControl = forwardRef<
+  ElementRef<typeof SlotPrimitive.Slot>,
+  ComponentPropsWithoutRef<typeof SlotPrimitive.Slot>
+>(({ ...props }, ref) => {
+  const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
-    return (
-      <SlotPrimitive.Slot
-        aria-invalid={!(error == null)}
-        id={formItemId}
-        aria-describedby={
-          error == null ? formDescriptionId : `${formDescriptionId} ${formMessageId}`
-        }
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
+  return (
+    <SlotPrimitive.Slot
+      aria-invalid={!(error == null)}
+      id={formItemId}
+      aria-describedby={error == null ? formDescriptionId : `${formDescriptionId} ${formMessageId}`}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 FormControl.displayName = "FormControl";
 
 const FormDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(

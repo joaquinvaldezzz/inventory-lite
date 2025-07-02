@@ -4,9 +4,9 @@ import {
   type ElementRef,
   type HTMLAttributes,
 } from "react";
-import { type DialogProps } from "radix-ui";
 import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
+import { type DialogProps } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";

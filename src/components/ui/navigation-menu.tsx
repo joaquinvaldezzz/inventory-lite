@@ -1,6 +1,6 @@
 import * as React from "react";
-import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui";
 import { ChevronDown } from "lucide-react";
+import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 
