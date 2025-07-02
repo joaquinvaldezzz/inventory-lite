@@ -5,7 +5,7 @@ import {
   type ElementRef,
   type HTMLAttributes,
 } from "react";
-import { Slot as SlotPrimitive, type Root } from "radix-ui";
+import { Slot as SlotPrimitive, type Label as LabelPrimitive } from "radix-ui";
 import {
   Controller,
   FormProvider,
@@ -47,20 +47,21 @@ const FormItem = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 );
 FormItem.displayName = "FormItem";
 
-const FormLabel = forwardRef<ElementRef<typeof Root>, ComponentPropsWithoutRef<typeof Root>>(
-  ({ className, ...props }, ref) => {
-    const { error, formItemId } = useFormField();
+const FormLabel = forwardRef<
+  ElementRef<typeof LabelPrimitive.Root>,
+  ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+>(({ className, ...props }, ref) => {
+  const { error, formItemId } = useFormField();
 
-    return (
-      <Label
-        className={cn(error != null && "text-destructive", className)}
-        htmlFor={formItemId}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
+  return (
+    <Label
+      className={cn(error != null && "text-destructive", className)}
+      htmlFor={formItemId}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 FormLabel.displayName = "FormLabel";
 
 const FormControl = forwardRef<
