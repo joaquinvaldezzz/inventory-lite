@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import {
   IonButtons,
   IonContent,
@@ -14,11 +14,10 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
-  useIonViewDidEnter,
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchWasteEntries } from "@/lib/api";
@@ -37,12 +36,17 @@ import { WastesFormModal } from "./modal-form";
  * @returns The rendered component.
  */
 export default function Wastes() {
-  const { isPending, data, refetch } = useQuery({
-    queryKey: ["wastes"],
-    queryFn: async () => await fetchWasteEntries(),
+  const queryClient = useQueryClient();
+  const { data, isPending, refetch } = useQuery({
+    queryKey: ["wastes-entries"],
+    queryFn: fetchWasteEntries,
   });
 
-  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
+  const sortedData = useMemo(() => {
+    if (data == null) return [];
+
+    return data.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [data]);
 
   const [present, dismiss] = useIonModal(WastesFormModal, {
     dismiss: (data: string, role: string) => {
@@ -50,14 +54,7 @@ export default function Wastes() {
     },
   });
 
-  /**
-   * Presents a modal and handles its dismissal event.
-   *
-   * This function triggers the presentation of a modal using the `present` method. It also sets up
-   * an event listener for the modal's dismissal event (`onWillDismiss`). If the modal is dismissed
-   * with the role of 'confirm', it triggers a refetch operation.
-   */
-  function presentModal() {
+  const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
@@ -65,36 +62,26 @@ export default function Wastes() {
         }
       },
     });
-  }
+  }, [present, refetch]);
 
-  /**
-   * Handles the refresh event for the waste entries page.
-   *
-   * @param event The refresh event containing the refresher details.
-   *
-   *   This function attempts to refetch the data when the refresh event is triggered. If an error
-   *   occurs during the refetch, it logs the error to the console. Regardless of the outcome, it
-   *   signals the completion of the refresh event.
-   */
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    try {
-      void refetch();
-    } catch (error) {
-      throw new Error("Error fetching delivery entries");
-    } finally {
-      event.detail.complete();
-    }
-  }
-
-  useIonViewDidEnter(() => {
-    void refetch();
-  });
+  const handleRefresh = useCallback(
+    (event: CustomEvent<RefresherEventDetail>) => {
+      try {
+        void refetch();
+      } catch (error) {
+        throw new Error("Error fetching delivery entries");
+      } finally {
+        event.detail.complete();
+      }
+    },
+    [refetch],
+  );
 
   return (
     <Fragment>
       <IonMenu
         onIonDidClose={() => {
-          void refetch();
+          void queryClient.invalidateQueries({ queryKey: ["wastes-entries"] });
         }}
         contentId="wastes-content"
       >

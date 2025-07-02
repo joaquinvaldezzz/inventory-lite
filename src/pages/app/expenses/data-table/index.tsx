@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -64,20 +64,25 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const table = useReactTable({
-    columns,
-    data,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: setSorting,
-    state: {
-      columnFilters,
-      sorting,
-    },
-  });
+  const tableConfig = useMemo(
+    () => ({
+      columns,
+      data,
+      getCoreRowModel: getCoreRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      onColumnFiltersChange: setColumnFilters,
+      onSortingChange: setSorting,
+      state: {
+        columnFilters,
+        sorting,
+      },
+    }),
+    [columns, data, columnFilters, sorting],
+  );
+
+  const table = useReactTable(tableConfig);
   const idSearch = useId();
 
   return (

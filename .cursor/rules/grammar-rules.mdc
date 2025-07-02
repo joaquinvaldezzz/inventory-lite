@@ -1,0 +1,21 @@
+---
+description:
+globs: *.md,*.md,*.ts,*.tsx
+alwaysApply: false
+---
+
+When writing JSDoc comments or documenting in a README file, act as a spelling and grammar corrector, and improve clarity and tone where needed.
+
+Here are the rules you must follow:
+
+- Fix spelling, grammar and punctuation
+- Improve clarity and conciseness
+- Break up overly long sentences
+- Reduce repetition
+- Prefer active voice
+- Prefer simple words
+- Keep the meaning same
+- Keep the tone of voice same
+- Return in the same language as the input
+
+Write like a human. Keep it professional but conversational. Don't use em dashes or buzzwords like 'streamlined.' Avoid sounding like press release. Be clear, direct, and natural, like you're writing to a smart friend.

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import {
   IonButtons,
   IonContent,
@@ -15,11 +15,10 @@ import {
   IonTitle,
   IonToolbar,
   useIonModal,
-  useIonViewDidEnter,
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchDailyCountEntries } from "@/lib/api";
@@ -31,19 +30,34 @@ import { columns } from "./columns";
 import { DailyCountModal } from "./modal-form";
 
 /**
- * The `DisplayCount` component displays a daily count page with a list of daily count entries. It
- * includes functionality to refresh the list, present a modal for adding new entries, and display a
- * loading indicator while data is being fetched.
+ * DailyCount component displays a comprehensive daily count management interface.
  *
- * @returns The rendered component.
+ * This component provides:
+ *
+ * - A data table showing daily count entries sorted by date (newest first)
+ * - Pull-to-refresh functionality to update the data
+ * - A floating action button to add new daily count entries via modal
+ * - A collapsible header with progress indicator during data loading
+ * - A side menu with settings accessible via hamburger menu
+ * - Search functionality filtered by raw material type
+ *
+ * The component automatically refreshes data when the modal is dismissed with confirmation or when
+ * the settings menu is closed.
+ *
+ * @returns JSX element representing the daily count page interface
  */
 export default function DailyCount() {
-  const { isPending, data, refetch } = useQuery({
+  const queryClient = useQueryClient();
+  const { data, isPending, refetch } = useQuery({
     queryKey: ["daily-count-entries"],
-    queryFn: async () => await fetchDailyCountEntries(),
+    queryFn: fetchDailyCountEntries,
   });
 
-  const sortedData = data?.sort((z, a) => (new Date(a.date) < new Date(z.date) ? -1 : 1)) ?? [];
+  const sortedData = useMemo(() => {
+    if (data == null) return [];
+
+    return data.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [data]);
 
   const [present, dismiss] = useIonModal(DailyCountModal, {
     dismiss: (data: string, role: string) => {
@@ -51,8 +65,7 @@ export default function DailyCount() {
     },
   });
 
-  /** Displays a modal and handles its dismissal event. */
-  function presentModal() {
+  const presentModal = useCallback(() => {
     present({
       onWillDismiss: (event: CustomEvent<OverlayEventDetail>) => {
         if (event.detail.role === "confirm") {
@@ -60,32 +73,26 @@ export default function DailyCount() {
         }
       },
     });
-  }
+  }, [present, refetch]);
 
-  /**
-   * Handles the refresh event for the delivery page.
-   *
-   * @param event The refresh event containing the refresher details.
-   */
-  function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    try {
-      void refetch();
-    } catch (error) {
-      throw new Error("Error fetching delivery entries");
-    } finally {
-      event.detail.complete();
-    }
-  }
-
-  useIonViewDidEnter(() => {
-    void refetch();
-  });
+  const handleRefresh = useCallback(
+    (event: CustomEvent<RefresherEventDetail>) => {
+      try {
+        void refetch();
+      } catch (error) {
+        throw new Error("Error fetching delivery entries");
+      } finally {
+        event.detail.complete();
+      }
+    },
+    [refetch],
+  );
 
   return (
     <Fragment>
       <IonMenu
         onIonDidClose={() => {
-          void refetch();
+          void queryClient.invalidateQueries({ queryKey: ["daily-count-entries"] });
         }}
         contentId="daily-count-content"
       >

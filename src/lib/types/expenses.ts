@@ -55,7 +55,8 @@ export type ExpensesRecordFormData = ExpensesTableData & {
     ATC: null;
     TaxType: string;
     vatable_sales: null;
-    Unit: string | null;
+    ItemID: string;
+    Unit: string;
   }>;
 };
 
