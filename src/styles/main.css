@@ -9,8 +9,8 @@
 
 @import "./variables.css";
 
-@plugin 'tailwindcss-safe-area';
-@plugin 'tailwindcss-animate';
+@plugin "tailwindcss-safe-area";
+@plugin "tailwindcss-animate";
 
 @font-face {
   font-family: "Inter var";
