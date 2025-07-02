@@ -5,8 +5,8 @@ import {
   type ElementRef,
   type HTMLAttributes,
 } from "react";
-import type { Root } from "@radix-ui/react-label";
-import { Slot } from "@radix-ui/react-slot";
+import { type Root, Slot as SlotPrimitive } from "radix-ui";
+
 import {
   Controller,
   FormProvider,
@@ -64,12 +64,12 @@ const FormLabel = forwardRef<ElementRef<typeof Root>, ComponentPropsWithoutRef<t
 );
 FormLabel.displayName = "FormLabel";
 
-const FormControl = forwardRef<ElementRef<typeof Slot>, ComponentPropsWithoutRef<typeof Slot>>(
+const FormControl = forwardRef<ElementRef<typeof SlotPrimitive.Slot>, ComponentPropsWithoutRef<typeof SlotPrimitive.Slot>>(
   ({ ...props }, ref) => {
     const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
     return (
-      <Slot
+      <SlotPrimitive.Slot
         aria-invalid={!(error == null)}
         id={formItemId}
         aria-describedby={
