@@ -1,6 +1,6 @@
 import { forwardRef, type ComponentPropsWithoutRef, type ElementRef } from "react";
-import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
+import { Accordion as AccordionPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 
