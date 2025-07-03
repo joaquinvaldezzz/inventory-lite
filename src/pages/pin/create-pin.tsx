@@ -33,8 +33,8 @@ import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin
  * @returns JSX element representing the PIN creation form
  */
 export default function CreatePIN() {
-  const router = useIonRouter();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const router = useIonRouter();
   const form = useForm<PinFormSchema>({
     defaultValues: {
       pin: "",

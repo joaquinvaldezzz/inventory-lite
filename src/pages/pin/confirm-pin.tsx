@@ -40,6 +40,7 @@ import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin
  * @returns JSX element representing the PIN confirmation form
  */
 export default function ConfirmPIN() {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useIonRouter();
   const [presentToast] = useIonToast();
   const form = useForm<PinFormSchema>({
@@ -48,7 +49,6 @@ export default function ConfirmPIN() {
     },
     resolver: zodResolver(pinFormSchema),
   });
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { data: savedPIN } = useQuery({
     queryKey: ["pin"],
