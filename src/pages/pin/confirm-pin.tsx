@@ -1,4 +1,4 @@
-import { useRef, type FormEvent } from "react";
+import { useCallback, useRef, type FormEvent } from "react";
 import {
   IonContent,
   IonImg,
@@ -8,6 +8,7 @@ import {
   useIonViewDidEnter,
 } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { checkmarkCircleOutline } from "ionicons/icons";
 import { useForm } from "react-hook-form";
 
@@ -24,54 +25,54 @@ import {
 import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin";
 
 /**
- * The `ConfirmPIN` component provides a form for users to confirm a PIN. Upon successful submission
- * and validation of the PIN, the user is redirected to the Branch Selector page.
+ * ConfirmPIN component displays a form for users to confirm their previously created PIN.
  *
- * @returns The rendered component.
+ * This component:
+ *
+ * - Renders a form for PIN entry and confirmation
+ * - Validates the entered PIN against the stored PIN
+ * - Redirects the user to the Branch Selector page upon successful validation
+ * - Provides feedback for incorrect PIN entries and loading states
+ *
+ * The component ensures that only users who correctly confirm their PIN can proceed, enhancing
+ * security and guiding users through the authentication process.
+ *
+ * @returns JSX element representing the PIN confirmation form
  */
 export default function ConfirmPIN() {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const router = useIonRouter();
+  const [presentToast] = useIonToast();
   const form = useForm<PinFormSchema>({
     defaultValues: {
       pin: "",
     },
     resolver: zodResolver(pinFormSchema),
   });
-  const router = useIonRouter();
-  const [presentToast] = useIonToast();
+
+  const { data: savedPIN } = useQuery({
+    queryKey: ["pin"],
+    queryFn: async () => await getFromStorage("pin"),
+  });
 
   useIonViewDidEnter(() => {
     form.setFocus("pin");
   });
 
-  /**
-   * Handles the form submission event.
-   *
-   * @param event The form submission event.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedData = pinFormSchema.safeParse(formValues);
+      void form.handleSubmit((formValues) => {
+        const parsedData = pinFormSchema.safeParse(formValues);
 
-      if (!parsedData.success) {
-        throw new Error("Form data is invalid:", parsedData.error);
-      }
-
-      /**
-       * Asynchronously checks if the stored PIN matches the provided PIN.
-       *
-       * @returns A promise that resolves when the PIN check is complete.
-       */
-      async function checkIfPINMatches() {
-        const pin = await getFromStorage("pin");
+        if (!parsedData.success) {
+          throw new Error("Form data is invalid:", parsedData.error);
+        }
 
         try {
-          if (pin === parsedData.data?.pin) {
+          if (savedPIN === parsedData.data.pin) {
             void presentToast({
-              duration: 1500,
               icon: checkmarkCircleOutline,
               message: "PIN confirmed!",
               swipeGesture: "vertical",
@@ -85,11 +86,10 @@ export default function ConfirmPIN() {
         } catch (error) {
           throw new Error("PIN does not match");
         }
-      }
-
-      void checkIfPINMatches();
-    })(event);
-  }
+      })(event);
+    },
+    [form.handleSubmit, form.setError, savedPIN, presentToast, router],
+  );
 
   return (
     <IonPage>

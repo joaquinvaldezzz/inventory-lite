@@ -1,6 +1,7 @@
-import { useRef, type FormEvent } from "react";
+import { useCallback, useRef, type FormEvent } from "react";
 import { IonContent, IonImg, IonPage, useIonRouter, useIonViewDidEnter } from "@ionic/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
 import { pinFormSchema, type PinFormSchema } from "@/lib/form-schema";
@@ -16,21 +17,44 @@ import {
 import { InputPIN, InputPINGroup, InputPINSlot } from "@/components/ui/input-pin";
 
 /**
- * The `CreatePIN` component provides a form for users to create a PIN, which is then saved to
- * storage. Upon successful submission and saving of the PIN, the user is redirected to a
- * confirmation page.
+ * CreatePIN component displays a form for users to create and save a secure PIN.
  *
- * @returns The rendered component.
+ * This component:
+ *
+ * - Renders a form for PIN entry and confirmation
+ * - Validates the PIN input for required criteria
+ * - Saves the PIN to secure storage upon successful submission
+ * - Redirects the user to a confirmation page after saving
+ * - Provides feedback for loading and error states
+ *
+ * The component ensures that the PIN is securely stored and that users are guided through the
+ * creation and confirmation process with appropriate validation and navigation.
+ *
+ * @returns JSX element representing the PIN creation form
  */
 export default function CreatePIN() {
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const router = useIonRouter();
   const form = useForm<PinFormSchema>({
     defaultValues: {
       pin: "",
     },
     resolver: zodResolver(pinFormSchema),
   });
-  const router = useIonRouter();
+
+  const createPinMutation = useMutation({
+    mutationFn: async (pin: string) => {
+      await saveToStorage("pin", pin);
+    },
+    onError: () => {
+      form.setError("pin", {
+        message: "Unable to save PIN. Please try again.",
+      });
+    },
+    onSuccess: () => {
+      router.push("/confirm-pin");
+    },
+  });
 
   useIonViewDidEnter(() => {
     form.setFocus("pin");
@@ -41,38 +65,22 @@ export default function CreatePIN() {
    *
    * @param event The form submission event.
    */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    void form.handleSubmit(() => {
-      const formValues = form.getValues();
-      const parsedData = pinFormSchema.safeParse(formValues);
+      void form.handleSubmit(async (formValues) => {
+        const parsedData = pinFormSchema.safeParse(formValues);
 
-      if (!parsedData.success) {
-        throw new Error("Form data is invalid:", parsedData.error);
-      }
-
-      /**
-       * Asynchronously saves a PIN to storage.
-       *
-       * This function attempts to save the provided PIN to storage using the `saveToStorage`
-       * function. If an error occurs during the save process, it throws an error with a descriptive
-       * message.
-       *
-       * @throws {Error} An error if unable to save the PIN.
-       */
-      async function savePIN() {
-        try {
-          await saveToStorage("pin", String(parsedData.data?.pin));
-          router.push("/confirm-pin");
-        } catch (error) {
-          throw new Error(`Unable to save PIN: ${String(error)}`);
+        if (!parsedData.success) {
+          throw new Error("Form data is invalid:", parsedData.error);
         }
-      }
 
-      void savePIN();
-    })(event);
-  }
+        await createPinMutation.mutateAsync(parsedData.data.pin);
+      })(event);
+    },
+    [form.handleSubmit, createPinMutation.mutateAsync],
+  );
 
   return (
     <IonPage>
