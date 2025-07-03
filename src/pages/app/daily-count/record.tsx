@@ -39,7 +39,7 @@ type DailyCountPageProps = RouteComponentProps<{ id: string }>;
  * @returns JSX element representing the daily count record page with loading states and form
  */
 export default function DailyCountRecord({ match }: DailyCountPageProps) {
-  const { isPending, data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["daily-count-record", match.params.id],
     queryFn: async () => await getSpecificDailyCountRecordById(Number(match.params.id)),
   });
@@ -52,7 +52,7 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
             <IonBackButton defaultHref="/app/daily-count" />
           </IonButtons>
           <IonTitle>
-            {isPending || data == null
+            {isFetching || data == null
               ? "Loading daily count record..."
               : `Daily Count #${data[0].id}`}
           </IonTitle>
@@ -65,7 +65,7 @@ export default function DailyCountRecord({ match }: DailyCountPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {isPending || data == null ? <Loading /> : <DailyCountRecordForm data={data[0]} />}
+        {isFetching || data == null ? <Loading /> : <DailyCountRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

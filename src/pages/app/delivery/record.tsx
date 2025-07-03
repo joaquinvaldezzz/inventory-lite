@@ -40,7 +40,7 @@ type DeliveryPageProps = RouteComponentProps<{ id: string }>;
  * @returns JSX element representing the delivery record page with loading states and form
  */
 export default function DeliveryRecord({ match }: DeliveryPageProps) {
-  const { isPending, data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["delivery-record", match.params.id],
     queryFn: async () => await getSpecificDeliveryRecord(Number(match.params.id)),
   });
@@ -53,7 +53,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
             <IonBackButton defaultHref="/app/delivery" />
           </IonButtons>
           <IonTitle>
-            {isPending || data == null ? "Loading delivery record..." : `Delivery #${data[0].id}`}
+            {isFetching || data == null ? "Loading delivery record..." : `Delivery #${data[0].id}`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton>
@@ -64,7 +64,7 @@ export default function DeliveryRecord({ match }: DeliveryPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {isPending || data == null ? <Loading /> : <DeliveryRecordForm data={data[0]} />}
+        {isFetching || data == null ? <Loading /> : <DeliveryRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );

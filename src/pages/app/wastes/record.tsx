@@ -28,7 +28,7 @@ type WastesPageProps = RouteComponentProps<{ id: string }>;
  * @returns The rendered component.
  */
 export default function WastesRecord({ match }: WastesPageProps) {
-  const { isPending, data } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["waste-entry", match.params.id],
     queryFn: async () => await getSpecificWastesRecordById(Number(match.params.id)),
   });
@@ -41,7 +41,7 @@ export default function WastesRecord({ match }: WastesPageProps) {
             <IonBackButton defaultHref="/app/wastes" />
           </IonButtons>
           <IonTitle>
-            {isPending || data == null ? "Loading wastes record..." : `Wastes #${data[0].id}`}
+            {isFetching || data == null ? "Loading wastes record..." : `Wastes #${data[0].id}`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton>
@@ -52,7 +52,7 @@ export default function WastesRecord({ match }: WastesPageProps) {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {isPending || data == null ? <Loading /> : <WastesRecordForm data={data[0]} />}
+        {isFetching || data == null ? <Loading /> : <WastesRecordForm data={data[0]} />}
       </IonContent>
     </IonPage>
   );
