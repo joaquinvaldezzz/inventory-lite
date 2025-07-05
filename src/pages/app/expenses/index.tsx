@@ -18,7 +18,7 @@ import {
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchExpenses } from "@/lib/api";
@@ -47,7 +47,6 @@ import { NewExpensesModal } from "./modal-form";
  * @returns JSX element representing the expense management page interface
  */
 export default function Expenses() {
-  const queryClient = useQueryClient();
   const { data, isFetching, isPending, refetch } = useQuery({
     queryKey: ["expenses-entries"],
     queryFn: async () => await fetchExpenses(),
@@ -108,12 +107,7 @@ export default function Expenses() {
 
   return (
     <Fragment>
-      <IonMenu
-        onIonDidClose={() => {
-          void queryClient.invalidateQueries({ queryKey: ["expenses-entries"] });
-        }}
-        contentId="expenses-content"
-      >
+      <IonMenu contentId="expenses-content">
         <Settings />
       </IonMenu>
 

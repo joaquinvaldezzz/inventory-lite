@@ -17,7 +17,7 @@ import {
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchWasteEntries } from "@/lib/api";
@@ -36,7 +36,6 @@ import { WastesFormModal } from "./modal-form";
  * @returns The rendered component.
  */
 export default function Wastes() {
-  const queryClient = useQueryClient();
   const { data, isPending, refetch } = useQuery({
     queryKey: ["wastes-entries"],
     queryFn: fetchWasteEntries,
@@ -79,12 +78,7 @@ export default function Wastes() {
 
   return (
     <Fragment>
-      <IonMenu
-        onIonDidClose={() => {
-          void queryClient.invalidateQueries({ queryKey: ["wastes-entries"] });
-        }}
-        contentId="wastes-content"
-      >
+      <IonMenu contentId="wastes-content">
         <Settings />
       </IonMenu>
 

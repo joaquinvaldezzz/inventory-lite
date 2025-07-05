@@ -18,7 +18,7 @@ import {
   type RefresherEventDetail,
 } from "@ionic/react";
 import type { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { add } from "ionicons/icons";
 
 import { fetchDailyCountEntries } from "@/lib/api";
@@ -47,7 +47,6 @@ import { DailyCountModal } from "./modal-form";
  * @returns JSX element representing the daily count page interface
  */
 export default function DailyCount() {
-  const queryClient = useQueryClient();
   const { data, isPending, refetch } = useQuery({
     queryKey: ["daily-count-entries"],
     queryFn: fetchDailyCountEntries,
@@ -90,12 +89,7 @@ export default function DailyCount() {
 
   return (
     <Fragment>
-      <IonMenu
-        onIonDidClose={() => {
-          void queryClient.invalidateQueries({ queryKey: ["daily-count-entries"] });
-        }}
-        contentId="daily-count-content"
-      >
+      <IonMenu contentId="daily-count-content">
         <Settings />
       </IonMenu>
 

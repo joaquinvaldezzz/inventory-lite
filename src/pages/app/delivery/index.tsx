@@ -104,12 +104,7 @@ export default function Delivery() {
 
   return (
     <Fragment>
-      <IonMenu
-        onIonDidClose={() => {
-          void queryClient.invalidateQueries({ queryKey: ["delivery-entries"] });
-        }}
-        contentId="delivery-content"
-      >
+      <IonMenu contentId="delivery-content">
         <Settings />
       </IonMenu>
 
