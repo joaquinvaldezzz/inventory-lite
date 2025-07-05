@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import {
   IonContent,
   IonHeader,
@@ -12,12 +12,12 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 
 import { version } from "@/root/package.json";
 import { fetchUserBranches, getUserSelectedBranch } from "@/lib/dal";
 import { saveToStorage } from "@/lib/storage";
 import { onChange } from "@/lib/theme-utils";
-import type { Branch } from "@/lib/types/login";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -27,43 +27,26 @@ import { useTheme } from "@/hooks/use-theme";
  * @returns The rendered component.
  */
 export function Settings() {
-  const [currentBranch, setCurrentBranch] = useState<number | null>(null);
-  const [branches, setBranches] = useState<Branch[]>([]);
+  const queryClient = useQueryClient();
+  const [getBranchesQuery, getSelectedBranchQuery] = useQueries({
+    queries: [
+      {
+        queryKey: ["branches"],
+        queryFn: fetchUserBranches,
+      },
+      {
+        queryKey: ["selected-branch"],
+        queryFn: getUserSelectedBranch,
+      },
+    ],
+  });
+
+  const branches = getBranchesQuery.data ?? [];
+  const currentBranch = getSelectedBranchQuery.data;
+
   const [presentAlert] = useIonAlert();
   const auth = useAuth();
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    /**
-     * Fetches the branches associated with the user and updates the state with the fetched
-     * branches.
-     *
-     * @returns A promise that resolves when the branches have been fetched and the state has been
-     *   updated.
-     */
-    async function getBranches() {
-      const userBranches = await fetchUserBranches();
-
-      setBranches(userBranches);
-    }
-
-    void getBranches();
-  }, []);
-
-  useEffect(() => {
-    /**
-     * Retrieves the branch selected by the user and updates the state with the selected branch.
-     *
-     * @returns A promise that resolves when the selected branch has been fetched and the state has
-     *   been updated.
-     */
-    async function getSelectedBranch() {
-      const selectedBranch = await getUserSelectedBranch();
-      setCurrentBranch(selectedBranch);
-    }
-
-    void getSelectedBranch();
-  }, []);
 
   /**
    * Updates the current branch information by saving it to storage.
@@ -82,6 +65,9 @@ export function Settings() {
           currentBranch: value.toString(),
         }),
       );
+
+      // TODO: Temporary quick fix; change the function to invalidate the queries
+      await queryClient.invalidateQueries();
     } catch (error) {
       throw new Error("Error saving branch information");
     }
