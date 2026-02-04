@@ -16,17 +16,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - uses: oven-sh/setup-bun@v1
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: "bun"
       - name: Install dependencies
-        run: pnpm install
+        run: bun install
       - name: Run Prettier's CLI to check formatting
-        run: pnpm run format:check
+        run: bun run format:check
       - name: Run ESLint to check for linting errors
-        run: pnpm run lint
+        run: bun run lint
