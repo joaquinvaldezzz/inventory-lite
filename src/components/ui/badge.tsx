@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 import { badgeVariants } from "./badge-variants";
 
 export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 
 /**
  * Badge component that renders a span element with dynamic class names.

@@ -53,7 +53,6 @@ Follow these steps to set up Inventory Lite on your local device:
    ```
 
 4. Run the development server in the background:
-
    - For Web:
 
      ```bash
