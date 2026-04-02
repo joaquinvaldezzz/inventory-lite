@@ -17,14 +17,32 @@ export default defineConfig({
     port: 8100,
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          react: ["react", "react-router-dom", "react-dom"],
-          "ionic-react": ["@ionic/react"],
-          "ionic-react-router": ["@ionic/react-router"],
-          "tanstack-react-query": ["@tanstack/react-query"],
-          "tanstack-react-table": ["@tanstack/react-table"],
+        codeSplitting: {
+          minSize: 1024 * 1024, // 1MB,
+          groups: [
+            {
+              name: "react",
+              test: /[\\/]node_modules[\\/](react|react-router-dom|react-dom)[\\/]/,
+            },
+            {
+              name: "ionic-react",
+              test: "@ionic/react",
+            },
+            {
+              name: "ionic-react-router",
+              test: "@ionic/react-router",
+            },
+            {
+              name: "tanstack-react-query",
+              test: "@tanstack/react-query",
+            },
+            {
+              name: "tanstack-react-table",
+              test: "@tanstack/react-table",
+            },
+          ],
         },
       },
     },
