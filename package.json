@@ -16,7 +16,7 @@
     "format:check": "prettier --check .",
     "format:src": "prettier --write src",
     "generate:icons": "capacitor-assets generate",
-    "lint": "oxlint",
+    "lint": "oxlint --format=stylish",
     "lint:fix": "oxlint --fix",
     "preview": "vite preview",
     "serve": "vite build && vite preview",
