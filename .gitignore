@@ -482,3 +482,5 @@ hs_err_pid*
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/node,macos,xcode,ionic3,windows,androidstudio,intellij
+
+.env.keys
