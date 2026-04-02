@@ -9,7 +9,7 @@
     "oxc",
     "import",
     "jsdoc",
-    "jsx-a11y",
+    // "jsx-a11y",
     "promise"
   ],
   "categories": {
