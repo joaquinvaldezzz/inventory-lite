@@ -10,23 +10,23 @@ PODS:
     - Capacitor
 
 DEPENDENCIES:
-  - "Capacitor (from `../../node_modules/.pnpm/@capacitor+ios@7.2.0_@capacitor+core@7.2.0/node_modules/@capacitor/ios`)"
-  - "CapacitorApp (from `../../node_modules/.pnpm/@capacitor+app@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/app`)"
-  - "CapacitorCordova (from `../../node_modules/.pnpm/@capacitor+ios@7.2.0_@capacitor+core@7.2.0/node_modules/@capacitor/ios`)"
-  - "CapacitorHaptics (from `../../node_modules/.pnpm/@capacitor+haptics@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/haptics`)"
-  - "CapacitorKeyboard (from `../../node_modules/.pnpm/@capacitor+keyboard@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/keyboard`)"
+  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
+  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
+  - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
 
 EXTERNAL SOURCES:
   Capacitor:
-    :path: "../../node_modules/.pnpm/@capacitor+ios@7.2.0_@capacitor+core@7.2.0/node_modules/@capacitor/ios"
+    :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
-    :path: "../../node_modules/.pnpm/@capacitor+app@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/app"
+    :path: "../../node_modules/@capacitor/app"
   CapacitorCordova:
-    :path: "../../node_modules/.pnpm/@capacitor+ios@7.2.0_@capacitor+core@7.2.0/node_modules/@capacitor/ios"
+    :path: "../../node_modules/@capacitor/ios"
   CapacitorHaptics:
-    :path: "../../node_modules/.pnpm/@capacitor+haptics@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/haptics"
+    :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
-    :path: "../../node_modules/.pnpm/@capacitor+keyboard@7.0.1_@capacitor+core@7.2.0/node_modules/@capacitor/keyboard"
+    :path: "../../node_modules/@capacitor/keyboard"
 
 SPEC CHECKSUMS:
   Capacitor: 03bc7cbdde6a629a8b910a9d7d78c3cc7ed09ea7
@@ -35,6 +35,6 @@ SPEC CHECKSUMS:
   CapacitorHaptics: 1f1e17041f435d8ead9ff2a34edd592c6aa6a8d6
   CapacitorKeyboard: 09fd91dcde4f8a37313e7f11bde553ad1ed52036
 
-PODFILE CHECKSUM: 2cc56b74879333f6e41f8df38b836869791d8e91
+PODFILE CHECKSUM: 5309d70e6290e2be5099715ab8dbc47748709b67
 
 COCOAPODS: 1.16.2
