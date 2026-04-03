@@ -82,7 +82,7 @@ export function Settings() {
           currentBranch: value.toString(),
         }),
       );
-    } catch (error) {
+    } catch {
       throw new Error("Error saving branch information");
     }
   }
@@ -116,7 +116,7 @@ export function Settings() {
       </IonHeader>
 
       <IonContent>
-        <div className="bg-( flex h-full flex-col justify-between bg-(--ion-item-background,_#fff)">
+        <div className="bg-( flex h-full flex-col justify-between bg-(--ion-item-background,#fff)">
           <IonList>
             <IonItem>
               <IonSelect

@@ -71,7 +71,7 @@ export default function EnterPIN() {
         }
       })(event);
     },
-    [form.handleSubmit, form.setError, savedPIN, router],
+    [form, savedPIN, router],
   );
 
   return (

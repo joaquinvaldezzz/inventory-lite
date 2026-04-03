@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Idk */
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   IonContent,
   IonHeader,
@@ -112,7 +112,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
   });
 
   const categories = categoriesQuery.data ?? [];
-  const ingredients = ingredientsMutation.data ?? [];
+  const ingredients = useMemo(() => ingredientsMutation.data ?? [], [ingredientsMutation.data]);
 
   const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
@@ -143,7 +143,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
         unit: ingredient.unit,
       })),
     );
-  }, [ingredientsMutation.isSuccess, replace]);
+  }, [ingredients, replace]);
 
   useEffect(() => {
     const category = form.getValues("raw_material_type");
@@ -153,7 +153,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
     }
 
     void ingredientsMutation.mutateAsync(category);
-  }, [form.watch("raw_material_type"), ingredientsMutation.mutateAsync]);
+  }, [form, ingredientsMutation]);
 
   useEffect(() => {
     generateItems();
@@ -173,7 +173,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
         await createDailyCountEntryMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [createDailyCountEntryMutation.mutateAsync, form.handleSubmit],
+    [createDailyCountEntryMutation, form],
   );
 
   useEffect(() => {
@@ -224,7 +224,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                 <FormItem>
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                    <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <Popover open={isDateOpen} onOpenChange={setIsDateOpen} modal>
@@ -251,7 +251,6 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                             field.onChange(date);
                             setIsDateOpen(false);
                           }}
-                          autoFocus
                         />
                       </PopoverContent>
                     </Popover>
@@ -268,7 +267,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                 <FormItem>
                   <FormLabel htmlFor={field.name}>Category</FormLabel>
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                    <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
@@ -278,6 +277,8 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                             <Button
                               className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
                               role="combobox"
+                              aria-expanded={isCategoryOpen}
+                              aria-controls={`${field.name}-popover`}
                               variant="outline"
                             >
                               <span
@@ -302,6 +303,7 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                         </PopoverTrigger>
 
                         <PopoverContent
+                          id={`${field.name}-popover`}
                           className="w-full min-w-(--radix-popper-anchor-width) border-input p-0"
                           align="start"
                         >
@@ -374,6 +376,8 @@ export function DailyCountModal({ dismiss }: DailyCountModalActions) {
                                     <Button
                                       className="w-full min-w-40 justify-between border-input bg-background px-3 font-normal outline-offset-0 outline-none hover:bg-background focus-visible:outline-3"
                                       role="combobox"
+                                      aria-expanded={isItemPopoverOpen[index] || false}
+                                      aria-controls={`item-${index}-popover`}
                                       variant="outline"
                                     >
                                       <span

@@ -79,7 +79,7 @@ export default function CreatePIN() {
         await createPinMutation.mutateAsync(parsedData.data.pin);
       })(event);
     },
-    [form.handleSubmit, createPinMutation.mutateAsync],
+    [form, createPinMutation],
   );
 
   return (

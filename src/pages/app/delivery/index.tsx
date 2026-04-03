@@ -91,13 +91,8 @@ export default function Delivery() {
 
   const handleRefresh = useCallback(
     (event: CustomEvent<RefresherEventDetail>) => {
-      try {
-        void refetch();
-      } catch (error) {
-        throw new Error("Error fetching delivery entries");
-      } finally {
-        event.detail.complete();
-      }
+      void refetch();
+      event.detail.complete();
     },
     [refetch],
   );

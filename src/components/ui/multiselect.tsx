@@ -73,7 +73,7 @@ interface MultipleSelectorProps {
    * First item selected is a default behavior by cmdk. That is why the default is true. This is a
    * workaround solution by add a dummy item.
    *
-   * @reference https://github.com/pacocoursey/cmdk/issues/171
+   * @see https://github.com/pacocoursey/cmdk/issues/171
    */
   selectFirstItem?: boolean;
 
@@ -179,7 +179,7 @@ function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
  * The `CommandEmpty` of shadcn/ui will cause the cmdk empty not rendering correctly. So we create
  * one and copy the `Empty` implementation from `cmdk`.
  *
- * @reference https://github.com/hsuanyi-chou/shadcn-ui-expansions/issues/34#issuecomment-1949561607
+ * @see https://github.com/hsuanyi-chou/shadcn-ui-expansions/issues/34#issuecomment-1949561607
  */
 const CommandEmpty = forwardRef<
   HTMLDivElement,
@@ -355,7 +355,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       };
 
       exec();
-    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
+    }, [debouncedSearchTerm, groupBy, onSearchSync, open, triggerSearchOnFocus]);
 
     useEffect(() => {
       /** Async search */
@@ -380,7 +380,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       };
 
       void exec();
-    }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
+    }, [debouncedSearchTerm, groupBy, onSearch, open, triggerSearchOnFocus]);
 
     const CreatableItem = () => {
       if (!creatable) return undefined;
@@ -561,7 +561,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             />
             <button
               className={cn(
-                "absolute end-0 top-0 flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring/70",
+                "absolute inset-e-0 top-0 flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring/70",
                 (hideClearAllButton ||
                   (disabled ?? false) ||
                   selected.length < 1 ||

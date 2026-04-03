@@ -169,7 +169,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         await updateDailyCountRecordMutation.mutateAsync(formValues);
       })(event);
     },
-    [form.handleSubmit, updateDailyCountRecordMutation.mutateAsync],
+    [form, updateDailyCountRecordMutation],
   );
 
   return (
@@ -182,7 +182,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
             <FormItem>
               <FormLabel>Date</FormLabel>
               <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
@@ -226,7 +226,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
             <FormItem>
               <FormLabel htmlFor={field.name}>Category</FormLabel>
               <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                   <Container aria-hidden="true" strokeWidth={2} size={16} />
                 </div>
                 <FormControl>

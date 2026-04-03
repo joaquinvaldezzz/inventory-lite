@@ -157,13 +157,13 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     control: form.control,
   });
 
-  useEffect(() => {
-    const supplierId = form.getValues("supplier");
+  const supplierId = form.watch("supplier");
 
+  useEffect(() => {
     if (supplierId.length > 0) {
       void itemsMutation.mutateAsync(supplierId);
     }
-  }, [form.watch("supplier"), itemsMutation.mutateAsync]);
+  }, [supplierId, itemsMutation]);
 
   const handleAdd = () => {
     append({
@@ -191,7 +191,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
         await createExpensesEntryMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [form.handleSubmit, createExpensesEntryMutation.mutateAsync],
+    [form, createExpensesEntryMutation],
   );
 
   useEffect(() => {
@@ -242,7 +242,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 <FormItem>
                   <FormLabel>Supplier</FormLabel>
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                    <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <Container aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <FormControl>
@@ -321,7 +321,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
                 <FormItem>
                   <FormLabel>Date</FormLabel>
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                    <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                       <CalendarIcon aria-hidden="true" strokeWidth={2} size={16} />
                     </div>
                     <Popover open={isDateOpen} onOpenChange={setIsDateOpen} modal>

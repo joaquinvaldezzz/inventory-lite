@@ -29,7 +29,7 @@ export async function getCurrentUser(): Promise<LoginResponse | null> {
     if (isLoginResponse(parsedCurrentUser)) {
       return parsedCurrentUser;
     }
-  } catch (error) {
+  } catch {
     throw new Error("Error parsing `currentUser` from storage");
   }
 
@@ -62,7 +62,7 @@ export async function getUserSelectedBranch(): Promise<number | null> {
     if (branch != null && typeof branch === "object") {
       return Number(Object.values(branch)[0]);
     }
-  } catch (error) {
+  } catch {
     throw new Error("Error parsing `currentBranch` from storage");
   }
 

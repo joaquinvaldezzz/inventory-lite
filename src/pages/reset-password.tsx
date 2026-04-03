@@ -69,7 +69,7 @@ export default function ResetPassword() {
         } else {
           form.setError("root", { message: response.message });
         }
-      } catch (error) {
+      } catch {
         throw new Error("Failed to reset password");
       } finally {
         setIsLoading(false);
