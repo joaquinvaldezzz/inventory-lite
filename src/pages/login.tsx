@@ -83,7 +83,7 @@ export default function Login() {
         await loginMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [form.handleSubmit, loginMutation.mutateAsync],
+    [form, loginMutation],
   );
 
   return (

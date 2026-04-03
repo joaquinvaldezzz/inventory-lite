@@ -182,14 +182,14 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
     control: form.control,
   });
 
+  const selectedCategory = form.watch("raw_material_type");
+
   useEffect(() => {
-    const category = form.getValues("raw_material_type");
+    if (selectedCategory.length === 0) return;
 
-    if (category.length === 0) return;
-
-    void ingredientsMutation.mutateAsync(category);
+    void ingredientsMutation.mutateAsync(selectedCategory);
     remove();
-  }, [form.getValues("raw_material_type")]);
+  }, [selectedCategory, ingredientsMutation, remove]);
 
   const handleAdd = useCallback(() => {
     append({
@@ -222,7 +222,7 @@ export function WastesFormModal({ dismiss }: WastesModalActions) {
         await createWasteEntryMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [createWasteEntryMutation.mutateAsync, form.handleSubmit],
+    [createWasteEntryMutation, form],
   );
 
   useEffect(() => {

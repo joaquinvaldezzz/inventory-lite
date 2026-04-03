@@ -175,7 +175,7 @@ export function DeliveryFormModal({ dismiss }: DeliveryModalActions) {
         await createDeliveryEntryMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [createDeliveryEntryMutation.mutateAsync, form.handleSubmit],
+    [createDeliveryEntryMutation, form],
   );
 
   useEffect(() => {

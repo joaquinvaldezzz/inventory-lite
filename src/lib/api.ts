@@ -115,7 +115,7 @@ async function apiRequest<T>({ url, action, additionalData = {} }: ApiRequestCon
   try {
     const response = await axios.post<T>(url, requestData);
     return response.data;
-  } catch (error) {
+  } catch {
     throw new Error(`Failed to ${action} data`);
   }
 }
@@ -135,7 +135,7 @@ export async function authenticateUser(email: string, password: string): Promise
       password,
     });
     return authenticatedUser.data;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to authenticate user");
   }
 }
@@ -156,7 +156,7 @@ export async function checkIfUserTokenIsValid(): Promise<boolean> {
     if (request.success) {
       return true;
     }
-  } catch (error) {
+  } catch {
     throw new Error("Failed to check if user token is valid");
   }
 
@@ -176,7 +176,7 @@ export async function resetPassword(email: string): Promise<ForgotPasswordRespon
       email,
     });
     return response.data;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to reset password");
   }
 }
@@ -626,7 +626,7 @@ export async function executeLogout() {
 
   try {
     await axios.post(env.VITE_LOGOUT_API_URL, { user_id: userId, token });
-  } catch (error) {
+  } catch {
     throw new Error("Failed to log out");
   }
 }

@@ -82,7 +82,7 @@ export function Settings() {
           currentBranch: value.toString(),
         }),
       );
-    } catch (error) {
+    } catch {
       throw new Error("Error saving branch information");
     }
   }

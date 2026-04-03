@@ -83,12 +83,12 @@ export default function ConfirmPIN() {
               message: "The PIN does not match.",
             });
           }
-        } catch (error) {
+        } catch {
           throw new Error("PIN does not match");
         }
       })(event);
     },
-    [form.handleSubmit, form.setError, savedPIN, presentToast, router],
+    [form, savedPIN, presentToast, router],
   );
 
   return (

@@ -106,7 +106,7 @@ export default function BranchSelector() {
         await saveBranchMutation.mutateAsync(parsedData.data);
       })(event);
     },
-    [form.handleSubmit, saveBranchMutation.mutateAsync],
+    [form, saveBranchMutation],
   );
 
   return (

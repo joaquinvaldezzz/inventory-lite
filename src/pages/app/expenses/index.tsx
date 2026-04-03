@@ -98,7 +98,10 @@ export default function Expenses() {
       try {
         void refetch();
       } catch (error) {
-        throw new Error("Error fetching delivery entries");
+        throw new Error(
+          "Error fetching delivery entries",
+          error instanceof Error ? { cause: error } : undefined,
+        );
       } finally {
         event.detail.complete();
       }

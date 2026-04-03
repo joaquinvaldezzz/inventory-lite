@@ -199,7 +199,7 @@ export default function ExpensesRecordForm({ data }: ExpenseRecordFormProps) {
         await updateExpensesRecordMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [form.handleSubmit, updateExpensesRecordMutation.mutateAsync],
+    [form, updateExpensesRecordMutation],
   );
 
   return (

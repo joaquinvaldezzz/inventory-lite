@@ -6,7 +6,7 @@ interface CustomWindow extends Window {
  * Updates the theme in the document
  *
  * @param theme The theme to apply
- * @reference https://github.com/tailwindlabs/tailwindcss.com/blob/main/src/app/layout.tsx
+ * @see https://github.com/tailwindlabs/tailwindcss.com/blob/main/src/app/layout.tsx
  */
 function updateTheme(theme: string) {
   const classList = document.documentElement.classList;

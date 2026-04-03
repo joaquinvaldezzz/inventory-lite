@@ -157,13 +157,13 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
     control: form.control,
   });
 
-  useEffect(() => {
-    const supplierId = form.getValues("supplier");
+  const supplierId = form.watch("supplier");
 
+  useEffect(() => {
     if (supplierId.length > 0) {
       void itemsMutation.mutateAsync(supplierId);
     }
-  }, [form.watch("supplier"), itemsMutation.mutateAsync]);
+  }, [supplierId, itemsMutation]);
 
   const handleAdd = () => {
     append({
@@ -191,7 +191,7 @@ export function NewExpensesModal({ dismiss }: ExpensesModalActions) {
         await createExpensesEntryMutation.mutateAsync(parsedValues.data);
       })(event);
     },
-    [form.handleSubmit, createExpensesEntryMutation.mutateAsync],
+    [form, createExpensesEntryMutation],
   );
 
   useEffect(() => {

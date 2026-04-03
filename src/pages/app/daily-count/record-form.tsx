@@ -169,7 +169,7 @@ export function DailyCountRecordForm({ data }: DailyCountRecordFormProps) {
         await updateDailyCountRecordMutation.mutateAsync(formValues);
       })(event);
     },
-    [form.handleSubmit, updateDailyCountRecordMutation.mutateAsync],
+    [form, updateDailyCountRecordMutation],
   );
 
   return (
