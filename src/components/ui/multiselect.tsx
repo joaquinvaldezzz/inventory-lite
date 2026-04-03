@@ -561,7 +561,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             />
             <button
               className={cn(
-                "absolute end-0 top-0 flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring/70",
+                "absolute inset-e-0 top-0 flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground/80 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring/70",
                 (hideClearAllButton ||
                   (disabled ?? false) ||
                   selected.length < 1 ||

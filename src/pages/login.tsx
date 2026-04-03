@@ -122,7 +122,7 @@ export default function Login() {
                     <FormItem>
                       <FormLabel>Email address</FormLabel>
                       <div className="relative">
-                        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                        <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                           <User aria-hidden="true" strokeWidth={2} size={16} />
                         </div>
                         <FormControl>
@@ -148,7 +148,7 @@ export default function Login() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <div className="relative">
-                        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                        <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
                           <KeyRound aria-hidden="true" strokeWidth={2} size={16} />
                         </div>
                         <FormControl>
@@ -161,7 +161,7 @@ export default function Login() {
                           />
                         </FormControl>
                         <button
-                          className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                          className="absolute inset-y-0 inset-e-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                           type="button"
                           aria-controls="password"
                           aria-label={isVisible ? "Hide password" : "Show password"}

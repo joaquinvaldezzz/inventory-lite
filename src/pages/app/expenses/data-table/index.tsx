@@ -88,7 +88,7 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
   return (
     <div className="space-y-4">
       <div className="relative w-full shrink-0">
-        <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
+        <div className="pointer-events-none absolute inset-y-0 inset-s-0 flex items-center justify-center ps-3 text-muted-foreground/80 peer-disabled:opacity-50">
           <Search strokeWidth={2} size={16} />
         </div>
         <label className="sr-only" htmlFor={`search-${idSearch}`}>
@@ -163,7 +163,7 @@ export function DataTable<TData extends { PurchaseID: string | number }, TValue>
               <SelectTrigger className="w-fit whitespace-nowrap" id="rows-per-page">
                 <SelectValue placeholder="Select number of results" />
               </SelectTrigger>
-              <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+              <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:inset-e-2">
                 {[5, 10, 25, 50].map((pageSize) => (
                   <SelectItem value={pageSize.toString()} key={pageSize}>
                     {pageSize}
